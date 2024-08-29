@@ -52,6 +52,7 @@ const CreateLog = ({params}: params) => {
     for (let log of logs) {
       createLog(log, trialId)
     }
+    resetLogs()
   }, [trialId, logs])
 
   useEffect(() => {

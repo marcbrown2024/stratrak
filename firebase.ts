@@ -40,11 +40,17 @@ export const createLog = async (log: LogDetails, trialId: string) => {
   try {
     const logsRef = collection(db, "logs");
     const newLogsRef = await addDoc(logsRef, {
-      ...log, 
-      trialId: trialId
-    })
-    const newLogsSnap = await getDoc(newLogsRef)
-    response = {success: true, data: {...newLogsSnap.data(), dateOfVisit: new Date(newLogsSnap.data()!.dateOfVisit)} as LogDetails}
+      ...log,
+      trialId: trialId,
+    });
+    const newLogsSnap = await getDoc(newLogsRef);
+    response = {
+      success: true,
+      data: {
+        ...newLogsSnap.data(),
+        dateOfVisit: new Date(newLogsSnap.data()!.dateOfVisit),
+      } as LogDetails,
+    };
   } catch (e: any) {
     console.error(e.message);
     response = { success: false };
@@ -83,6 +89,19 @@ export const getLogs = async (id: string) => {
       logs.push({ id: doc.id, ...doc.data() } as LogDetails);
     });
     response = { success: true, data: logs };
+  } catch (e: any) {
+    console.error(e.message);
+    response = { success: false };
+  }
+  return response;
+};
+
+export const getTrial = async (trialId: string) => {
+  try {
+    const trialsRef = doc(db, "trials", trialId);
+    const trialsSnap = await getDoc(trialsRef);
+
+    response = { success: true, data: trialsSnap.data() as TrialDetails };
   } catch (e: any) {
     console.error(e.message);
     response = { success: false };
