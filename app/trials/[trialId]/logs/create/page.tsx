@@ -47,7 +47,7 @@ const CreateLog = ({params}: params) => {
     for (let log of logs) {
       createLog(log, trialId)
     }
-  }, [logs])
+  }, [trialId, logs])
 
   return (
     <div className="flex flex-col space-y-4 w-[70%] h-fit min-h-[500px] mx-auto">
