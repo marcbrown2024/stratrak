@@ -6,6 +6,12 @@ type LogDetails = {
   dateOfVisit: string,
 }
 
+type TrialDetails = {
+  investigatorName: string,
+  protocol: string,
+  siteVisit: string,
+}
+
 type TrialData = {
   id: number;
   investigatorName: string;
