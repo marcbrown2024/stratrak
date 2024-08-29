@@ -5,3 +5,9 @@ type LogDetails = {
   purposeOfVisit: "SIV" | "IMV" | "COV" | "Audit",
   dateOfVisit: string,
 }
+
+type TrialDetails = {
+  investigatorName: string,
+  protocol: string,
+  siteVisit: string,
+}

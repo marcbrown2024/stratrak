@@ -1,13 +1,21 @@
 'use client'
 
 import CreateLogTableRow from "@/components/CreateLogTableRow";
+import { createLog, getTrials } from "@/firebase";
 import React, { useEffect, useState } from "react";
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 
-const CreateLog = () => {
+type params = {
+  params: {
+    trialId: string
+  }
+}
+
+const CreateLog = ({params}: params) => {
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0, 1])
-  const [shouldSubmit, setShouldSubmit] = useState<Boolean>(false)
   const [logs, setLogs] = useState<LogDetails[]>([])
+
+  const trialId = params.trialId
 
   const addRow = () => {
     setTableRowsIds(rowArr => [...rowArr, rowArr.length])
@@ -21,22 +29,38 @@ const CreateLog = () => {
   }
   
   const updateLogs = (log: LogDetails) => {
-    setLogs([...logs, log])
+    setLogs(prevState => [...prevState, log])
   }
 
   const triggerSubmit = () => {
-    setShouldSubmit(true)
+    const submitBtns = document.getElementsByClassName('formSubmitBtn')
+    for (let i=0; i<submitBtns.length; i++) {
+      (submitBtns[i] as HTMLButtonElement).click()
+    }
+    // setShouldSubmit(true)
+  }
+
+  const resetLogs = () => {
+    setTableRowsIds([0])
   }
 
   useEffect(() => {
-    console.log(logs);
-  }, [shouldSubmit])
+    for (let log of logs) {
+      createLog(log, trialId)
+    }
+  }, [logs])
 
   return (
     <div className="flex flex-col space-y-4 w-[70%] h-fit min-h-[500px] mx-auto">
       <h1 className="text-4xl pl-6">Monitoring Log</h1>
 
       {/* Create log form wrapper */}
+      <div className="w-full flex justify-end pr-6">
+        <button 
+        onClick={resetLogs}
+        disabled={tableRowsIds.length <= 1}
+        className="bg-red-500 text-white px-4 py-1 rounded-full disabled:opacity-30">Reset</button>
+      </div>
       <div className="flex flex-col mt-10">
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-1.5 min-w-full inline-block align-middle">
@@ -79,7 +103,7 @@ const CreateLog = () => {
                 <tbody className="divide-y divide-gray-200 duration-200">
                   {
                     tableRowsIds.map((i, k) => (
-                      <tr key={k}><CreateLogTableRow rowId={i} shouldSubmit={shouldSubmit} updateLogs={updateLogs} /></tr>
+                      <tr key={k}><CreateLogTableRow rowId={i} updateLogs={updateLogs} /></tr>
                     ))
                   }
                 </tbody>
