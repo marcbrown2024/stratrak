@@ -60,7 +60,7 @@ const TrialsPage = () => {
   useEffect(() => {
     getLogs(trialId as string)
     .then(response => setLogs(response.data) )
-  }, []);
+  }, [trialId]);
 
   console.log(logs);
 

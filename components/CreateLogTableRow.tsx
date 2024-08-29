@@ -21,6 +21,7 @@ const TableRow = ({rowId, updateLogs}: params) => {
   }
 
   const logDetails: LogDetails = {
+    id: "",
     monitorName: "",
     signature: "",
     typeOfVisit: "Remote",
