@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { addDoc, collection, doc, getDoc, getDocs, getFirestore, orderBy, query, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, orderBy, query, serverTimestamp, setDoc, Timestamp, where } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC_VAvLs0zFKgj1sSVVujCXQ1yCsnmQeT8",
@@ -54,8 +54,24 @@ export const getTrials = async () => {
     console.error(e.message)
     response = {success: false}
   }
-  console.log("result: ", response)
   return response
 }
 
-// export const getLogs = async (trialId: )
+export const getLogs =  async (id: string) => {
+  const logs: LogDetails[] = []
+
+  try {
+    const logsRef = collection(db, 'logs')
+    const q = query(logsRef, where("trialId", '==', id))
+
+    const logsSnap = await getDocs(q)
+    logsSnap.forEach(doc => {
+      logs.push(doc.data() as LogDetails)
+    })  
+    response = {success: true, data: logs}
+  } catch (e: any) {
+    console.error(e.message)
+    response = {success: false}
+  }
+  return response
+}

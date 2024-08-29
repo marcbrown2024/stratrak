@@ -1,7 +1,7 @@
 'use client'
 
 import CreateLogTableRow from "@/components/CreateLogTableRow";
-import { createLog, getTrials } from "@/firebase";
+import { createLog, getLogs, getTrials } from "@/firebase";
 import React, { useEffect, useState } from "react";
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 
@@ -12,7 +12,7 @@ type params = {
 }
 
 const CreateLog = ({params}: params) => {
-  const [tableRowsIds, setTableRowsIds] = useState<number[]>([0, 1])
+  const [tableRowsIds, setTableRowsIds] = useState<number[]>([0])
   const [logs, setLogs] = useState<LogDetails[]>([])
 
   const trialId = params.trialId
@@ -37,7 +37,6 @@ const CreateLog = ({params}: params) => {
     for (let i=0; i<submitBtns.length; i++) {
       (submitBtns[i] as HTMLButtonElement).click()
     }
-    // setShouldSubmit(true)
   }
 
   const resetLogs = () => {

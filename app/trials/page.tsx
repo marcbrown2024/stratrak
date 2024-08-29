@@ -18,12 +18,6 @@ type TrialsFormatted = {
 
 const columns: GridColDef[] = [
   {
-    field: "id",
-    headerClassName: "text-blue-500 uppercase bg-blue-50",
-    headerName: "Trial ID",
-    width: 90,
-  },
-  {
     field: "investigatorName",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     type: "string",
