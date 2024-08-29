@@ -31,7 +31,7 @@ export const createLog = async (log: LogDetails, trialId: string) => {
       trialId: trialId
     })
     const newLogsSnap = await getDoc(newLogsRef)
-    response = {success: true, data: newLogsSnap.data() as LogDetails}
+    response = {success: true, data: {...newLogsSnap.data(), dateOfVisit: new Date(newLogsSnap.data()!.dateOfVisit)} as LogDetails}
   } catch (e: any) {
     console.error(e.message)
     response = {success: false}
@@ -69,6 +69,20 @@ export const getLogs =  async (id: string) => {
       logs.push(doc.data() as LogDetails)
     })  
     response = {success: true, data: logs}
+  } catch (e: any) {
+    console.error(e.message)
+    response = {success: false}
+  }
+  return response
+}
+
+export const getTrial = async (trialId: string) => {
+
+  try {
+    const trialsRef = doc(db, 'trials', trialId)
+    const trialsSnap = await getDoc(trialsRef)
+ 
+    response = {success: true, data: trialsSnap.data() as TrialDetails}
   } catch (e: any) {
     console.error(e.message)
     response = {success: false}
