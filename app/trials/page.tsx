@@ -9,12 +9,8 @@ import TrialTable from "@/components/Mui/TrialTable";
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
 
-// lib assets
-import TrialsData from "@/lib/trialData.json";
-
-type TrialsFormatted = {
-  [id: number]: TrialData;
-};
+// firestore functions
+import { getTrials } from "@/firebase";
 
 const columns: GridColDef[] = [
   {
@@ -41,18 +37,15 @@ const columns: GridColDef[] = [
 ];
 
 const TrialsPage = () => {
-  const [trialData, setTrialData] = useState<TrialsFormatted>({});
-  const [trials, setTrials] = useState<TrialData[]>([]);
+  const [trials, setTrials] = useState<TrialDetails[]>([]);
 
-  // Update the state with the imported JSON data
+  // Update the state with the imported data
   useEffect(() => {
-    const formattedData: TrialsFormatted = {};
-    TrialsData.forEach((trial: TrialData) => {
-      formattedData[trial.id] = trial;
-    });
-    setTrials(TrialsData);
-    setTrialData(formattedData);
+    getTrials()
+    .then(response => setTrials(response.data) )
   }, []);
+
+  console.log(trials);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center gap-10 px-20">

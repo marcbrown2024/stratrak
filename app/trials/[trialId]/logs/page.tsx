@@ -11,20 +11,10 @@ import LogTable from "@/components/Mui/LogTable";
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
 
-// lib assets
-import TrialLogsData from "@/lib/trialLogs.json";
-
-type TrialLogsFormatted = {
-  [id: number]: TrialLog;
-};
+// firestore functions
+import { getLogs } from "@/firebase";
 
 const columns: GridColDef[] = [
-  {
-    field: "id",
-    headerClassName: "text-blue-500 uppercase bg-blue-50",
-    headerName: "Log ID",
-    width: 90,
-  },
   {
     field: "monitorName",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
@@ -56,7 +46,7 @@ const columns: GridColDef[] = [
   {
     field: "dateOfVisit",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
-    type: "date",
+    type: "string",
     headerName: "Date Of Visit",
     flex: 1,
   },
@@ -64,33 +54,24 @@ const columns: GridColDef[] = [
 
 const TrialsPage = () => {
   const { trialId } = useParams();
-  const [trialData, setTrialData] = useState<TrialLogsFormatted>({});
-  const [trials, setTrials] = useState<TrialLog[]>([]);
+  const [logs, setLogs] = useState<LogDetails[]>([]);
 
-  // Update the state with the imported JSON data
+  // Update the state with the imported data
   useEffect(() => {
-    const formattedData: TrialLogsFormatted = {};
-    const formattedTrials: TrialLog[] = TrialLogsData.map((log: any) => ({
-      ...log,
-      dateOfVisit: new Date(log.dateOfVisit), // Convert string to Date object
-    }));
-
-    formattedTrials.forEach((log) => {
-      formattedData[log.id] = log;
-    });
-
-    setTrials(formattedTrials);
-    setTrialData(formattedData);
+    getLogs(trialId as string)
+    .then(response => setLogs(response.data) )
   }, []);
+
+  console.log(logs);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center gap-10 px-20">
       <h1 className="text-3xl text-blue-500 font-bold">
-        Trial Id# {trialId} Logs
+        Trial Logs
       </h1>
       {trialId ? (
         <div className="flex flex-col items-center justify-center gap-8">
-          <LogTable columns={columns} rows={trials} />
+          <LogTable columns={columns} rows={logs} />
           <Link
             className="text-white font-bold bg-blue-500 rounded-full px-4 py-2 hover:opacity-90"
             href={`/trials/${trialId}/logs/create`}
