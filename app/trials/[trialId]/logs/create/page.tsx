@@ -1,7 +1,7 @@
 'use client'
 
 import CreateLogTableRow from "@/components/CreateLogTableRow";
-import { createLog, getLogs, getTrials } from "@/firebase";
+import { createLog, getLogs, getTrial, getTrials } from "@/firebase";
 import React, { useEffect, useState } from "react";
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 
@@ -14,6 +14,7 @@ type params = {
 const CreateLog = ({params}: params) => {
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0])
   const [logs, setLogs] = useState<LogDetails[]>([])
+  const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails)
 
   const trialId = params.trialId
 
@@ -40,6 +41,10 @@ const CreateLog = ({params}: params) => {
   }
 
   const resetLogs = () => {
+    const forms = document.querySelectorAll('form')
+    for (let i=0; i<forms.length; i++) {
+      forms[i].reset()
+    }
     setTableRowsIds([0])
   }
 
@@ -49,18 +54,26 @@ const CreateLog = ({params}: params) => {
     }
   }, [trialId, logs])
 
+  useEffect(() => {
+    getTrial(trialId).then(response => setTrial(response.data))
+  }, [])
+
   return (
     <div className="flex flex-col space-y-4 w-[70%] h-fit min-h-[500px] mx-auto">
       <h1 className="text-4xl pl-6">Monitoring Log</h1>
-
+      <br />
+      <div className="px-6 py-2 bg-slate-50 w-fit rounded-lg flex space-x-6">
+        <p>Investigator Name: <span className="font-bold">{trial?.investigatorName}</span></p>
+        <p>Protocol: <span className="font-bold">{trial?.protocol}</span></p>
+        <p>Site Visit: <span className="font-bold">{trial?.siteVisit}</span></p>
+      </div>
       {/* Create log form wrapper */}
       <div className="w-full flex justify-end pr-6">
         <button 
         onClick={resetLogs}
-        disabled={tableRowsIds.length <= 1}
         className="bg-red-500 text-white px-4 py-1 rounded-full disabled:opacity-30">Reset</button>
       </div>
-      <div className="flex flex-col mt-10">
+      <div className="flex flex-col">
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-1.5 min-w-full inline-block align-middle">
             <div className="border rounded-lg overflow-hidden">
