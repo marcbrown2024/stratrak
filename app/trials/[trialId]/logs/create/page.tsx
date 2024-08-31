@@ -13,6 +13,8 @@ import CreateLogTableRow from "@/components/CreateLogTableRow";
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 import { useLogStore } from "@/store/CreateLogStore";
 import { defaultLog } from "@/lib/defaults";
+import { useAlertStore } from "@/store/AlertStore";
+import { AlertType } from "@/enums";
 
 type params = {
   params: {
@@ -28,6 +30,7 @@ const CreateLog = ({params}: params) => {
 
   const trialId = params.trialId
   const createLogTableRef = useRef<HTMLTableElement>(null)
+  const [setAlert] = useAlertStore(state => [state.setAlert])
 
   const addRow = () => {
     updateLogs(tableRowsIds.length, defaultLog)
@@ -46,12 +49,30 @@ const CreateLog = ({params}: params) => {
   }
 
   const saveLogs = () => {
+    
     for (let log in logs) {
       createLog(logs[log], trialId).then(response => {
-        console.log(response.data)
+        let alert: AlertBody
+        let alertType: AlertType
+
+        if (response.success) {
+          alert = {
+            title:"Success!",
+            content: "Log" + (Object.keys(logs).length > 1 ? "s" : "") + " we saved successfully."
+          }
+          alertType = AlertType.Success
+        } else {
+          alert = {
+            title:"Something went wrong",
+            content: "Could not save logs, please try again"
+          }
+          alertType = AlertType.Error
+
+        }
+        setAlert(alert, alertType)
+        resetLogs()
       })
     }
-    resetLogs()
   }
 
   const resetLogs = () => {
@@ -68,7 +89,7 @@ const CreateLog = ({params}: params) => {
     <div className="flex flex-col space-y-4 w-[70%] h-fit min-h-[500px] mx-auto">
       <h1 className="text-4xl pl-6">Monitoring Log</h1>
       <br />
-      <div className="px-6 py-2 bg-slate-50 w-fit rounded-lg flex space-x-6">
+      <div className="px-8 py-2 bg-slate-50 w-fit rounded-lg flex space-x-6">
         <p>Investigator Name: <span className="font-bold">{trial?.investigatorName}</span></p>
         <p>Protocol: <span className="font-bold">{trial?.protocol}</span></p>
         <p>Site Visit: <span className="font-bold">{trial?.siteVisit}</span></p>
@@ -88,31 +109,31 @@ const CreateLog = ({params}: params) => {
                   <tr className="text-blue-500">
                     <th
                       scope="col"
-                      className="px-6 py-3 text-start text-xs font-medium uppercase"
+                      className="px-8 py-3 text-start text-xs font-medium uppercase"
                     >
                      Monitor Name
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-start text-xs font-medium uppercase"
+                      className="px-8 py-3 text-start text-xs font-medium uppercase"
                     >
                      Signature
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-start text-xs font-medium uppercase"
+                      className="px-8 py-3 text-start text-xs font-medium uppercase"
                     >
                      Type of Visit
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-start text-xs font-medium uppercase"
+                      className="px-8 py-3 text-start text-xs font-medium uppercase"
                     >
                      Purpose of Visit	
                     </th>
                     <th
                       scope="col"
-                      className="px-6 py-3 text-start text-xs font-medium uppercase"
+                      className="px-8 py-3 text-start text-xs font-medium uppercase"
                     >
                      Date of Visit	
                     </th>

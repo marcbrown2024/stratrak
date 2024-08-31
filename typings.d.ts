@@ -38,3 +38,8 @@ type MenuItemWithSubMenuProps = {
   item: SideNavItem;
   toggleOpen: () => void;
 }
+
+type AlertBody = {
+  title?: string,
+  content: string,
+}

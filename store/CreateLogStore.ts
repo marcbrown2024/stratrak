@@ -26,10 +26,8 @@ export const useLogStore = create<logsState>()((set) => ({
     return {...state, logs: {...state.logs, [rowId]: logDetails}}}
   ),
   updateLog: (rowId, logKey, logData) => set(state => {
-    // const updatedState = {...state.logs, [rowId]: {...state.logs.rowId, [logKey]: logData}}
     let log = state.logs[rowId]
     log = {...log, [logKey]: logData}
-    // const updatedState = {...state, logs: {...state.logs, [rowId]: {...state.logs[rowId], [logKey]: {...state.logs[rowId], [logKey]: logData}}}}
     const updatedState = {...state}
     updatedState.logs[rowId] = log
     return updatedState
