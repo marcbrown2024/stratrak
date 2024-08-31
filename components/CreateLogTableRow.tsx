@@ -1,54 +1,27 @@
 'use client'
 
+import { useLogStore } from "@/store/CreateLogStore";
 import React, { useEffect, useRef, useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
 
 type params = {
   rowId: number,
-  updateLogs: (log: LogDetails) => void
 }
 
-type Inputs = LogDetails
-
-const TableRow = ({rowId, updateLogs}: params) => {
-
-  const getCurrentDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  const logDetails: LogDetails = {
-    id: "",
-    monitorName: "",
-    signature: "",
-    typeOfVisit: "Remote",
-    purposeOfVisit: "SIV",
-    dateOfVisit: getCurrentDate(),
-  }
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>({defaultValues: logDetails});
+const TableRow = ({rowId}: params) => {
+  const [logs, updateLog] = useLogStore(state => [state.logs, state.updateLog])
 
 
-  const onSubmit: SubmitHandler<Inputs> = (data, e) => {
-    e?.preventDefault()
-    updateLogs({
-      ...logDetails,
-      ...data,
-    })
-  }
+  useEffect(() => {
+    console.log(logs)
+  }, [logs])
 
   return (
     <>
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input {...register("monitorName")} type="text"
+        <form>
+          <input type="text"
+            defaultValue={logs[rowId]["monitorName"]}
+            onChange={e => updateLog(rowId, "monitorName", e.target.value)}
             id={`name-${rowId}`}
             className="text-gray-900 text-sm border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 pl-0"
             placeholder="Enter name..."
@@ -58,7 +31,7 @@ const TableRow = ({rowId, updateLogs}: params) => {
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
         <form>
-          <input {...register("signature")} type="text"
+          <input type="text"
             id={`signature-${rowId}`}
             className="text-gray-900 text-sm border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 pl-0"
             placeholder="Your signature here"
@@ -68,7 +41,7 @@ const TableRow = ({rowId, updateLogs}: params) => {
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
         <form>
           <select 
-          {...register("typeOfVisit")}            
+               
           id={`visit-${rowId}`}
           className="hover:cursor-pointer text-gray-900 text-sm border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 pl-0">
             <option>Remote</option>
@@ -80,8 +53,7 @@ const TableRow = ({rowId, updateLogs}: params) => {
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
         <form>
-          <select 
-          {...register("purposeOfVisit")}            
+          <select         
           id={`purpose-${rowId}`}
           className="hover:cursor-pointer text-gray-900 text-sm border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 pl-0">
             <option>SIV</option>
@@ -94,7 +66,6 @@ const TableRow = ({rowId, updateLogs}: params) => {
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
         <form>
           <input 
-          {...register("dateOfVisit")}
           aria-label="Date" type="date" />        
         </form>
       </td>
