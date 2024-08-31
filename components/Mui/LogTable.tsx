@@ -9,7 +9,7 @@ import CustomToolbar from "@/components/mui/CustomToolbar";
 
 type Props = {
   columns: GridColDef[];
-  rows: object[];
+  rows: LogDetails[];
 };
 
 const TrialTable = (props: Props) => {

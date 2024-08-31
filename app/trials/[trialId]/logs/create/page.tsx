@@ -1,7 +1,7 @@
 'use client'
 
 // react/nextjs components
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 // firebase components/functions
 import { createLog, getTrial } from "@/firebase";
@@ -21,13 +21,13 @@ type params = {
 }
 
 const CreateLog = ({params}: params) => {
-  const updateLogs = useLogStore(state => state.updateLogs)
+  const [logs, removeLog, updateLogs, clearLogs] = useLogStore(state => [state.logs, state.removeLog, state.updateLogs, state.clearLogs])
 
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0])
-  const [logs, setLogs] = useState<LogDetails[]>([])
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails)
 
   const trialId = params.trialId
+  const createLogTableRef = useRef<HTMLTableElement>(null)
 
   const addRow = () => {
     updateLogs(tableRowsIds.length, defaultLog)
@@ -35,39 +35,30 @@ const CreateLog = ({params}: params) => {
   }
 
   const remRow = () => {
-    updateLogs(tableRowsIds.length-1, defaultLog)
+    if (tableRowsIds.length == 1) return
+
+    removeLog(tableRowsIds.length-1)
 
     setTableRowsIds(rowArr => {
       if (rowArr.length == 1) return rowArr
       return rowArr.slice(0, -1)
     })
   }
-  
-  // const updateLogs = (log: LogDetails) => {
-  //   setLogs(prevState => [...prevState, log])
-  // }
 
-  const triggerSubmit = () => {
-    const submitBtns = document.getElementsByClassName('formSubmitBtn')
-    for (let i=0; i<submitBtns.length; i++) {
-      (submitBtns[i] as HTMLButtonElement).click()
+  const saveLogs = () => {
+    for (let log in logs) {
+      createLog(logs[log], trialId).then(response => {
+        console.log(response.data)
+      })
     }
+    resetLogs()
   }
 
   const resetLogs = () => {
-    const forms = document.querySelectorAll('form')
-    for (let i=0; i<forms.length; i++) {
-      forms[i].reset()
-    }
+    clearLogs()
+    createLogTableRef.current?.querySelectorAll('form').forEach(form => form.reset())
     setTableRowsIds([0])
   }
-
-  useEffect(() => {
-    for (let log of logs) {
-      createLog(log, trialId)
-    }
-    resetLogs()
-  }, [trialId, logs])
 
   useEffect(() => {
     getTrial(trialId).then(response => setTrial(response.data))
@@ -92,7 +83,7 @@ const CreateLog = ({params}: params) => {
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-1.5 min-w-full inline-block align-middle">
             <div className="border rounded-lg overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
+              <table ref={createLogTableRef} className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-sky-50">
                   <tr className="text-blue-500">
                     <th
@@ -145,7 +136,7 @@ const CreateLog = ({params}: params) => {
         <button onClick={addRow}><FaPlusCircle className="text-2xl text-slate-200 hover:text-blue-500" /></button>
       </div>
       <div 
-        onClick={() => triggerSubmit()}
+        onClick={() => saveLogs()}
         className="pl-6 w-full flex items-center justify-center">
         <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:opacity-90">{`Save Log${tableRowsIds.length > 1 ? 's' : ''}`}</button>
       </div>
