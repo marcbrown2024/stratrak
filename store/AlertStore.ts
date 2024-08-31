@@ -1,23 +1,23 @@
 // store for keeping track of of pop up is open or closed
+import { AlertType } from "@/enums";
 import { create } from "zustand";
 
-enum AlertType {
-  "success",
-  "error",
-}
 
 type AlertState = {
   showAlert: boolean
-  body: string
-  alertType: AlertType | null 
+  body: AlertBody
+  alertType: AlertType 
   closeAlert: () => void;
-  setAlert: (body: string, alertType: AlertType) => void
+  setAlert: (body: AlertBody, alertType: AlertType) => void
 }
 
 export const useAlertStore = create<AlertState>()((set) => ({
-  showAlert: true,
-  body: "This is an alert",
-  alertType: null,
-  closeAlert: () => set(state => ({ showAlert: false })),
-  setAlert: (body, alertType) => set({ body: body, alertType: alertType})
+  showAlert: false,
+  body: {
+    title: "Success!",
+    content: "This is an alert",
+  },
+  alertType: AlertType.Success,
+  closeAlert: () => set(({ showAlert: false })),
+  setAlert: (body, alertType) => set({showAlert: true, body: body, alertType: alertType})
 }));

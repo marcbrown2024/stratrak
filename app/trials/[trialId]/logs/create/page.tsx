@@ -13,6 +13,8 @@ import CreateLogTableRow from "@/components/CreateLogTableRow";
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 import { useLogStore } from "@/store/CreateLogStore";
 import { defaultLog } from "@/lib/defaults";
+import { useAlertStore } from "@/store/AlertStore";
+import { AlertType } from "@/enums";
 
 type params = {
   params: {
@@ -28,6 +30,7 @@ const CreateLog = ({params}: params) => {
 
   const trialId = params.trialId
   const createLogTableRef = useRef<HTMLTableElement>(null)
+  const [setAlert] = useAlertStore(state => [state.setAlert])
 
   const addRow = () => {
     updateLogs(tableRowsIds.length, defaultLog)
@@ -46,11 +49,30 @@ const CreateLog = ({params}: params) => {
   }
 
   const saveLogs = () => {
+    
     for (let log in logs) {
       createLog(logs[log], trialId).then(response => {
+        let alert: AlertBody
+        let alertType: AlertType
+
+        if (response.success) {
+          alert = {
+            title:"Success!",
+            content: "Log" + (Object.keys(logs).length > 1 ? "s" : "") + " we saved successfully."
+          }
+          alertType = AlertType.Success
+        } else {
+          alert = {
+            title:"Something went wrong",
+            content: "Could not save logs, please try again"
+          }
+          alertType = AlertType.Error
+
+        }
+        setAlert(alert, alertType)
+        resetLogs()
       })
     }
-    resetLogs()
   }
 
   const resetLogs = () => {

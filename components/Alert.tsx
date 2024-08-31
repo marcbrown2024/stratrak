@@ -3,16 +3,19 @@
 import { useAlertStore } from '@/store/AlertStore'
 import React, { useEffect } from 'react'
 import {AnimatePresence, motion} from 'framer-motion'
-import { IoCloseCircleSharp } from "react-icons/io5";
+import { MdClose } from "react-icons/md";
+import { AlertType } from '@/enums';
+import { TiTick } from "react-icons/ti";
+import { IoAlert } from "react-icons/io5";
 
 const Alert = () => {
   const [showAlert, body, alertType, closeAlert] = useAlertStore(state => [state.showAlert, state.body, state.alertType, state.closeAlert])
   
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     closeAlert()
-  //   }, 5000)
-  // }, [])
+  useEffect(() => {
+    setTimeout(() => {
+      closeAlert()
+    }, 5000)
+  }, [showAlert])
 
   return (
     <AnimatePresence>
@@ -38,11 +41,29 @@ const Alert = () => {
             opacity: "0",
           }}
   
-          className={`absolute bottom-40 -right-50 flex w-fit min-w-48 h-fit bg-white`}>
-          <div className={`bg-emerald-500 w-10 rounded-l-lg`} />  
-          <div className={`px-4 py-4 relative w-full`}>
-            {body}
-            <button className='absolute top-1 right-1 opacity-3 0 hover:opacity-100'><IoCloseCircleSharp /></button>
+          className={`z-[1000000] p-2 absolute bottom-20 -right-50 flex w-96 h-fit bg-white shadow-xl border-t-2 
+            ${alertType == AlertType.Success ? "border-emerald-500 text-emerald-500" : 
+              alertType == AlertType.Error && "border-rose-500 text-rose-500" }
+          `}>
+          {/* alert body */}
+          <div className={`relative w-full`}>
+            {/* alert heading */}
+            <div className='flex items-center space-x-2 font-bold'>
+              {
+                alertType == AlertType.Success ?
+                <span className='rounded-full bg-emerald-500 text-white'>
+                  <TiTick />   
+                </span>
+                :
+                <span className='rounded-full bg-rose-500 text-white'>
+                  <IoAlert />
+                </span>
+              }
+              <p className='flex-1'>{body.title}</p>
+              <button onClick={closeAlert} className=''><MdClose className='' fontWeight={500} /></button>
+            </div>
+            {/* alert body content */}
+            <p className='px-6 text-black text-sm text-wrap'>{body.content}</p>
           </div>
         </motion.div>
       }
