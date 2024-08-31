@@ -67,7 +67,7 @@ export const getTrials = async () => {
 
     trialsSnap.forEach((doc) => {
       // Use Firestore's document ID as the `id` for each trial
-      trials.push({ id: doc.id, ...doc.data() } as TrialDetails);
+      trials.push({ id: doc.id, ...doc.data() } as DBTrial);
     });
     response = { success: true, data: trials };
   } catch (e: any) {
@@ -86,7 +86,7 @@ export const getLogs = async (id: string) => {
 
     const logsSnap = await getDocs(q);
     logsSnap.forEach((doc) => {
-      logs.push({ id: doc.id, ...doc.data() } as LogDetails);
+      logs.push({ id: doc.id, ...doc.data() } as DBLog);
     });
     response = { success: true, data: logs };
   } catch (e: any) {

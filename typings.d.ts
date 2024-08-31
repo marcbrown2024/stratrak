@@ -1,6 +1,5 @@
 // type for log details 
-type LogDetails = {
-  id: string;
+interface LogDetails {
   monitorName: string;
   signature: string;
   typeOfVisit: "Remote" | "Onsite" | "Waiver Call";
@@ -8,13 +7,21 @@ type LogDetails = {
   dateOfVisit: string | Date;
 };
 
+interface DBLog extends LogDetails {
+  id: string,
+}
+
 // type for trial details
-type TrialDetails = {
-  id: string;
+interface TrialDetails {
   investigatorName: string;
   protocol: string;
   siteVisit: string;
 };
+
+// trial fetched from database
+interface DBTrial extends TrialDetails {
+  id: string
+}
 
 // types for nav-menu are defined here
 type SideNavItem = {

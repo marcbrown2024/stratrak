@@ -4,28 +4,34 @@ import { defaultLog } from "@/lib/defaults";
 
 type logsState = {
   logs: {
-    [key: number]: LogDetails;
-  };
-  updateLogs: (rowId: number, log: LogDetails) => void;
-  updateLog: (rowId: number, logKey: keyof LogDetails, logData: any) => void;
-};
+    [key: number]: LogDetails
+  }
+  clearLogs: () => void
+  removeLog: (rowId: number) => void 
+  updateLogs: (rowId: number, log: LogDetails) => void
+  updateLog: (rowId: number, logKey: keyof LogDetails, logData: any) => void
+}
 
 export const useLogStore = create<logsState>()((set) => ({
   logs: {
-    0: defaultLog,
+    0: defaultLog
   },
-  updateLogs: (rowId, logDetails) =>
-    set((state) => {
-      return { ...state, logs: { ...state.logs, [rowId]: logDetails } };
-    }),
-  updateLog: (rowId, logKey, logData) =>
-    set((state) => {
-      // const updatedState = {...state.logs, [rowId]: {...state.logs.rowId, [logKey]: logData}}
-      let log = state.logs[rowId];
-      log = { ...log, [logKey]: logData };
-      // const updatedState = {...state, logs: {...state.logs, [rowId]: {...state.logs[rowId], [logKey]: {...state.logs[rowId], [logKey]: logData}}}}
-      const updatedState = { ...state };
-      updatedState.logs[rowId] = log;
-      return updatedState;
-    }),
-}));
+  clearLogs: () => set({logs: {0: defaultLog}}),
+  removeLog: (rowId) => set(state => {
+    const logs = {...state.logs}
+    delete logs[rowId]
+    return {...state, logs: logs}
+  }),
+  updateLogs: (rowId, logDetails) => set(state => {
+    return {...state, logs: {...state.logs, [rowId]: logDetails}}}
+  ),
+  updateLog: (rowId, logKey, logData) => set(state => {
+    // const updatedState = {...state.logs, [rowId]: {...state.logs.rowId, [logKey]: logData}}
+    let log = state.logs[rowId]
+    log = {...log, [logKey]: logData}
+    // const updatedState = {...state, logs: {...state.logs, [rowId]: {...state.logs[rowId], [logKey]: {...state.logs[rowId], [logKey]: logData}}}}
+    const updatedState = {...state}
+    updatedState.logs[rowId] = log
+    return updatedState
+  })
+}))

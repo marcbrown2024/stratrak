@@ -45,8 +45,6 @@ const TrialsPage = () => {
     .then(response => setTrials(response.data) )
   }, []);
 
-  console.log(trials);
-
   return (
     <div className="h-full w-full flex flex-col items-center justify-start gap-16 px-20">
       <h1 className="text-3xl text-blue-500 font-bold">Current Trials</h1>

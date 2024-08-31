@@ -52,7 +52,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-const TrialsPage = () => {
+const LogsPage = () => {
   const { trialId } = useParams();
   const [logs, setLogs] = useState<LogDetails[]>([]);
 
@@ -61,8 +61,6 @@ const TrialsPage = () => {
     getLogs(trialId as string)
     .then(response => setLogs(response.data) )
   }, [trialId]);
-
-  console.log(logs);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center gap-10 px-20">
@@ -87,4 +85,4 @@ const TrialsPage = () => {
   );
 };
 
-export default TrialsPage;
+export default LogsPage;
