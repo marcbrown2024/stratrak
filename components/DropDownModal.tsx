@@ -6,8 +6,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
-// custom components
-
 // zustand stores
 import { useModalStore } from "@/store/DropDownModalStore";
 
@@ -18,8 +16,7 @@ import { FaUserLock } from "react-icons/fa6";
 import { MdOutlineHelp } from "react-icons/md";
 
 const DropDownModal = () => {
-  const isModalOpen = useModalStore((state) => state.isModalOpen);
-  const toggleModal = useModalStore((state) => state.toggleModal);
+  const { isModalOpen, toggleModal, closeModal } = useModalStore();
   const currentPathname = usePathname();
   const router = useRouter();
   const userPhotoUrl =
@@ -27,84 +24,82 @@ const DropDownModal = () => {
 
   return (
     <div
-      className={`absolute top-16 right-8 hidden md:flex items-center justify-center z-50 ${
-        isModalOpen ? "opacity-100" : "opacity-0"
-      } transition-opacity duration-300 ease-in-out`}
+      className={`Popup absolute top-10 right-4 h-96 w-80 hidden md:flex flex-col items-center  ${
+        isModalOpen ? "visible opacity-100" : "invisible opacity-0"
+      } bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-300 ease-in-out`}
     >
-      <div className="h-[30rem] w-96 flex flex-col items-center text-black bg-[#fffefe] border rounded-2xl mr-8 pt-2">
-        <div className="h-1/2 w-full flex flex-col items-center justify-center gap-6 p-4">
-          <div className="h-auto w-full flex items-center justify-between">
-            <span className="text-xl text-blue-500 font-bold tracking-wider">
-              User Acount
-            </span>
-            <button
-              onClick={toggleModal}
-              className="flex items-center justify-center"
-            >
-              <AiOutlineClose className="text-xl text-blue-500 cursor-pointer" />
-            </button>
-          </div>
-          <div className="h-auto w-full flex items-center justify-start gap-8">
-            <Image
-              src={userPhotoUrl}
-              alt=""
-              width={50}
-              height={50}
-              className="h-20 w-20 rounded-full"
-            />
-            <div className="flex flex-col items-start justify-start gap-1">
-              <p className="text-lg text-blue-500 font-semibold">First Last</p>
-              <p className="text-base text-blue-500 font-medium">Department</p>
-              <p className="text-base text-blue-500 font-medium">
-                Company Name
-              </p>
-            </div>
-          </div>
-          <Link
-            href={"/userProfile"}
-            className={`h-10 w-full flex items-center justify-center text-blue-500 font-semibold border border-blue-500 rounded-3xl`}
+      <div className="h-1/2 w-full flex flex-col items-center justify-center gap-4 p-4">
+        <div className="h-auto w-full flex items-center justify-between">
+          <span className="text-lg text-blue-500 font-bold tracking-wider">
+            User Acount
+          </span>
+          <button
+            onClick={closeModal}
+            className="flex items-center justify-center"
           >
-            View Profile
-          </Link>
+            <AiOutlineClose className="text-xl text-blue-500 cursor-pointer" />
+          </button>
         </div>
-        <div className="h-1/2 w-full bg-blue-500 rounded-b-2xl">
-          <div className="h-auto w-full flex flex-col items-start justify-center gap-4 mx-4 my-6">
-            <span className="text-xl text-white font-bold tracking-wider">
-              User Support
-            </span>
-            <div className="h-auto w-full flex flex-col items-start justify-start gap-4">
-              <button type="button">
-                <Link
-                  href={"/help"}
-                  className="flex items-center justify-start gap-4 text-white text-xl"
-                >
-                  <MdOutlineHelp className="text-white text-2xl" />
-                  <span>Help</span>
-                </Link>
-              </button>
-              <button type="button">
-                <Link
-                  href={"/resetPassword"}
-                  className="flex items-center justify-start gap-4 text-white text-xl"
-                >
-                  <FaUserLock className="text-white text-2xl" />
-                  <span>Reset Password</span>
-                </Link>
-              </button>
-            </div>
+        <div className="h-auto w-full flex items-center justify-start gap-6">
+          <Image
+            src={userPhotoUrl}
+            alt=""
+            width={50}
+            height={50}
+            className="h-16 w-16 rounded-full"
+          />
+          <div className="flex flex-col items-start justify-start gap-1">
+            <p className="text-blue-500 font-semibold">First Last</p>
+            <p className="text-sm text-blue-500 font-medium">Department</p>
+            <p className="text-sm text-blue-500 font-medium">Company Name</p>
           </div>
-          <hr className="w-full" />
-          <div className="h-auto w-full flex items-center justify-start px-4 py-2 rounded-b-2xl">
-            <button type="button">
+        </div>
+        <Link
+          onClick={closeModal}
+          href={"/profile"}
+          className={`w-full flex items-center justify-center text-blue-500 font-semibold p-1 rounded-2xl border border-blue-500`}
+        >
+          View Profile
+        </Link>
+      </div>
+      <div className="h-1/2 w-full bg-blue-500 rounded-b-2xl">
+        <div className="h-auto w-full flex flex-col items-start justify-center gap-4 mx-4 my-2">
+          <span className="text-lg text-white font-bold tracking-wider">
+            User Support
+          </span>
+          <div className="h-auto w-full flex flex-col items-start justify-start gap-4">
+            <button onClick={closeModal} type="button">
               <Link
-                href={"/login"}
-                className="h-8 w-full flex items-center justify-start gap-4 text-white text-xl font-medium mt-2"
+                href={"/help"}
+                className="flex items-center justify-start gap-4 text-white"
               >
-                <MdLogout className="text-white text-2xl" />
-                Sign Out
+                <MdOutlineHelp className="text-white text-xl" />
+                <span>Help</span>
+              </Link>
+            </button>
+            <button onClick={closeModal} type="button">
+              <Link
+                href={"/resetPassword"}
+                className="flex items-center justify-start gap-4 text-white"
+              >
+                <FaUserLock className="text-white text-xl" />
+                <span>Reset Password</span>
               </Link>
             </button>
           </div>
+        </div>
+        <hr className="w-full" />
+        <div className="h-auto w-full flex items-center justify-start px-4 py-2 rounded-b-xl">
+          <button type="button">
+            <Link
+              onClick={closeModal}
+              href={"/login"}
+              className="h-8 w-full flex items-center justify-start gap-4 text-white font-medium mt-2"
+            >
+              <MdLogout className="text-white text-xl" />
+              Sign Out
+            </Link>
+          </button>
         </div>
       </div>
     </div>

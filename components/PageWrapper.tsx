@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 const PageWrapper = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="h-[calc(100vh-60px)] flex flex-col bg-zinc-50 flex-grow pt-10 pb-4">
+    <div className="md:h-[calc(100vh-58px)] flex flex-col bg-zinc-50 flex-grow">
       {children}
     </div>
   );
