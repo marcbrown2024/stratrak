@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 
 //components
-import LogTable from "@/components/Mui/LogTable";
+import LogTable from "@/components/mui/LogTable";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";

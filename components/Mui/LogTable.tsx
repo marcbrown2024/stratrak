@@ -5,7 +5,7 @@ import React from "react";
 
 // mui components
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import CustomToolbar from "@/components/Mui/CustomToolbar";
+import CustomToolbar from "@/components/mui/CustomToolbar";
 
 type Props = {
   columns: GridColDef[];

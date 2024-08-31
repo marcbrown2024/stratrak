@@ -1,8 +1,15 @@
 'use client'
 
-import CreateLogTableRow from "@/components/CreateLogTableRow";
-import { createLog, getLogs, getTrial, getTrials } from "@/firebase";
+// react/nextjs components
 import React, { useEffect, useState } from "react";
+
+// firebase components/functions
+import { createLog, getTrial } from "@/firebase";
+
+// custom components
+import CreateLogTableRow from "@/components/CreateLogTableRow";
+
+// icons
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 
 type params = {

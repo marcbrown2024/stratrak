@@ -1,7 +1,16 @@
+// react/nextjs components
 import type { Metadata } from "next";
+
+// styling
+import "@/styles/globals.css";
 import { Inter } from "next/font/google";
-import '@/styles/globals.css';
-import Header from "@/components/Header";
+
+// custom components
+import Header from "@/components/navLayout/Header";
+import HeaderMobile from "@/components/navLayout/HeaderMobile/HeaderMobile";
+import Sidebar from "@/components/navLayout/SideMenu/Sidebar";
+import PageWrapper from "@/components/PageWrapper";
+import MarginWidthWrapper from "@/components/MarginWidthWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,10 +26,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
-        <Header />
-        <div className="mt-10">
-          {children}
+      <body className={`bg-white ${inter.className}`}>
+        <div className="flex">
+          <Sidebar />
+          <main className="flex-1">
+            <MarginWidthWrapper>
+              <Header />
+              <HeaderMobile />
+              <PageWrapper>{children}</PageWrapper>
+            </MarginWidthWrapper>
+          </main>
         </div>
       </body>
     </html>
