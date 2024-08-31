@@ -11,6 +11,8 @@ import CreateLogTableRow from "@/components/CreateLogTableRow";
 
 // icons
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
+import { useLogStore } from "@/store/CreateLogStore";
+import { defaultLog } from "@/lib/defaults";
 
 type params = {
   params: {
@@ -19,6 +21,8 @@ type params = {
 }
 
 const CreateLog = ({params}: params) => {
+  const updateLogs = useLogStore(state => state.updateLogs)
+
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0])
   const [logs, setLogs] = useState<LogDetails[]>([])
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails)
@@ -26,19 +30,22 @@ const CreateLog = ({params}: params) => {
   const trialId = params.trialId
 
   const addRow = () => {
+    updateLogs(tableRowsIds.length, defaultLog)
     setTableRowsIds(rowArr => [...rowArr, rowArr.length])
   }
 
   const remRow = () => {
+    updateLogs(tableRowsIds.length-1, defaultLog)
+
     setTableRowsIds(rowArr => {
       if (rowArr.length == 1) return rowArr
       return rowArr.slice(0, -1)
     })
   }
   
-  const updateLogs = (log: LogDetails) => {
-    setLogs(prevState => [...prevState, log])
-  }
+  // const updateLogs = (log: LogDetails) => {
+  //   setLogs(prevState => [...prevState, log])
+  // }
 
   const triggerSubmit = () => {
     const submitBtns = document.getElementsByClassName('formSubmitBtn')
@@ -123,7 +130,7 @@ const CreateLog = ({params}: params) => {
                 <tbody className="divide-y divide-gray-200 duration-200">
                   {
                     tableRowsIds.map((i, k) => (
-                      <tr key={k}><CreateLogTableRow rowId={i} updateLogs={updateLogs} /></tr>
+                      <tr key={k}><CreateLogTableRow rowId={i} /></tr>
                     ))
                   }
                 </tbody>
@@ -138,7 +145,7 @@ const CreateLog = ({params}: params) => {
         <button onClick={addRow}><FaPlusCircle className="text-2xl text-slate-200 hover:text-blue-500" /></button>
       </div>
       <div 
-        onClick={triggerSubmit}
+        onClick={() => triggerSubmit()}
         className="pl-6 w-full flex items-center justify-center">
         <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:opacity-90">{`Save Log${tableRowsIds.length > 1 ? 's' : ''}`}</button>
       </div>
