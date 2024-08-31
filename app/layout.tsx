@@ -12,6 +12,7 @@ import Sidebar from "@/components/navLayout/SideMenu/Sidebar";
 import PageWrapper from "@/components/PageWrapper";
 import MarginWidthWrapper from "@/components/MarginWidthWrapper";
 import DropDownModal from "@/components/DropDownModal";
+import Alert from "@/components/Alert";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,6 +39,7 @@ export default function RootLayout({
             </MarginWidthWrapper>
           </main>
           <DropDownModal />
+          <Alert />
         </div>
       </body>
     </html>
