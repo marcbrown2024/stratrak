@@ -8,9 +8,13 @@ import { useSelectedLayoutSegment } from "next/navigation";
 // custom hooks
 import UseScroll from "@/hooks/UseScroll";
 
+// zustand stores 
+import { useModalStore } from "@/store/DropDownModalStore";
+
 const Header = () => {
   const scrolled = UseScroll(5);
   const selectedLayout = useSelectedLayoutSegment();
+  const toggleModal = useModalStore((state) => state.toggleModal);
 
   return (
     <div
@@ -18,7 +22,7 @@ const Header = () => {
         scrolled ? "border-b border-gray-200 bg-white/75 backdrop-blur-lg" : ""
       } ${selectedLayout ? "border-b border-gray-200 bg-white" : ""}`}
     >
-      <div className="flex h-14 items-center justify-between px-4">
+      <div className="h-20 flex items-center justify-between px-4">
         <div className="flex items-center space-x-4">
           <Link
             href="/"
@@ -30,9 +34,9 @@ const Header = () => {
         </div>
 
         <div className="hidden md:block">
-          <div className="h-10 w-10 flex items-center justify-center text-center bg-blue-100 rounded-full">
-            <span className="text-sm text-blue-500 font-extrabold">HQ</span>
-          </div>
+          <button  onClick={toggleModal} className="h-16 w-16 flex items-center justify-center text-center bg-blue-100 rounded-full">
+            <span className="text-xl text-blue-500 font-extrabold">HQ</span>
+          </button>
         </div>
       </div>
     </div>

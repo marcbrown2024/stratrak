@@ -1,4 +1,3 @@
-// react/nextjs components
 import React from 'react'
 
 const page = () => {

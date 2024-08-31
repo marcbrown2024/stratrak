@@ -23,6 +23,8 @@ type SideNavItem = {
   icon?: JSX.Element;
   subMenu?: boolean;
   subMenuItems?: SideNavItem[];
+  signOut?: () => void;
+  usage?: string;
 };
 
 type MenuItemWithSubMenuProps = {

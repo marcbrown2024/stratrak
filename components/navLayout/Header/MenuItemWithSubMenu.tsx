@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 // custom components
-import MenuItem from "@/components/navLayout/HeaderMobile/MenuItem";
+import MenuItem from "@/components/navLayout/Header/MenuItem";
 
 // icons
 import { FaChevronDown } from "react-icons/fa";
@@ -20,7 +20,7 @@ const MenuItemWithSubMenu = ({
     <>
       <MenuItem>
         <button
-          className="flex w-full text-2xl"
+          className="flex w-full text-3xl"
           onClick={() => setSubMenuOpen(!subMenuOpen)}
         >
           <div className="flex flex-row justify-between w-full items-center">
@@ -43,7 +43,7 @@ const MenuItemWithSubMenu = ({
                 <Link
                   href={subItem.path}
                   onClick={() => toggleOpen()}
-                  className={`text-blue-500 ${subItem.path === pathname ? "font-bold" : ""}`}
+                  className={`text-xl text-blue-500 ${subItem.path === pathname ? "font-bold" : ""} pl-2`}
                 >
                   {subItem.title}
                 </Link>

@@ -6,11 +6,12 @@ import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 
 // custom components
-import Header from "@/components/navLayout/Header";
-import HeaderMobile from "@/components/navLayout/HeaderMobile/HeaderMobile";
+import Header from "@/components/navLayout/Header/Header";
+import HeaderMobile from "@/components/navLayout/Header/HeaderMobile";
 import Sidebar from "@/components/navLayout/SideMenu/Sidebar";
 import PageWrapper from "@/components/PageWrapper";
 import MarginWidthWrapper from "@/components/MarginWidthWrapper";
+import DropDownModal from "@/components/DropDownModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`bg-white ${inter.className}`}>
-        <div className="flex">
+        <div className="relative flex">
           <Sidebar />
           <main className="flex-1">
             <MarginWidthWrapper>
@@ -36,6 +37,7 @@ export default function RootLayout({
               <PageWrapper>{children}</PageWrapper>
             </MarginWidthWrapper>
           </main>
+          <DropDownModal />
         </div>
       </body>
     </html>

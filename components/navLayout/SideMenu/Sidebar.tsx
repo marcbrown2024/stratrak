@@ -11,17 +11,17 @@ import MenuItem from "./MenuItem";
 
 const Sidebar = () => {
   return (
-    <div className="md:w-60 bg-white h-full flex-1 fixed border-r border-zinc-200 hidden md:flex">
-      <div className="flex flex-col space-y-6 w-full">
+    <div className="fixed md:w-96 hidden md:flex flex-1 bg-white h-full border-r border-zinc-200">
+      <div className="w-full flex flex-col space-y-6">
         <Link
           href="/"
-          className="flex flex-row space-x-3 items-center justify-center md:justify-start md:px-6 border-b border-zinc-200 h-14 w-full"
+          className="h-20 w-full flex flex-row items-center justify-center md:justify-start space-x-3 md:px-6 border-b border-zinc-200"
         >
           <span className="h-7 w-7 bg-blue-500 rounded-lg" />
-          <span className="font-bold text-xl text-blue-500 hidden md:flex">Logo</span>
+          <span className="md:flex hidden text-xl text-blue-500 font-bold">Logo</span>
         </Link>
 
-        <div className="flex flex-col space-y-2 md:px-6 ">
+        <div className="flex flex-col space-y-2 md:px-6">
           {SIDENAV_ITEMS.map((item, idx) => {
             return <MenuItem key={idx} item={item} />;
           })}

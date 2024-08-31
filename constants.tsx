@@ -9,17 +9,17 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
   {
     title: "Home",
     path: "/",
-    icon: <FaHome size={30} />,
+    icon: <FaHome size={24} />,
   },
   {
     title: "Dashboard",
     path: "/dashboard",
-    icon: <MdDashboardCustomize size={30} />,
+    icon: <MdDashboardCustomize size={24} />,
   },
   {
     title: "Trials",
     path: "/trials",
-    icon: <MdFolderShared  size={30} />,
+    icon: <MdFolderShared  size={24} />,
     subMenu: true,
     subMenuItems: [
       { title: "All Trials", path: "/trials" },
@@ -30,6 +30,26 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
   {
     title: "Settings",
     path: "/settings",
-    icon: <FaCog size={30} />,
+    icon: <FaCog size={24} />,
+  },
+  {
+    title: "Profile",
+    path: "/profile",
+    usage: "smallScreen"
+  },
+  {
+    title: "Help",
+    path: "/help",
+    usage: "smallScreen"
+  },
+  {
+    title: "Reset Password",
+    path: "/resetPassword",
+    usage: "smallScreen"
+  },
+  {
+    title: "Sign Out",
+    path: "/login",
+    usage: "smallScreen"
   },
 ];
