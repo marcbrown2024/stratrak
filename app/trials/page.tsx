@@ -11,6 +11,7 @@ import { GridColDef } from "@mui/x-data-grid";
 
 // firestore functions
 import { getTrials } from "@/firebase";
+import Loader from "@/components/Loader";
 
 const columns: GridColDef[] = [
   {
@@ -38,17 +39,26 @@ const columns: GridColDef[] = [
 
 const TrialsPage = () => {
   const [trials, setTrials] = useState<TrialDetails[]>([]);
+  const [loading, setLoading] = useState<Boolean>(true);
 
   // Update the state with the imported data
   useEffect(() => {
     getTrials()
-    .then(response => setTrials(response.data) )
+    .then(response => {
+      setTrials(response.data)
+      setLoading(false)
+    })
   }, []);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-start gap-16 px-20">
       <h1 className="text-3xl text-blue-500 font-bold">Current Trials</h1>
-      <TrialTable columns={columns} rows={trials} />
+      {
+        loading ?
+        <Loader />
+        :
+        <TrialTable columns={columns} rows={trials} />
+      }
     </div>
   );
 };
