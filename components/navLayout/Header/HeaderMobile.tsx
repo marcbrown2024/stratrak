@@ -60,6 +60,10 @@ const HeaderMobile = () => {
   const userPhotoUrl =
     "https://cdn-icons-png.flaticon.com/512/3237/3237472.png";
 
+  if (pathname === "/login") {
+    return null;
+  }
+
   return (
     <motion.nav
       initial={false}
