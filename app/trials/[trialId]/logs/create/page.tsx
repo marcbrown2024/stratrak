@@ -15,6 +15,7 @@ import { useLogStore } from "@/store/CreateLogStore";
 import { defaultLog } from "@/lib/defaults";
 import { useAlertStore } from "@/store/AlertStore";
 import { AlertType } from "@/enums";
+import Loader from "@/components/Loader";
 
 type params = {
   params: {
@@ -31,6 +32,8 @@ const CreateLog = ({params}: params) => {
   const trialId = params.trialId
   const createLogTableRef = useRef<HTMLTableElement>(null)
   const [setAlert] = useAlertStore(state => [state.setAlert])
+
+  const [loading, setLoading] = useState<Boolean>(true)
 
   const addRow = () => {
     updateLogs(tableRowsIds.length, defaultLog)
@@ -58,7 +61,7 @@ const CreateLog = ({params}: params) => {
         if (response.success) {
           alert = {
             title:"Success!",
-            content: "Log" + (Object.keys(logs).length > 1 ? "s" : "") + " we saved successfully."
+            content: "Log" + (Object.keys(logs).length > 1 ? "s were" : " was") + "  saved successfully."
           }
           alertType = AlertType.Success
         } else {
@@ -82,17 +85,31 @@ const CreateLog = ({params}: params) => {
   }
 
   useEffect(() => {
-    getTrial(trialId).then(response => setTrial(response.data))
+    getTrial(trialId).then(response => {
+      setTrial(response.data)
+      setLoading(false)
+    })
   }, [])
 
   return (
-    <div className="flex flex-col space-y-4 w-[70%] h-fit min-h-[500px] mx-auto">
-      <h1 className="text-4xl pl-6">Monitoring Log</h1>
-      <br />
-      <div className="px-8 py-2 bg-slate-50 w-fit rounded-lg flex space-x-6">
-        <p>Investigator Name: <span className="font-bold">{trial?.investigatorName}</span></p>
-        <p>Protocol: <span className="font-bold">{trial?.protocol}</span></p>
-        <p>Site Visit: <span className="font-bold">{trial?.siteVisit}</span></p>
+    <div className="h-full flex flex-col w-[70%] mx-auto justify-start gap-5 px-20">
+      <h1 className="text-3xl text-blue-500 font-bold w-full text-center">Monitoring Log</h1>
+      <div className="px-8 py-2 bg-white mt-10 w-fit rounded-lg flex space-x-4 border">
+        <div className="font-bold text-gray-500">
+          <p>Investigator Name:</p>
+          <p>Protocol:</p>
+          <p>Site Visit:</p>
+        </div>
+        {
+          loading ?
+          <Loader /> 
+          :
+          <div className="flex flex-col">
+            <p className="">{trial?.investigatorName}</p>
+            <p className="">{trial?.protocol}</p>
+            <p className="">{trial?.siteVisit}</p>
+          </div>
+        }
       </div>
       {/* Create log form wrapper */}
       <div className="w-full flex justify-end pr-6">
@@ -156,10 +173,10 @@ const CreateLog = ({params}: params) => {
         <button onClick={remRow} disabled={tableRowsIds.length <= 1}><FaMinusCircle className={`text-2xl text-slate-200 ${tableRowsIds.length > 1 && "hover:text-blue-500"}`} /></button>
         <button onClick={addRow}><FaPlusCircle className="text-2xl text-slate-200 hover:text-blue-500" /></button>
       </div>
-      <div 
-        onClick={() => saveLogs()}
-        className="pl-6 w-full flex items-center justify-center">
-        <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:opacity-90">{`Save Log${tableRowsIds.length > 1 ? 's' : ''}`}</button>
+      <div className="pl-6 w-full flex items-center justify-center">
+        <button 
+        onClick={saveLogs}
+        className="px-4 py-2 w-fit bg-blue-500 text-white rounded-full hover:opacity-90">{`Save Log${tableRowsIds.length > 1 ? 's' : ''}`}</button>
       </div>
     </div>
   );
