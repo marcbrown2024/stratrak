@@ -22,23 +22,24 @@ const Page = () => {
   };
 
   return (
-    <div className="relative h-screen w-full flex items-center justify-center overflow-hidden">
+    <div className="relative h-screen w-full flex items-center justify-end overflow-hidden">
       <div className="absolute left-0 h-full w-full flex items-center rotate-45 z-0">
-        <div className="h-full w-1/5 bg-blue-50 blur-[150px]"></div>
-        <div className="h-full w-1/5 bg-blue-100 blur-[150px]"></div>
         <div className="h-full w-1/5 bg-blue-100 blur-[150px]"></div>
         <div className="h-full w-1/5 bg-blue-200 blur-[150px]"></div>
         <div className="h-full w-1/5 bg-blue-300 blur-[150px]"></div>
         <div className="h-full w-1/5 bg-blue-400 blur-[150px]"></div>
+        <div className="h-full w-1/5 bg-blue-300 blur-[150px]"></div>
+        <div className="h-full w-1/5 bg-blue-500 blur-[150px]"></div>
       </div>
-      <div className="relative w-full max-w-lg">
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+      <div className="relative w-full">
+        <div className="absolute -top-96 left-96 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div className="absolute top-40 left-80 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-40 left-20 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-10 left-1/2 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
       </div>
       <form
         onSubmit={handleSubmit}
-        className="w-96 space-y-4 bg-gradient-to-tl from-[#8476d6] via-[#33b0cf] to-[#6f96d4] p-6 mr-20 border rounded-lg shadow-lg z-10"
+        className="h-[30rem]  w-[30rem] space-y-4 bg-gradient-to-tl from-[#8476d6] via-[#33b0cf] to-[#6f96d4] p-10 mr-20 rounded-xl shadow-xl z-10"
       >
         {error && <p className="text-red-500">{error}</p>}
         <div className="space-y-2">
@@ -129,7 +130,7 @@ const Page = () => {
         >
           Login
         </button>
-        <div className="text-center">
+        <div className="text-center pt-4">
           <a
             href="/forgot-password"
             className="text-white font-medium hover:underline"
