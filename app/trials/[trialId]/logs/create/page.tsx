@@ -89,7 +89,7 @@ const CreateLog = ({params}: params) => {
       setTrial(response.data)
       setLoading(false)
     })
-  }, [])
+  }, [trialId])
 
   return (
     <div className="h-full flex flex-col w-[70%] mx-auto justify-start gap-5 px-20">

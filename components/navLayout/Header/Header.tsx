@@ -3,7 +3,7 @@
 // react/nextjs components
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 
 // custom hooks
 import UseScroll from "@/hooks/UseScroll";
@@ -13,6 +13,7 @@ import { useModalStore } from "@/store/DropDownModalStore";
 
 const Header = () => {
   const scrolled = UseScroll(5);
+  const pathname = usePathname();
   const selectedLayout = useSelectedLayoutSegment();
   const { toggleModal, closeModal } = useModalStore();
 
@@ -27,7 +28,11 @@ const Header = () => {
     return () => {
       document.removeEventListener("click", closePopupsOnOutsideClick);
     };
-  }, []);
+  }, [closeModal]);
+
+  if (pathname === "/login") {
+    return null;
+  }
 
   return (
     <div

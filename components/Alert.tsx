@@ -15,7 +15,7 @@ const Alert = () => {
     setTimeout(() => {
       closeAlert()
     }, 5000)
-  }, [showAlert])
+  }, [showAlert, closeAlert])
 
   return (
     <AnimatePresence>
