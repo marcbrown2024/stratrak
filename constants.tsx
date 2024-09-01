@@ -8,7 +8,7 @@ import { MdDashboardCustomize, MdFolderShared  } from "react-icons/md";
 export const SIDENAV_ITEMS: SideNavItem[] = [
   {
     title: "Home",
-    path: "/",
+    path: "",
     icon: <FaHome size={24} />,
   },
   {

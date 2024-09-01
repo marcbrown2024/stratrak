@@ -12,7 +12,7 @@ type Props = {
   rows: LogDetails[];
 };
 
-const TrialTable = (props: Props) => {
+const LogTable = (props: Props) => {
   return (
     <div className="h-fit w-[80rem]">
       <DataGrid
@@ -35,4 +35,4 @@ const TrialTable = (props: Props) => {
   );
 };
 
-export default TrialTable;
+export default LogTable;
