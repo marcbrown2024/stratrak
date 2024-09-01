@@ -19,6 +19,7 @@ const Page = () => {
     event.preventDefault();
     // Handle form submission logic here
     // For example, send the credentials, role, and userId to an API
+    router.push("/dashboard");
   };
 
   return (
