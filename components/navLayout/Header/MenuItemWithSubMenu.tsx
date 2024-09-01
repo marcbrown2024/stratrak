@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 // custom components
-import MenuItem from "@/components/navLayout/Header/MenuItem";
+import MenuItem from "@/components/navLayout/header/MenuItem";
 
 // icons
 import { FaChevronDown } from "react-icons/fa";
