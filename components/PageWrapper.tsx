@@ -10,7 +10,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
   return pathname === "/login" ? (
     <>{children}</>
   ) : (
-    <div className="md:h-[calc(100vh-58px)] flex flex-col bg-zinc-50 flex-grow py-20">
+    <div className="relative md:min-h-[calc(100vh-58px)] h-fit flex flex-col bg-zinc-50 flex-grow py-20">
       {children}
     </div>
   );
