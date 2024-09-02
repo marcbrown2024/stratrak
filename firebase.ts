@@ -16,13 +16,13 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC_VAvLs0zFKgj1sSVVujCXQ1yCsnmQeT8",
-  authDomain: "stratrak-e7d68.firebaseapp.com",
-  projectId: "stratrak-e7d68",
-  storageBucket: "stratrak-e7d68.appspot.com",
-  messagingSenderId: "737654042646",
-  appId: "1:737654042646:web:f605e8abaa68f06c8e8537",
-  measurementId: "G-G438MCSLTW",
+  apiKey: process.env.FIRESTORE_API_KEY,
+  authDomain: "stratrak-4614e.firebaseapp.com",
+  projectId: "stratrak-4614e",
+  storageBucket: "stratrak-4614e.appspot.com",
+  messagingSenderId: "423217736137",
+  appId: "1:423217736137:web:cd78f54c5438a501afe018",
+  measurementId: "G-7QJWLM6YFP"
 };
 
 // Initialize Firebase
