@@ -61,11 +61,11 @@ const Page = (props: Props) => {
   }, [EditPopUp, setEditPopUp, DeletePopUp, setDeletePopUp]);
 
   return (
-    <div className="relative h-auto w-full flex flex-col items-start xl:items-center justify-start gap-16 p-4">
-      <div className="h-auto w-full flex flex-col items-center justify-center gap-4 -mb-4">
-        <div className="h-auto w-full md:w-11/12 xl:w-3/6 flex items-center justify-between text-xl font-semibold bg-[#fff] px-4 py-3 rounded-lg">
+    <div className="relative h-fit w-full flex flex-col items-start xl:items-center justify-start gap-16">
+      <div className="h-fit w-full flex flex-col items-center justify-center gap-4 -mb-4">
+        <div className="h-fit w-full md:w-11/12 xl:w-3/6 flex items-center justify-between text-xl text-white font-semibold bg-blue-500 px-4 py-2 rounded-lg">
           <h1>Update Profile</h1>
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center bg-white p-1 rounded-full">
             <Image
               src={userPhotoUrl}
               width={50}
@@ -76,13 +76,13 @@ const Page = (props: Props) => {
             />
           </div>
         </div>
-        <div className="h-auto w-full flex items-center justify-center">
+        <div className="h-fit w-full flex items-center justify-center">
           <div className="relative h-full w-full flex items-start justify-center">
-            <div className="relative h-auto w-auto flex items-start">
+            <div className="relative h-fit w-fit flex items-start">
               <Image
                 src={userPhotoUrl}
-                width={120}
-                height={120}
+                width={100}
+                height={100}
                 alt=""
                 priority
                 className="rounded-full"
@@ -158,7 +158,7 @@ const Page = (props: Props) => {
         } flex-col items-center justify-center bg-blue-500 text-[#fff] rounded-lg border`}
       >
         <div className="h-2/6 w-full flex items-center justify-between p-4">
-          <h2 className="h-full w-auto flex items-center justify-end font-semibold">
+          <h2 className="h-full w-fit flex items-center justify-end font-semibold">
             Delete profile photo
           </h2>
           <AiOutlineClose

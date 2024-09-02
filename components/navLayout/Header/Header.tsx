@@ -54,7 +54,7 @@ const Header = () => {
           onClick={toggleModal}
           className="Popup h-10 w-10 md:flex hidden items-center justify-center text-center bg-blue-100 rounded-full"
         >
-          <span className="text-blue-500 font-extrabold">HQ</span>
+          <span className="text-sm text-blue-500 font-extrabold">HQ</span>
         </button>
       </div>
     </div>

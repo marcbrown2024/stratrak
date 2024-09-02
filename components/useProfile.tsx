@@ -9,7 +9,7 @@ import React, { useState } from "react";
 
 const UserProfile = () => {
   const [formButton, setFormButton] = useState(false);
-  const [editTitle, setEditTitle] = useState("");
+  const [editrole, setEditRole] = useState("");
   const [editFullName, setEditFullName] = useState("");
   const [editNumber, setEditNumber] = useState("");
   const [editCity, setEditCity] = useState("");
@@ -17,7 +17,7 @@ const UserProfile = () => {
   const [editZipCode, setEditZipCode] = useState("");
 
   const [formData, setFormData] = useState({
-    title: "",
+    role: "",
     fullName: "",
     number: "",
     city: "",
@@ -28,7 +28,7 @@ const UserProfile = () => {
   const editProfile = () => {
     setFormButton(!formButton);
     setFormData({
-      title: "",
+      role: "",
       fullName: "",
       number: "",
       city: "",
@@ -39,7 +39,7 @@ const UserProfile = () => {
 
   const cancelEdit = () => {
     setFormButton(false);
-    setEditTitle("");
+    setEditRole("");
     setEditFullName("");
     setEditNumber("");
     setEditCity("");
@@ -53,62 +53,44 @@ const UserProfile = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    // Get form data
-    const form = event.target as HTMLFormElement;
-    const formData = new FormData(form);
-
-    // Create an object from form data
-    const data: Record<string, string> = {};
-    const fieldsToUpdate = ["city", "number", "state", "title", "zipCode"];
-
-    formData.forEach((value, key) => {
-      if (fieldsToUpdate.includes(key)) {
-        data[key] = value as string;
-      }
-    });
-
-    // Split fullName into firstName and lastName
-    const fullName = formData.get("fullName") as string;
-    const [firstName, lastName] = fullName.split(" ");
   };
 
   return (
-    <>
+    <div className="h-full w-full flex items-center justify-center">
       <form
         onSubmit={handleSubmit}
         className="h-full w-full xl:w-3/6 flex flex-col items-start justify-center"
       >
         <div className="h-full w-full flex flex-col items-start justify-start gap-2 text-[15px] font-semibold">
-          <div className="h-auto w-full flex items-center justify-center gap-10 p-2">
+          <div className="h-auto w-full flex items-center justify-center gap-10">
             <label
-              htmlFor="title"
-              className="h-auto w-full flex flex-col items-start justify-center"
+              htmlFor="role"
+              className="h-fit w-full flex flex-col items-start justify-center gap-2 text-blue-800"
             >
-              Title
+              Role
               <input
-                id="title"
-                name="title"
+                id="role"
+                name="role"
                 autoComplete="off"
                 required
                 onChange={(e: any) =>
                   setFormData((formData) => ({
                     ...formData,
-                    title: e.target.value,
+                    role: e.target.value,
                   }))
                 }
-                onFocus={() => formButton && setEditTitle("title")}
+                onFocus={() => formButton && setEditRole("role")}
                 readOnly={!formButton}
                 className={`h-12 w-full flex flex-col items-center justify-center ${
                   formButton
                     ? "text-[#464646]"
                     : "text-[#858585] focus-within:outline-none"
-                } p-4 bg-transparent border rounded-md`}
+                } p-4 bg-transparent border-2 border-blue-800 rounded-md`}
               />
             </label>
             <label
               htmlFor="fullName"
-              className="h-auto w-full flex flex-col items-start justify-center"
+              className="h-fit w-full flex flex-col items-start justify-center gap-2 text-blue-800"
             >
               Full Name
               <input
@@ -128,13 +110,13 @@ const UserProfile = () => {
                   formButton
                     ? "text-[#464646]"
                     : "text-[#858585] focus-within:outline-none"
-                } p-4 bg-transparent border rounded-md`}
+                } p-4 bg-transparent border-2 border-blue-800 rounded-md`}
               />
             </label>
           </div>
           <label
             htmlFor="email"
-            className="h-auto w-full flex flex-col items-start justify-center p-2"
+            className="h-fit w-full flex flex-col items-start justify-center gap-2 text-blue-800"
           >
             Email
             <input
@@ -143,12 +125,12 @@ const UserProfile = () => {
               autoComplete="off"
               required
               readOnly
-              className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent p-4 border rounded-md focus-within:outline-none"
+              className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent p-4 border-2 border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
           <label
             htmlFor="number"
-            className="h-auto w-full flex flex-col items-start justify-center p-2"
+            className="h-fit w-full flex flex-col items-start justify-center gap-2 text-blue-800"
           >
             Number
             <input
@@ -168,12 +150,12 @@ const UserProfile = () => {
                 formButton
                   ? "text-[#464646]"
                   : "text-[#858585] focus-within:outline-none"
-              } p-4 bg-transparent border rounded-md`}
+              } p-4 bg-transparent border-2 border-blue-800 rounded-md`}
             />
           </label>
           <label
             htmlFor="city"
-            className="h-auto w-full flex flex-col items-start justify-center p-2"
+            className="h-fit w-full flex flex-col items-start justify-center gap-2 text-blue-800"
           >
             City
             <input
@@ -193,13 +175,13 @@ const UserProfile = () => {
                 formButton
                   ? "text-[#464646]"
                   : "text-[#858585] focus-within:outline-none"
-              } p-4 bg-transparent border rounded-md`}
+              } p-4 bg-transparent border-2 border-blue-800 rounded-md`}
             />
           </label>
-          <div className="h-auto w-full flex items-center justify-center gap-10 p-2">
+          <div className="h-auto w-full flex items-center justify-center gap-10">
             <label
               htmlFor="state"
-              className="h-auto w-full flex flex-col items-start justify-center"
+              className="h-fit w-full flex flex-col items-start justify-center gap-2 text-blue-800"
             >
               State
               <input
@@ -219,12 +201,12 @@ const UserProfile = () => {
                   formButton
                     ? "text-[#464646]"
                     : "text-[#858585] focus-within:outline-none"
-                } p-4 bg-transparent border rounded-md`}
+                } p-4 bg-transparent border-2 border-blue-800 rounded-md`}
               />
             </label>
             <label
               htmlFor="zipCode"
-              className="h-auto w-full flex flex-col items-start justify-center"
+              className="h-fit w-full flex flex-col items-start justify-center gap-2 text-blue-800"
             >
               Zip Code
               <input
@@ -244,13 +226,13 @@ const UserProfile = () => {
                   formButton
                     ? "text-[#464646]"
                     : "text-[#858585] focus-within:outline-none"
-                } p-4 bg-transparent border rounded-md`}
+                } p-4 bg-transparent border-2 border-blue-800 rounded-md`}
               />
             </label>
           </div>
           <label
             htmlFor="country"
-            className="h-auto w-full flex flex-col items-start justify-center p-2"
+            className="h-fit w-full flex flex-col items-start justify-center gap-2 text-blue-800"
           >
             Country
             <input
@@ -259,15 +241,15 @@ const UserProfile = () => {
               value="United States"
               autoComplete="off"
               readOnly
-              className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent p-4 border rounded-md focus-within:outline-none"
+              className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent p-4 border-2 border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
         </div>
-        <div className="h-full w-full flex items-center justify-end gap-20 p-2">
+        <div className="h-full w-full flex items-center justify-end gap-20 p-2 mt-4">
           {formButton && (
             <div
               onClick={cancelEdit}
-              className="h-10 w-36 flex items-center justify-center font-semibold rounded hover:bg-[#fff] cursor-pointer"
+              className="h-10 w-36 flex items-center justify-center text-blue-500 font-semibold rounded bg-zinc-200 hover:bg-[#fff] cursor-pointer"
             >
               Cancel
             </div>
@@ -291,7 +273,7 @@ const UserProfile = () => {
           )}
         </div>
       </form>
-    </>
+    </div>
   );
 };
 
