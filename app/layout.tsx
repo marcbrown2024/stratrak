@@ -13,7 +13,6 @@ import PageWrapper from "@/components/PageWrapper";
 import MarginWidthWrapper from "@/components/MarginWidthWrapper";
 import DropDownModal from "@/components/DropDownModal";
 import Alert from "@/components/Alert";
-import SiteNavBtns from "@/components/SiteNavBtns";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,7 +36,6 @@ export default function RootLayout({
               <Header />
               <HeaderMobile />
               <PageWrapper>
-                <SiteNavBtns />
                 {children}
               </PageWrapper>
             </MarginWidthWrapper>
