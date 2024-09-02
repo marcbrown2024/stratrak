@@ -10,11 +10,6 @@ type params = {
 const TableRow = ({rowId}: params) => {
   const [logs, updateLog] = useLogStore(state => [state.logs, state.updateLog])
 
-
-  useEffect(() => {
-    console.log(logs)
-  }, [logs])
-
   return (
     <>
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
