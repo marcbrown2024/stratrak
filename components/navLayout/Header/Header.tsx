@@ -5,6 +5,9 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useSelectedLayoutSegment } from "next/navigation";
 
+// constants
+import { SIDENAV_ITEMS } from "@/constants";
+
 // custom hooks
 import UseScroll from "@/hooks/UseScroll";
 
@@ -16,6 +19,12 @@ const Header = () => {
   const pathname = usePathname();
   const selectedLayout = useSelectedLayoutSegment();
   const { toggleModal, closeModal } = useModalStore();
+  
+  // Find the current item's title based on the current path
+  const currentItem = SIDENAV_ITEMS.find((item) => item.path === pathname) as
+    | SideNavItem
+    | undefined;
+  const title = currentItem?.title || "";
 
   useEffect(() => {
     const closePopupsOnOutsideClick = (event: MouseEvent) => {
@@ -36,11 +45,12 @@ const Header = () => {
 
   return (
     <div
-      className={`sticky inset-x-0 top-0 w-full transition-all border-b border-zinc-200 ${
+      className={`sticky inset-x-0 top-0 w-full transition-all border-b border-zinc-100/90 ${
         scrolled ? "border-b border-zinc-200 bg-white/75 backdrop-blur-lg" : ""
-      } ${selectedLayout ? "border-b border-zinc-200 bg-white" : ""} z-30 `}
+      } ${selectedLayout ? "border-b border-zinc-200 bg-white" : ""} z-30`}
     >
       <div className="h-14 flex items-center justify-between px-4">
+        <span className="text-xl text-blue-800 font-bold">{title}</span>
         <div className="flex items-center space-x-4">
           <Link
             href="/"
@@ -52,9 +62,9 @@ const Header = () => {
         </div>
         <button
           onClick={toggleModal}
-          className="Popup h-10 w-10 md:flex hidden items-center justify-center text-center bg-blue-100 rounded-full"
+          className="Popup h-10 w-10 md:flex hidden items-center justify-center text-center bg-[#1286ff] rounded-full"
         >
-          <span className="text-sm text-blue-500 font-extrabold">HQ</span>
+          <span className="text-sm text-white font-extrabold">HQ</span>
         </button>
       </div>
     </div>

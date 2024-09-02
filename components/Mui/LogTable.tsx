@@ -16,7 +16,7 @@ const LogTable = (props: Props) => {
   return (
     <div className="h-fit w-[80rem]">
       <DataGrid
-        className="p-8 gap-4"
+        className="p-6 gap-4"
         rows={props.rows}
         columns={[...props.columns]}
         initialState={{

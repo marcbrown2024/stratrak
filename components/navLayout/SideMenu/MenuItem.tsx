@@ -20,33 +20,29 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
         <>
           <button
             onClick={toggleSubMenu}
-            className={`w-full flex flex-row items-center justify-between text-blue-500 p-2 rounded-lg hover:bg-blue-100 ${
-              pathname.includes(item.path) ? "bg-blue-100" : ""
-            }`}
+            className="w-full flex flex-row items-center justify-between text-white p-2 rounded-lg hover:bg-white/10"
           >
             <div className="flex flex-row space-x-4 items-center">
               {item.icon}
-              <span className="font-semibold text-blue-500">{item.title}</span>
+              <span className="font-semibold text-white">{item.title}</span>
             </div>
-
             <div
               className={`flex ${
                 subMenuOpen ? "rotate-180" : ""
-              } text-blue-500`}
+              } text-white`}
             >
               <FaChevronDown size={16} />
             </div>
           </button>
-
           {subMenuOpen && (
             <div className="my-2 ml-12 flex flex-col space-y-4">
               {item.subMenuItems?.map((subItem, idx) => (
                 <Link
                   key={idx}
                   href={subItem.path}
-                  className={`text-blue-500 text-sm ${
+                  className={`text-white text-sm ${
                     subItem.path === pathname ? "font-bold" : ""
-                  } py-1 rounded hover:bg-blue-100`}
+                  } py-1 rounded hover:bg-white/10`}
                 >
                   <span className="pl-2">{subItem.title}</span>
                 </Link>
@@ -58,9 +54,7 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
         item.usage !== "smallScreen" && (
           <Link
             href={item.path}
-            className={`flex flex-row items-center text-blue-500 space-x-4 p-2 rounded-lg hover:bg-blue-100 ${
-              item.path === pathname ? "bg-blue-100" : ""
-            }`}
+            className="flex flex-row items-center text-white space-x-4 p-2 rounded-lg hover:bg-white/10"
           >
             {item.icon}
             <span className="font-semibold">{item.title}</span>

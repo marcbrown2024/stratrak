@@ -92,7 +92,7 @@ const CreateLog = ({params}: params) => {
   }, [trialId])
 
   return (
-    <div className="h-full flex flex-col w-[70%] mx-auto justify-start gap-5 px-20">
+    <div className="h-full flex flex-col w-5/6 mx-auto justify-start gap-5">
       <h1 className="text-3xl text-blue-500 font-bold w-full text-center">Monitoring Log</h1>
       <div className="px-8 py-2 bg-white mt-10 w-fit rounded-lg flex space-x-4 border">
         <div className="font-bold text-gray-500">

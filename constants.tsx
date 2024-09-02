@@ -1,9 +1,10 @@
-import {
-  FaHome,
-  FaCog,
-} from "react-icons/fa";
+import { FaHome, FaCog } from "react-icons/fa";
 
-import { MdDashboardCustomize, MdFolderShared  } from "react-icons/md";
+import {
+  MdDashboardCustomize,
+  MdFolderShared,
+  MdAdminPanelSettings,
+} from "react-icons/md";
 
 export const SIDENAV_ITEMS: SideNavItem[] = [
   {
@@ -17,9 +18,14 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: <MdDashboardCustomize size={24} />,
   },
   {
+    title: "User Management",
+    path: "/userManagement",
+    icon: <MdAdminPanelSettings size={24} />,
+  },
+  {
     title: "Trials",
     path: "/trials",
-    icon: <MdFolderShared  size={24} />,
+    icon: <MdFolderShared size={24} />,
     subMenu: true,
     subMenuItems: [
       { title: "All Trials", path: "/trials" },
@@ -35,21 +41,21 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
   {
     title: "Profile",
     path: "/profile",
-    usage: "smallScreen"
+    usage: "smallScreen",
   },
   {
     title: "Help",
     path: "/help",
-    usage: "smallScreen"
+    usage: "smallScreen",
   },
   {
     title: "Reset Password",
     path: "/resetPassword",
-    usage: "smallScreen"
+    usage: "smallScreen",
   },
   {
     title: "Sign Out",
     path: "/login",
-    usage: "smallScreen"
+    usage: "smallScreen",
   },
 ];

@@ -68,7 +68,7 @@ const LogsPage = () => {
   }, [trialId]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-start gap-10 px-20">
+    <div className="h-full w-full flex flex-col items-center justify-start gap-10">
       <h1 className="text-3xl text-blue-500 font-bold">
         Trial Logs
       </h1>

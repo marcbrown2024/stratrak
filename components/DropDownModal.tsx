@@ -26,7 +26,7 @@ const DropDownModal = () => {
     <div
       className={`Popup absolute top-10 right-4 h-96 w-80 hidden md:flex flex-col items-center  ${
         isModalOpen ? "visible opacity-100" : "invisible opacity-0"
-      } bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-300 ease-in-out`}
+      } bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-100 ease-in-out`}
     >
       <div className="h-1/2 w-full flex flex-col items-center justify-center gap-4 p-4">
         <div className="h-auto w-full flex items-center justify-between">
@@ -62,7 +62,7 @@ const DropDownModal = () => {
           View Profile
         </Link>
       </div>
-      <div className="h-1/2 w-full bg-blue-500 rounded-b-2xl">
+      <div className="h-1/2 w-full bg-[#1286ff] rounded-b-2xl">
         <div className="h-auto w-full flex flex-col items-start justify-center gap-4 mx-4 my-2">
           <span className="text-lg text-white font-bold tracking-wider">
             User Support

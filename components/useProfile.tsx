@@ -48,7 +48,7 @@ const UserProfile = () => {
   };
 
   const isFormDataEmpty = () => {
-    return Object.values(formData).every((value) => value === "");
+    return Object.values(formData).every((value: string) => value === "");
   };
 
   const handleSubmit = async (event: React.FormEvent) => {

@@ -21,7 +21,7 @@ const SiteNavBtns = () => {
   };
 
   return (
-    <div className='absolute w-full flex justify-between space-x-4 top-7 pl-20 pr-8'>
+    <div className='absolute w-full flex justify-between space-x-4 top-7 px-8'>
       <button 
       onClick={handleBack}
       className='hover:text-blue-500 border rounded p-2 active:scale-90 duration-200'>

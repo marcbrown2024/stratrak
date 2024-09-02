@@ -39,7 +39,7 @@ const Page = () => {
                 name="role"
                 autoComplete="on"
                 readOnly
-                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border-2 border-blue-800 rounded-md focus-within:outline-none"
+                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
             <label
@@ -52,7 +52,7 @@ const Page = () => {
                 name="fullName"
                 autoComplete="on"
                 readOnly
-                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border-2 border-blue-800 rounded-md focus-within:outline-none"
+                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
           </div>
@@ -67,7 +67,7 @@ const Page = () => {
                 name="email"
                 autoComplete="on"
                 readOnly
-                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border-2 border-blue-800 rounded-md focus-within:outline-none"
+                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
             <label
@@ -80,7 +80,7 @@ const Page = () => {
                 name="phoneNumber"
                 autoComplete="on"
                 readOnly
-                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border-2 border-blue-800 rounded-md focus-within:outline-none"
+                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
           </div>
@@ -99,7 +99,7 @@ const Page = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, subject: e.target.value })
                 }
-                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border-2 border-blue-800 rounded-md focus-within:outline-none"
+                className="h-12 w-full flex flex-col items-center justify-center text-[#858585] bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
             <label
@@ -116,7 +116,7 @@ const Page = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, message: e.target.value })
                 }
-                className="h-full w-full flex items-start justify-start text-[#858585] bg-transparent p-4 border-2 border-blue-800 rounded-md focus-within:outline-none"
+                className="h-full w-full flex items-start justify-start text-[#858585] bg-transparent p-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
           </div>

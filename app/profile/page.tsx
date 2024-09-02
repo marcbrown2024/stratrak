@@ -1,185 +1,288 @@
 "use client";
 
 // react components
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-
-// global states
 
 // components
 import UserProfile from "@/components/useProfile";
-
-// assets
 
 // icons
 import { MdModeEdit } from "react-icons/md";
 import { AiFillDelete, AiOutlineClose, AiTwotoneCamera } from "react-icons/ai";
 import { BiSolidUserCircle } from "react-icons/bi";
 
-type Props = {};
+type ProfileFormData = {
+  role: string;
+  fullName: string;
+  number: string;
+  city: string;
+  state: string;
+  zipCode: string;
+};
 
-const Page = (props: Props) => {
-  const router = useRouter();
-  const [EditPopUp, setEditPopUp] = useState(false);
-  const [DeletePopUp, setDeletePopUp] = useState(false);
-  const [photo, setPhoto] = useState<File | null>(null);
-  const photoInputRef = React.createRef<HTMLInputElement>();
+const initialFormData: ProfileFormData = {
+  role: "",
+  fullName: "",
+  number: "",
+  city: "",
+  state: "",
+  zipCode: "",
+};
+
+const Page = () => {
+  const [formButton, setFormButton] = useState<boolean>(false);
+  const [formData, setFormData] = useState<ProfileFormData>(initialFormData);
   const userPhotoUrl =
     "https://cdn-icons-png.flaticon.com/512/3237/3237472.png";
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setPhoto(e.target.files[0]);
-    }
-    setEditPopUp(false);
+  const isFormDataEmpty = (): boolean => {
+    return Object.values(formData).every((value: string) => value === "");
   };
 
-  const handleClick = () => {
-    if (photoInputRef.current) {
-      photoInputRef.current.click();
-    }
+  const editProfile = () => {
+    setFormButton(!formButton);
+    setFormData(initialFormData);
   };
 
-  useEffect(() => {
-    const closePopupsOnOutsideClick = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (DeletePopUp === true) {
-        if (!target.closest(".deletePopUp")) {
-          setDeletePopUp(false);
-        }
-      } else {
-        if (!target.closest(".editPopUp") && !target.closest(".deletePopUp")) {
-          setEditPopUp(false);
-        }
-      }
-    };
-    document.addEventListener("click", closePopupsOnOutsideClick);
-    return () => {
-      document.removeEventListener("click", closePopupsOnOutsideClick);
-    };
-  }, [EditPopUp, setEditPopUp, DeletePopUp, setDeletePopUp]);
+  const cancelEdit = () => {
+    setFormButton(!formButton);
+    setFormData(initialFormData);
+  };
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+  };
 
   return (
-    <div className="relative h-fit w-full flex flex-col items-start xl:items-center justify-start gap-16">
-      <div className="h-fit w-full flex flex-col items-center justify-center gap-4 -mb-4">
-        <div className="h-fit w-full md:w-11/12 xl:w-3/6 flex items-center justify-between text-xl text-white font-semibold bg-blue-500 px-4 py-2 rounded-lg">
-          <h1>Update Profile</h1>
-          <div className="flex items-center justify-center bg-white p-1 rounded-full">
-            <Image
-              src={userPhotoUrl}
-              width={50}
-              height={50}
-              alt=""
-              priority
-              className="rounded-full"
-            />
-          </div>
-        </div>
-        <div className="h-fit w-full flex items-center justify-center">
-          <div className="relative h-full w-full flex items-start justify-center">
-            <div className="relative h-fit w-fit flex items-start">
-              <Image
-                src={userPhotoUrl}
-                width={100}
-                height={100}
-                alt=""
-                priority
-                className="rounded-full"
-              />
-              <button
-                onClick={() => setEditPopUp(true)}
-                className="editPopUp absolute bottom-2 right-2 h-6 w-6 flex items-center justify-center text-[#fff] bg-blue-900 rounded-full"
-              >
-                <MdModeEdit />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        className={`editPopUp absolute top-[11.3rem] left-2 md:left-60 xl:left-[32%] h-96 w-[20rem] md:w-[35rem] xl:w-[41.4rem] ${
-          EditPopUp ? "flex" : "hidden"
-        } flex-col items-center justify-center bg-[#fff] rounded-lg border`}
-      >
-        <div className="h-1/6 w-full flex items-center justify-between p-8">
-          <h1 className="text-lg font-semibold">Profile photo</h1>
-          <AiOutlineClose
-            className="text-xl cursor-pointer"
-            onClick={() => setEditPopUp(false)}
-          />
-        </div>
-        <div className="h-4/6 w-full flex items-center justify-center">
+    <div className="h-full w-full flex flex-col items-center justify-center gap-4">
+      <div className="w-11/12 md:w-3/5 flex items-center justify-between bg-blue-500 px-4 md:px-8 py-4 rounded-lg">
+        <h1 className="text-lg md:text-[22px] text-white font-semibold">
+          Update Profile
+        </h1>
+        <div className="flex items-center justify-center bg-white p-[2px] rounded-full">
           <Image
             src={userPhotoUrl}
-            width={100}
-            height={100}
-            alt=""
-            priority
-            className="h-48 w-48 rounded-full"
+            width={40}
+            height={40}
+            alt="profile photo"
+            className="rounded-full"
           />
         </div>
-        <div className="h-1/6 w-full flex items-center justify-between text-sm font-semibold p-8 border">
-          <div className="flex items-center justify-center gap-10">
-            <button
-              onClick={handleClick}
-              className="flex flex-col items-center justify-center"
-            >
-              <AiTwotoneCamera className="text-2xl" />
-              Add Photo
-            </button>
-            <button className="flex flex-col items-center justify-center">
-              <BiSolidUserCircle className="text-2xl" />
-              Default Photo
-            </button>
-            <label htmlFor="fileInput">
-              <input
-                ref={photoInputRef}
-                id="fileInput"
-                type="file"
-                accept="image/*"
-                onChange={handleChange}
-                style={{ display: "none" }}
-              />
-            </label>
-          </div>
-          <button
-            onClick={() => setDeletePopUp(true)}
-            className="deletePopUp flex flex-col items-center justify-center"
-          >
-            <AiFillDelete className="text-2xl" />
-            Delete
-          </button>
-        </div>
       </div>
-      <div
-        className={`deletePopUp absolute top-[18rem] left-[40%] h-48 w-80 ${
-          DeletePopUp ? "flex" : "hidden"
-        } flex-col items-center justify-center bg-blue-500 text-[#fff] rounded-lg border`}
+      <div className="relative w-fit flex items-center justify-center">
+        <Image
+          src={userPhotoUrl}
+          width={50}
+          height={50}
+          alt="profile photo"
+          priority
+          className="w-20 h-20 sm:w-28 sm:h-28  rounded-full"
+        />
+        <button className="editPopUp absolute bottom-2 right-2 h-6 w-6 flex items-center justify-center text-[#fff] bg-black rounded-full">
+          <MdModeEdit />
+        </button>
+      </div>
+      <form
+        onSubmit={handleSubmit}
+        className="w-11/12 md:w-3/5 flex flex-col items-center justify-start gap-8 font-semibold mt-4"
       >
-        <div className="h-2/6 w-full flex items-center justify-between p-4">
-          <h2 className="h-full w-fit flex items-center justify-end font-semibold">
-            Delete profile photo
-          </h2>
-          <AiOutlineClose
-            className="text-xl cursor-pointer"
-            onClick={() => setDeletePopUp(false)}
-          />
-        </div>
-        <p className="h-3/6 w-full flex items-start justify-start p-4">
-          Are you sure? Having a profile picture helps others recognize you.
-        </p>
-        <div className="h-1/6 w-full flex items-center justify-end gap-6 p-4">
-          <button
-            onClick={() => setDeletePopUp(false)}
-            className="flex items-center justify-center"
+        <div className="w-full flex items-center justify-center gap-10">
+          <label
+            htmlFor="firstName"
+            className="w-1/2 flex flex-col gap-2 text-blue-800"
           >
-            Cancel
-          </button>
-          <button className="flex items-center justify-center">Delete</button>
+            First Name
+            <input
+              id="firstName"
+              name="firstName"
+              autoComplete="off"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+          <label
+            htmlFor="lastName"
+            className="w-1/2 flex flex-col gap-2 text-blue-800"
+          >
+            Last Name
+            <input
+              id="lastName"
+              name="lastName"
+              autoComplete="off"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
         </div>
-      </div>
-      <UserProfile />
+        <div className="w-full flex items-center justify-center gap-10">
+          <label
+            htmlFor="email"
+            className="w-1/2 flex flex-col gap-2 text-blue-800"
+          >
+            Email
+            <input
+              id="email"
+              name="email"
+              autoComplete="on"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+          <label
+            htmlFor="phoneNum"
+            className="w-1/2 flex flex-col gap-2 text-blue-800"
+          >
+            Phone Number
+            <input
+              id="phoneNum"
+              name="phoneNumber"
+              autoComplete="on"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+        </div>
+        <div className="w-full flex items-center justify-center gap-10">
+          <label
+            htmlFor="company"
+            className="w-full flex flex-col gap-2 text-blue-800"
+          >
+            Company
+            <input
+              id="company"
+              name="company"
+              autoComplete="on"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+        </div>
+        <div className="w-full flex items-center justify-center gap-10">
+          <label
+            htmlFor="streetAddress"
+            className="w-full flex flex-col gap-2 text-blue-800"
+          >
+            Street Address
+            <input
+              id="streetAddress"
+              name="streetAddress"
+              autoComplete="on"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+        </div>
+        <div className="w-full flex items-center justify-center gap-10">
+          <label
+            htmlFor="streetAddress2"
+            className="w-full flex flex-col gap-2 text-blue-800"
+          >
+            Street Address 2
+            <input
+              id="streetAddress2"
+              name="streetAddress2"
+              autoComplete="on"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+        </div>
+        <div className="w-full flex items-center justify-center gap-10">
+          <label
+            htmlFor="city"
+            className="w-1/2 flex flex-col gap-2 text-blue-800"
+          >
+            City
+            <input
+              id="city"
+              name="city"
+              autoComplete="on"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+          <label
+            htmlFor="state"
+            className="w-1/2 flex flex-col gap-2 text-blue-800"
+          >
+            State
+            <input
+              id="state"
+              name="state"
+              autoComplete="on"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+        </div>
+        <div className="w-full flex items-center justify-center gap-10">
+          <label
+            htmlFor="postalCode"
+            className="w-1/2 flex flex-col gap-2 text-blue-800"
+          >
+            Postal/Zip Code
+            <input
+              id="postalCode"
+              name="postalCode"
+              autoComplete="on"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+          <label
+            htmlFor="country"
+            className="w-1/2 flex flex-col gap-2 text-blue-800"
+          >
+            Country
+            <input
+              id="country"
+              name="country"
+              autoComplete="on"
+              required
+              readOnly={!formButton}
+              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+            />
+          </label>
+        </div>
+        <div className="h-full w-full flex items-center justify-end gap-20 p-2 mt-4">
+          {formButton && (
+            <button
+              onClick={cancelEdit}
+              className="h-10 w-36 flex items-center justify-center text-blue-700 font-semibold bg-[#718096]/30 rounded hover:bg-[#718096]/50"
+            >
+              Cancel
+            </button>
+          )}
+          {formButton ? (
+            <button
+              type="submit"
+              className="disabled:opacity-90 h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-500 rounded hover:bg-blue-800"
+              disabled={isFormDataEmpty()}
+            >
+              Save Changes
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={editProfile}
+              className="h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-800 rounded hover:bg-blue-700"
+            >
+              Edit Profile
+            </button>
+          )}
+        </div>
+      </form>
     </div>
   );
 };
