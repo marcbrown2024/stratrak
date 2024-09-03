@@ -1,5 +1,5 @@
 // react/nextjs components
-import React, { useState } from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 
 // mui components
 import Tooltip from "@mui/material/Tooltip";
@@ -8,6 +8,10 @@ import Tooltip from "@mui/material/Tooltip";
 import { FaChevronLeft, FaChevronRight, FaCircle } from "react-icons/fa";
 import { TiUserDelete } from "react-icons/ti";
 import { RiExchangeFill } from "react-icons/ri";
+import { createUser } from "@/firebase";
+import { useAlertStore } from "@/store/AlertStore";
+import { AlertType } from "@/enums";
+import Loader from "./Loader";
 
 type DataItem = {
   id: number;
@@ -80,6 +84,22 @@ const data: DataItem[] = [
   },
 ];
 
+type FormData = User & {
+  password: string;
+};
+
+const initialFormData: FormData = {
+  email: "",
+  fName: "",
+  lName: "",
+  isAdmin: false,
+  orgId: "",
+  signature: "",
+  online: false,
+  userId: "",
+  password: "",
+};
+
 // Total items per page
 const ITEMS_PER_PAGE = 4;
 
@@ -89,9 +109,11 @@ const CustomTable = () => {
   const [filter, setFilter] = useState<"Users" | "Admins" | "All Users">(
     "All Users"
   );
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [setAlert] = useAlertStore((state) => [state.setAlert]);
+
   const [addUser, setAddUser] = useState<boolean>(false);
+  const [creatingUser, setCreatingUser] = useState<boolean>(false);
 
   const filteredData = data.filter((item) => {
     if (filter === "Admins") return item.admin;
@@ -128,10 +150,42 @@ const CustomTable = () => {
     }, 300);
   };
 
-  const handleAddUserSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddUserSubmit = (e: FormEvent) => {
+    setCreatingUser(true);
     e.preventDefault();
-    setEmail("");
-    setPassword("");
+    let alertBody: AlertBody;
+
+    // Extract only the fields that are in User type
+    const { password, ...userData } = formData; // Omit password when sending data
+
+    // Send userData to the database
+    createUser(userData).then((response) => {
+      if (response?.success) {
+        alertBody = {
+          title: "Success!",
+          content: "User was created successfully",
+        };
+        setAlert(alertBody, AlertType.Success);
+      } else {
+        alertBody = {
+          title: "Something went wrong",
+          content: "There was an error when attempting to create user",
+        };
+        setAlert(alertBody, AlertType.Error);
+      }
+    });
+
+    setCreatingUser(false);
+    // Clear form after submission
+    setFormData(initialFormData);
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   return (
@@ -172,44 +226,92 @@ const CustomTable = () => {
           addUser ? "translate-y-36" : "-translate-y-28"
         } z-0`}
       >
-        <div className="h-60 w-full flex flex-col items-start justify-center gap-8 bg-[#1286ff] p-6 rounded-xl">
+        <div className="h-fit w-full flex flex-col items-start justify-center gap-8 bg-[#1286ff] p-6 rounded-xl">
           <span className="text-2xl text-white font-semibold">
             Create new user
           </span>
-          <form
-            onSubmit={handleAddUserSubmit}
-            className="h-full w-full flex"
-          >
-            <div className="h-full w-1/2 flex flex-col items-start justify-center gap-6">
-              <div className="w-full flex items-center justify-between">
-                <label className="w-1/4 font-medium text-white">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
-                  required
-                />
-              </div>
-              <div className="w-full flex items-center justify-between">
-                <label className="w-1/4 font-medium text-white">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
-                  required
-                />
-              </div>
-            </div>
-            <div className="w-1/2 flex items-end justify-end">
-              <button
-                type="submit"
-                className="h-10 w-fit flex items-center justify-center font-medium bg-white p-3 rounded-md hover:bg-white/95 md:mb-3"
-              >
-                Add User
-              </button>
-            </div>
+          <form onSubmit={handleAddUserSubmit} className="h-full w-full flex">
+            {creatingUser ? (
+              <Loader />
+            ) : (
+              <>
+                <div className="h-full w-1/2 flex flex-col items-start justify-center gap-6">
+                  <div className="w-full flex items-center justify-between">
+                    <label className="w-1/4 font-medium text-white">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      name="fName"
+                      value={formData.fName}
+                      onChange={handleChange}
+                      className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
+                      required
+                    />
+                  </div>
+                  <div className="w-full flex items-center justify-between">
+                    <label className="w-1/4 font-medium text-white">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      name="lName"
+                      value={formData.lName}
+                      onChange={handleChange}
+                      className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
+                      required
+                    />
+                  </div>
+                  <div className="w-full flex items-center justify-between">
+                    <label className="w-1/4 font-medium text-white">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
+                      required
+                    />
+                  </div>
+                  <div className="w-full flex items-center justify-between">
+                    <label className="w-1/4 font-medium text-white">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
+                      required
+                    />
+                  </div>
+                  <div className="w-full flex items-center justify-between">
+                    <label className="w-1/4 font-medium text-white">
+                      Admin
+                    </label>
+                    <input
+                      type="checkbox"
+                      name="isAdmin"
+                      checked={formData.isAdmin}
+                      onChange={handleChange}
+                      className="p-2"
+                    />
+                  </div>
+                  {/* Add other input fields similarly */}
+                </div>
+                <div className="w-1/2 flex items-end justify-end">
+                  <button
+                    type="submit"
+                    className="h-10 w-fit flex items-center justify-center font-medium bg-white p-3 rounded-md hover:bg-white/95 md:mb-3"
+                  >
+                    Add User
+                  </button>
+                </div>
+              </>
+            )}
           </form>
         </div>
         <div className="h-16 w-full flex items-center justify-center text-[#3b82fe] font-semibold -mb-8">

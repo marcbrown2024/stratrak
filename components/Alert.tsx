@@ -24,11 +24,9 @@ const Alert = () => {
           key="alert"
           initial={{
             right: "0",
-            opacity: "0"
           }}
           animate={{
             right: "2rem",
-            opacity: "1",
           }}
   
           transition={{
@@ -36,10 +34,7 @@ const Alert = () => {
             stiffness: 100,
             damping: 10,
           }}
-  
-          exit={{
-            opacity: "0",
-          }}
+
   
           className={`z-[1000000] p-2 absolute bottom-20 -right-50 flex w-96 h-fit bg-white shadow-xl border-t-2 
             ${alertType == AlertType.Success ? "border-emerald-500 text-emerald-500" : 
