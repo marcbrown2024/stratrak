@@ -4,9 +4,10 @@
 import React, { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import {useSignInWithEmailAndPassword} from 'react-firebase-hooks/auth'
-import {auth} from '@/firebase'
+import {auth, enrollUser, userExists} from '@/firebase'
 import { AlertType } from "@/enums";
 import { useAlertStore } from "@/store/AlertStore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 // custom components
 
 interface FormData {
@@ -37,34 +38,58 @@ const Page = () => {
     }));
   };
 
+  const handleSignInErrors = () => {
+
+  }
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     let alertBody: AlertBody
 
     try {
-      await signInWithEmailAndPassword(formData.email, formData.password).then(userDetails => {
-        if (userDetails) {
-          alertBody = {
-            title: "Success!",
-            content: "User logged in"
+      const userDetails = await signInWithEmailAndPassword(formData.email, formData.password)
+      if (userDetails) {
+        alertBody = {
+          title: "Success!",
+          content: "User logged in"
+        }
+        setAlert(alertBody, AlertType.Success)
+      } else {
+        const existResponse = await userExists(formData.email)
+        console.log("exist response: ", existResponse) //TODO: remove
+        const defaultPword = process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!
+
+        if (existResponse.data.exists && formData.password === defaultPword) {
+          const createdUser = await createUserWithEmailAndPassword(auth, formData.email, defaultPword)
+          if (createdUser) { // if user was created successfully
+            console.log("createdUser: ", createdUser) //TODO: remove
+            alertBody = {
+              title: "Success!",
+              content: "User account activated. Please change password."
+            }
+            enrollUser(existResponse.data.id, createdUser.user.uid)
+            setAlert(alertBody, AlertType.Success)
+            setFormData(initialFormData)
+            router.push('/')
+            return
           }
-          setAlert(alertBody, AlertType.Success)
-        } else {
-          alertBody = {
+        }
+        alertBody = {
             title: "Error",
             content: "User account does not exist"
-          }
-          setAlert(alertBody, AlertType.Error)
         }
-      })
+        setAlert(alertBody, AlertType.Error)
+      }
       setFormData(initialFormData)
       router.push('/')
     } catch (e) {
       alertBody = {
         title: "Error",
-        content: "There was an error when attempting to log user in"
+        content: "There was an error when attempting to sign in user"
       }
       setAlert(alertBody, AlertType.Error)
+      setFormData(initialFormData)
+
     }
 
   };
@@ -87,7 +112,7 @@ const Page = () => {
               Email
             </label>
             <input
-              type="text"
+              type="email"
               id="email"
               name="email"
               value={formData.email}

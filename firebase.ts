@@ -168,14 +168,79 @@ export const deleteLog = async (logId: string) => {
 // create user
 
 export const createUser = async (user: User) => {
+  const userDetails = {...user, enrolled: false}
   try {
-    const usersRef = collection(db, "logs");
-    await addDoc(usersRef, user);
+    const usersRef = collection(db, "users");
+    await addDoc(usersRef, userDetails);
+    
     response = {
       success: true,
+      data: userDetails
     };
-    return response;
   } catch (e) {
     response = { success: false, data: e };
   }
+  return response;
 }
+
+export const userExists = async (email: string) => {
+  try {
+    const usersRef = collection(db, "users")
+    const q = query(usersRef, where("email", "==", email), where("enrolled", "==", false)); // user has never logged in before
+
+    const userSnap = await getDocs(q);
+    if (!userSnap.empty) { //user exists in org and we should create firebase user
+      response = {
+        success: true, //successfully fulfilled request 
+        data: {
+          ...userSnap.docs[0],
+          id: userSnap.docs[0].id,
+          exists: true,
+        } //user exists in org and we should create firebase user
+      }
+    } else {
+      response = {
+        success: true, //successfully fulfilled request 
+        data: null //user does not exist in org and we should create firebase user
+      }
+    }
+  } catch (e) {
+    response = { success: false, data: e };
+  }
+  console.log("exist response: ", response)
+
+  return response;
+}
+
+export const enrollUser = async (userId: string, firebaseUserId: string) => { //first time user logging in 
+  console.log("userId: ", userId)
+  console.log("firebaseUserId: ", firebaseUserId)
+  try {
+    const userRef = doc(db, 'users', userId)
+    const userSnap = await getDoc(userRef)
+    const orgRef = doc(db, 'organizations', userSnap.data()?.orgId)
+    const orgSnap = await getDoc(orgRef)
+
+    await setDoc(userRef, {
+      userId: firebaseUserId,
+      enrolled: true,
+    }, {merge: true})
+
+    await setDoc(orgRef, {
+      users: [...orgSnap.data()?.users, userId]
+    }, {merge: true})
+    
+    response = {
+      success: true
+    }
+  } catch (e) {
+    response = {
+      success: false,
+      data: e
+    }
+  }
+
+  console.log("enroll User response: ", response)
+  return response;
+}
+
