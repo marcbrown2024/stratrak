@@ -99,7 +99,7 @@ const Page = () => {
               autoComplete="off"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
           <label
@@ -113,7 +113,7 @@ const Page = () => {
               autoComplete="off"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
         </div>
@@ -129,7 +129,7 @@ const Page = () => {
               autoComplete="on"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
           <label
@@ -143,7 +143,7 @@ const Page = () => {
               autoComplete="on"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
         </div>
@@ -159,7 +159,7 @@ const Page = () => {
               autoComplete="on"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
         </div>
@@ -175,7 +175,7 @@ const Page = () => {
               autoComplete="on"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
         </div>
@@ -191,7 +191,7 @@ const Page = () => {
               autoComplete="on"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
         </div>
@@ -207,7 +207,7 @@ const Page = () => {
               autoComplete="on"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
           <label
@@ -221,7 +221,7 @@ const Page = () => {
               autoComplete="on"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
         </div>
@@ -237,7 +237,7 @@ const Page = () => {
               autoComplete="on"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
           <label
@@ -251,11 +251,11 @@ const Page = () => {
               autoComplete="on"
               required
               readOnly={!formButton}
-              className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+              className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
             />
           </label>
         </div>
-        <div className="h-full w-full flex items-center justify-end gap-20 p-2 mt-4">
+        <div className="h-full w-full flex items-center justify-end gap-8 p-2 mb-2">
           {formButton && (
             <button
               onClick={cancelEdit}

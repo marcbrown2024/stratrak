@@ -19,12 +19,18 @@ const Header = () => {
   const pathname = usePathname();
   const selectedLayout = useSelectedLayoutSegment();
   const { toggleModal, closeModal } = useModalStore();
-  
+
+  const splitCamelCase = (str: string) => {
+    // Use regex to split camel case string into separate words
+    const result = str.replace(/([a-z])([A-Z])/g, "$1 $2");
+    // Capitalize the first letter of the result
+    return result.charAt(0).toUpperCase() + result.slice(1);
+  };
+
   // Find the current item's title based on the current path
-  const currentItem = SIDENAV_ITEMS.find((item) => item.path === pathname) as
-    | SideNavItem
-    | undefined;
-  const title = currentItem?.title || "";
+  const words = pathname.split("/").filter(Boolean).pop() ?? "";
+
+  const currentPath = splitCamelCase(words);
 
   useEffect(() => {
     const closePopupsOnOutsideClick = (event: MouseEvent) => {
@@ -50,7 +56,9 @@ const Header = () => {
       } ${selectedLayout ? "border-b border-zinc-200 bg-white" : ""} z-30`}
     >
       <div className="h-14 flex items-center justify-between px-4">
-        <span className="text-xl font-bold tracking-wide">{title}</span>
+        <span className="text-xl font-bold tracking-wide">
+          {pathname == "/" ? "Home" : currentPath}
+        </span>
         <div className="flex items-center space-x-4">
           <Link
             href="/"

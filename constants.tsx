@@ -9,7 +9,7 @@ import {
 export const SIDENAV_ITEMS: SideNavItem[] = [
   {
     title: "Home",
-    path: "",
+    path: "/",
     icon: <FaHome size={24} />,
   },
   {
@@ -18,20 +18,20 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: <MdDashboardCustomize size={24} />,
   },
   {
-    title: "User Management",
-    path: "/userManagement",
-    icon: <MdAdminPanelSettings size={24} />,
-  },
-  {
     title: "Trials",
     path: "/trials",
     icon: <MdFolderShared size={24} />,
     subMenu: true,
     subMenuItems: [
-      { title: "All Trials", path: "/trials" },
       { title: "Active Trials", path: "/trials/active" },
+      { title: "Inactive Trials", path: "/trials/inactive" },
       { title: "Completed Trials", path: "/trials/completed" },
     ],
+  },
+  {
+    title: "User Management",
+    path: "/userManagement",
+    icon: <MdAdminPanelSettings size={24} />,
   },
   {
     title: "Settings",

@@ -94,7 +94,7 @@ const Page = () => {
                 autoComplete="off"
                 required
                 readOnly
-                className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+                className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
             <label
@@ -108,7 +108,7 @@ const Page = () => {
                 autoComplete="off"
                 required
                 readOnly
-                className="h-12 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+                className="h-10 w-full text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
           </div>
@@ -123,7 +123,7 @@ const Page = () => {
                 name="email"
                 autoComplete="on"
                 readOnly
-                className="h-12 w-full flex flex-col items-center justify-center text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+                className="h-10 w-full flex flex-col items-center justify-center text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
             <label
@@ -136,7 +136,7 @@ const Page = () => {
                 name="phoneNumber"
                 autoComplete="on"
                 readOnly
-                className="h-12 w-full flex flex-col items-center justify-center text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
+                className="h-10 w-full flex flex-col items-center justify-center text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-none"
               />
             </label>
           </div>
@@ -154,7 +154,7 @@ const Page = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, subject: e.target.value })
                 }
-                className="h-12 w-full flex flex-col items-center justify-center text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-blue-600"
+                className="h-10 w-full flex flex-col items-center justify-center text-blue-800 bg-transparent pl-4 border border-blue-800 rounded-md focus-within:outline-blue-600"
               />
               {isSubmitted && !formData.subject && (
                 <span className="text-sm text-red-500 -mb-4">Required</span>
@@ -162,7 +162,7 @@ const Page = () => {
             </label>
             <label
               htmlFor="message"
-              className="h-72 w-full flex flex-col items-start justify-center gap-2 text-blue-800"
+              className="h-60 w-full flex flex-col items-start justify-center gap-2 text-blue-800"
             >
               Message
               <textarea
@@ -183,7 +183,7 @@ const Page = () => {
           <div className="w-full flex items-center justify-end">
             <button
               type="submit"
-              className="h-12 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-600 rounded hover:bg-blue-700 hover:scale-95"
+              className="h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-600 rounded hover:bg-blue-700 hover:scale-95"
             >
               Submit
             </button>

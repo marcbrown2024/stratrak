@@ -19,8 +19,6 @@ import {auth} from "@/firebase"
 
 const DropDownModal = () => {
   const { isModalOpen, toggleModal, closeModal } = useModalStore();
-  const currentPathname = usePathname();
-  const router = useRouter();
   const userPhotoUrl =
     "https://cdn-icons-png.flaticon.com/512/3237/3237472.png";
 

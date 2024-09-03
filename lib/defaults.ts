@@ -10,6 +10,7 @@ export const defaultTrial: TrialDetails = {
   investigatorName: "",
   protocol: "",
   siteVisit: "",
+  progress: "",
 };
 
 function getCurrentDate() {

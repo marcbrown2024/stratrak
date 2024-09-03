@@ -3,6 +3,7 @@ import { getApp, getApps, initializeApp } from "firebase/app";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -12,6 +13,7 @@ import {
   serverTimestamp,
   setDoc,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 
@@ -40,6 +42,36 @@ type DBResponse = {
 
 let response: DBResponse;
 
+export const getTrials = async () => {
+  const trials: TrialDetails[] = [];
+
+  try {
+    const trialsRef = collection(db, "trials");
+    const trialsSnap = await getDocs(trialsRef);
+
+    trialsSnap.forEach((doc) => {
+      // Use Firestore's document ID as the `id` for each trial
+      trials.push({ id: doc.id, ...doc.data() } as DBTrial);
+    });
+    response = { success: true, data: trials };
+  } catch (e: any) {
+    response = { success: false, data: e };
+  }
+  return response;
+};
+
+export const getTrial = async (trialId: string) => {
+  try {
+    const trialsRef = doc(db, "trials", trialId);
+    const trialsSnap = await getDoc(trialsRef);
+
+    response = { success: true, data: trialsSnap.data() as TrialDetails };
+  } catch (e: any) {
+    response = { success: false, data: e };
+  }
+  return response;
+};
+
 export const createTrial = async (trial: TrialDetails) => {
   try {
     const trialsRef = collection(db, "trials");
@@ -54,6 +86,47 @@ export const createTrial = async (trial: TrialDetails) => {
   } catch (e: any) {
     console.error(e.message);
     response = { success: false };
+  }
+  return response;
+};
+
+export const deleteTrial = async (trialId: string) => {
+  try {
+    const trialRef = doc(db, "trials", trialId);
+    await deleteDoc(trialRef);
+    response = { success: true };
+  } catch (e: any) {
+    console.error(e.message);
+    response = { success: false };
+  }
+  return response;
+};
+
+export const updateTrialProgress = async (trialId: string, progress: string): Promise<{ success: boolean }> => {
+  try {
+    const trialRef = doc(db, "trials", trialId);
+    await updateDoc(trialRef, { progress });
+    return { success: true };
+  } catch (e: any) {
+    console.error(e.message);
+    return { success: false };
+  }
+};
+
+export const getLogs = async (id: string) => {
+  const logs: LogDetails[] = [];
+
+  try {
+    const logsRef = collection(db, "logs");
+    const q = query(logsRef, where("trialId", "==", id));
+
+    const logsSnap = await getDocs(q);
+    logsSnap.forEach((doc) => {
+      logs.push({ id: doc.id, ...doc.data() } as DBLog);
+    });
+    response = { success: true, data: logs };
+  } catch (e: any) {
+    response = { success: false, data: e };
   }
   return response;
 };
@@ -79,54 +152,18 @@ export const createLog = async (log: LogDetails, trialId: string) => {
   return response;
 };
 
-export const getTrials = async () => {
-  const trials: TrialDetails[] = [];
 
+export const deleteLog = async (logId: string) => {
   try {
-    const trialsRef = collection(db, "trials");
-    const trialsSnap = await getDocs(trialsRef);
-
-    trialsSnap.forEach((doc) => {
-      // Use Firestore's document ID as the `id` for each trial
-      trials.push({ id: doc.id, ...doc.data() } as DBTrial);
-    });
-    response = { success: true, data: trials };
+    const logRef = doc(db, "logs", logId);
+    await deleteDoc(logRef);
+    response = { success: true };
   } catch (e: any) {
-    response = { success: false, data: e };
+    console.error(e.message);
+    response = { success: false };
   }
   return response;
 };
-
-export const getLogs = async (id: string) => {
-  const logs: LogDetails[] = [];
-
-  try {
-    const logsRef = collection(db, "logs");
-    const q = query(logsRef, where("trialId", "==", id));
-
-    const logsSnap = await getDocs(q);
-    logsSnap.forEach((doc) => {
-      logs.push({ id: doc.id, ...doc.data() } as DBLog);
-    });
-    response = { success: true, data: logs };
-  } catch (e: any) {
-    response = { success: false, data: e };
-  }
-  return response;
-};
-
-export const getTrial = async (trialId: string) => {
-  try {
-    const trialsRef = doc(db, "trials", trialId);
-    const trialsSnap = await getDoc(trialsRef);
-
-    response = { success: true, data: trialsSnap.data() as TrialDetails };
-  } catch (e: any) {
-    response = { success: false, data: e };
-  }
-  return response;
-};
-
 
 // create user
 

@@ -1,22 +1,21 @@
 "use client";
 
 // react/nextjs components
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // firebase components/functions
-import { createLog, getTrial } from "@/firebase";
-
-// global stores
-import { useLogStore } from "@/store/CreateLogStore";
-import { useAlertStore } from "@/store/AlertStore";
+import { createTrial } from "@/firebase";
 
 // custom components
-import CreateLogTableRow from "@/components/CreateLogTableRow";
-import Loader from "@/components/Loader";
+import CreateTrialTableRow from "@/components/CreateTrialTableRow";
+
+// global stores
+import { useTrialStore } from "@/store/CreateTrialStore";
+import { useAlertStore } from "@/store/AlertStore";
 
 // libraries
-import { defaultLog } from "@/lib/defaults";
+import { defaultTrial } from "@/lib/defaults";
 
 // enums
 import { AlertType } from "@/enums";
@@ -24,33 +23,21 @@ import { AlertType } from "@/enums";
 // icons
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 
-type params = {
-  params: {
-    trialId: string;
-  };
-};
-
-const CreateLog = ({ params }: params) => {
+const CreateTrials = () => {
   const router = useRouter();
-
-  const [logs, removeLog, updateLogs, clearLogs] = useLogStore((state) => [
-    state.logs,
-    state.removeLog,
-    state.updateLogs,
-    state.clearLogs,
+  const [trials, removeLog, updateLogs, clearLogs] = useTrialStore((state) => [
+    state.trials,
+    state.removeTrial,
+    state.updateTrials,
+    state.clearTrials,
   ]);
 
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0]);
-  const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
-
-  const trialId = params.trialId;
-  const createLogTableRef = useRef<HTMLTableElement>(null);
+  const createTrialTableRef = useRef<HTMLTableElement>(null);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
 
-  const [loading, setLoading] = useState<Boolean>(true);
-
   const addRow = () => {
-    updateLogs(tableRowsIds.length, defaultLog);
+    updateLogs(tableRowsIds.length, defaultTrial);
     setTableRowsIds((rowArr) => [...rowArr, rowArr.length]);
   };
 
@@ -65,9 +52,9 @@ const CreateLog = ({ params }: params) => {
     });
   };
 
-  const saveLogs = () => {
-    for (let log in logs) {
-      createLog(logs[log], trialId).then((response) => {
+  const saveTrial = () => {
+    for (let log in trials) {
+      createTrial(trials[log]).then((response) => {
         let alert: AlertBody;
         let alertType: AlertType;
 
@@ -76,7 +63,7 @@ const CreateLog = ({ params }: params) => {
             title: "Success!",
             content:
               "Log" +
-              (Object.keys(logs).length > 1 ? "s were" : " was") +
+              (Object.keys(trials).length > 1 ? "s were" : " was") +
               "  saved successfully.",
           };
           alertType = AlertType.Success;
@@ -91,51 +78,24 @@ const CreateLog = ({ params }: params) => {
           alertType = AlertType.Error;
         }
         setAlert(alert, alertType);
-        resetLogs();
+        resetTrials();
       });
     }
   };
 
-  const resetLogs = () => {
+  const resetTrials = () => {
     clearLogs();
-    createLogTableRef.current
+    createTrialTableRef.current
       ?.querySelectorAll("form")
       .forEach((form) => form.reset());
     setTableRowsIds([0]);
   };
 
-  useEffect(() => {
-    getTrial(trialId).then((response) => {
-      setTrial(response.data);
-      setLoading(false);
-    });
-  }, [trialId]);
-
   return (
-    <div className="h-full flex flex-col w-5/6 mx-auto justify-start gap-5">
-      <h1 className="text-3xl text-blue-500 font-bold w-full text-center">
-        Monitoring Log
-      </h1>
-      <div className="px-8 py-2 bg-white mt-10 w-fit rounded-lg flex space-x-4 border">
-        <div className="font-bold text-gray-500">
-          <p>Investigator Name:</p>
-          <p>Protocol:</p>
-          <p>Site Visit:</p>
-        </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <div className="flex flex-col">
-            <p className="">{trial?.investigatorName}</p>
-            <p className="">{trial?.protocol}</p>
-            <p className="">{trial?.siteVisit}</p>
-          </div>
-        )}
-      </div>
-      {/* Create log form wrapper */}
+    <div className="h-full flex flex-col w-5/6 mx-auto justify-start">
       <div className="w-full flex justify-end pr-6">
         <button
-          onClick={resetLogs}
+          onClick={resetTrials}
           className="bg-red-500 text-white px-4 py-1 rounded-full disabled:opacity-30"
         >
           Reset
@@ -146,7 +106,7 @@ const CreateLog = ({ params }: params) => {
           <div className="p-1.5 min-w-full inline-block align-middle">
             <div className="border rounded-lg overflow-hidden">
               <table
-                ref={createLogTableRef}
+                ref={createTrialTableRef}
                 className="min-w-full divide-y divide-gray-200"
               >
                 <thead className="bg-sky-50">
@@ -155,38 +115,26 @@ const CreateLog = ({ params }: params) => {
                       scope="col"
                       className="px-8 py-3 text-start text-xs font-medium uppercase"
                     >
-                      Monitor Name
+                      Investigator Name
                     </th>
                     <th
                       scope="col"
                       className="px-8 py-3 text-start text-xs font-medium uppercase"
                     >
-                      Signature
+                      Protocol
                     </th>
                     <th
                       scope="col"
                       className="px-8 py-3 text-start text-xs font-medium uppercase"
                     >
-                      Type of Visit
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
-                    >
-                      Purpose of Visit
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
-                    >
-                      Date of Visit
+                      Site Visit
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 duration-200">
                   {tableRowsIds.map((i, k) => (
                     <tr key={k}>
-                      <CreateLogTableRow rowId={i} />
+                      <CreateTrialTableRow rowId={i} />
                     </tr>
                   ))}
                 </tbody>
@@ -210,12 +158,12 @@ const CreateLog = ({ params }: params) => {
       </div>
       <div className="pl-6 w-full flex items-center justify-center">
         <button
-          onClick={saveLogs}
+          onClick={saveTrial}
           className="px-4 py-2 w-fit bg-blue-500 text-white rounded-full hover:opacity-90"
-        >{`Save Log${tableRowsIds.length > 1 ? "s" : ""}`}</button>
+        >{`Save Trial${tableRowsIds.length > 1 ? "s" : ""}`}</button>
       </div>
     </div>
   );
 };
 
-export default CreateLog;
+export default CreateTrials;

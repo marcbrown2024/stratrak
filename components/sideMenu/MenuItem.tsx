@@ -18,22 +18,19 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
     <div>
       {item.subMenu ? (
         <>
-          <button
-            onClick={toggleSubMenu}
-            className="w-full flex flex-row items-center justify-between text-white p-2 rounded-lg hover:bg-white/10"
-          >
-            <div className="flex flex-row space-x-4 items-center">
-              {item.icon}
-              <span className="font-semibold text-white">{item.title}</span>
-            </div>
-            <div
-              className={`flex ${
-                subMenuOpen ? "rotate-180" : ""
-              } text-white`}
+          <div className="w-full flex items-center justify-between text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer">
+            <Link href={item.path} className="w-full">
+              <div className="flex flex-row space-x-4 items-center">
+                {item.icon}
+                <span className="font-semibold text-white">{item.title}</span>
+              </div>
+            </Link>
+            <button
+              className={`flex ${subMenuOpen ? "rotate-180" : ""} text-white`}
             >
-              <FaChevronDown size={16} />
-            </div>
-          </button>
+              <FaChevronDown onClick={toggleSubMenu} size={16} />
+            </button>
+          </div>
           {subMenuOpen && (
             <div className="my-2 ml-12 flex flex-col space-y-4">
               {item.subMenuItems?.map((subItem, idx) => (

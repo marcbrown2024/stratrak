@@ -1,6 +1,7 @@
 // react/nextjs components
 import React from "react";
 import Link from "next/link";
+import { usePathname, useParams } from "next/navigation";
 
 // mui components
 import {
@@ -13,6 +14,9 @@ import {
 import Button from "@mui/material/Button";
 
 const CustomToolbar = () => {
+  const { trialId } = useParams();
+  const currentPathname = usePathname();
+
   return (
     <div className="flex justify-between items-center gap-8">
       <div className="flex-1">
@@ -24,14 +28,23 @@ const CustomToolbar = () => {
         <GridToolbarFilterButton />
         <GridToolbarExport />
       </div>
-      <Link href="/trials/createTrials">
-        <Button
-          variant="contained"
-          style={{ backgroundColor: "#007bff", color: "#fff" }}
+      {(currentPathname === "/trials" ||
+        currentPathname === `/trials/${trialId}/trialLogs`) && (
+        <Link
+          href={
+            currentPathname === "/trials"
+              ? "/trials/createTrial"
+              : `/trials/${trialId}/trialLogs/createLog`
+          }
         >
-          Add Trial
-        </Button>
-      </Link>
+          <Button
+            variant="contained"
+            style={{ backgroundColor: "#007bff", color: "#fff" }}
+          >
+            {currentPathname === "/trials" ? "Add Trial" : "Add Log"}
+          </Button>
+        </Link>
+      )}
     </div>
   );
 };

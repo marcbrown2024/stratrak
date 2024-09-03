@@ -16,6 +16,7 @@ interface TrialDetails {
   investigatorName: string;
   protocol: string;
   siteVisit: string;
+  progress: string;
 };
 
 // trial fetched from database

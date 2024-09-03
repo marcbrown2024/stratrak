@@ -35,6 +35,13 @@ const columns: GridColDef[] = [
     headerName: "Site Visit",
     flex: 1,
   },
+  {
+    field: "progress",
+    headerClassName: "text-blue-500 uppercase bg-blue-50",
+    type: "string",
+    headerName: "Progress",
+    flex: 1,
+  },
 ];
 
 const TrialsPage = () => {
@@ -51,8 +58,7 @@ const TrialsPage = () => {
   }, []);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-start gap-16">
-      <h1 className="text-3xl text-blue-500 font-bold">Current Trials</h1>
+    <div className="h-full w-full flex flex-col items-center justify-start">
       {
         loading ?
         <Loader />

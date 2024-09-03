@@ -60,34 +60,17 @@ const LogsPage = () => {
 
   // Update the state with the imported data
   useEffect(() => {
-    getLogs(trialId as string)
-    .then(response => {
-      setLogs(response.data)
-      setLoading(false)
-    })
+    getLogs(trialId as string).then((response) => {
+      setLogs(response.data);
+      setLoading(false);
+    });
   }, [trialId]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-start gap-10">
-      <h1 className="text-3xl text-blue-500 font-bold">
-        Trial Logs
-      </h1>
-        <div className="flex flex-col items-center justify-center gap-8">
-          {loading ?
-            <Loader />
-            :
-            <>
-              <LogTable columns={columns} rows={logs} />
-              <Link
-                className="px-4 py-2 w-fit bg-blue-500 text-white rounded-full hover:opacity-90"
-                href={`/trials/${trialId}/logs/create`}
-                rel="noopener noreferrer"
-              >
-                Add Log
-              </Link>
-            </>
-          }
-        </div>
+    <div className="h-full w-full flex flex-col items-center justify-start">
+      <div className="flex flex-col items-center justify-center gap-8">
+        {loading ? <Loader /> : <LogTable columns={columns} rows={logs} />}
+      </div>
     </div>
   );
 };
