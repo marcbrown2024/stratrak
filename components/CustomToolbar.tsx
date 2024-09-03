@@ -24,7 +24,7 @@ const CustomToolbar = () => {
         <GridToolbarFilterButton />
         <GridToolbarExport />
       </div>
-      <Link href="/your-page">
+      <Link href="/trials/createTrials">
         <Button
           variant="contained"
           style={{ backgroundColor: "#007bff", color: "#fff" }}

@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from "react";
 
 //components
-import TrialTable from "@/components/mui/TrialTable";
+import TrialTable from "@/components/TrialTable";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";

@@ -22,7 +22,7 @@ const firebaseConfig = {
   storageBucket: "stratrak-4614e.appspot.com",
   messagingSenderId: "423217736137",
   appId: "1:423217736137:web:cd78f54c5438a501afe018",
-  measurementId: "G-7QJWLM6YFP"
+  measurementId: "G-7QJWLM6YFP",
 };
 
 // Initialize Firebase
@@ -35,6 +35,24 @@ type DBResponse = {
 };
 
 let response: DBResponse;
+
+export const createTrial = async (trial: TrialDetails) => {
+  try {
+    const trialsRef = collection(db, "trials");
+    const newTrialsRef = await addDoc(trialsRef, trial);
+    const newTrialsSnap = await getDoc(newTrialsRef);
+    response = {
+      success: true,
+      data: {
+        ...newTrialsSnap.data(),
+      } as LogDetails,
+    };
+  } catch (e: any) {
+    console.error(e.message);
+    response = { success: false };
+  }
+  return response;
+};
 
 export const createLog = async (log: LogDetails, trialId: string) => {
   try {

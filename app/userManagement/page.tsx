@@ -13,7 +13,7 @@ import CustomTable from "@/components/CustomTable";
 // icons
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
 
-const page = () => {
+const Page = () => {
   const [loading, setLoading] = useState<Boolean>(true);
 
   // Update the state with the imported data
@@ -57,4 +57,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

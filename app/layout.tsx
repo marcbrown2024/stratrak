@@ -6,8 +6,8 @@ import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 
 // custom components
-import Header from "@/components/navLayout/header/Header";
-import HeaderMobile from "@/components/navLayout/header/HeaderMobile";
+import Header from "@/components/Header";
+import HeaderMobile from "@/components/HeaderMobile";
 import Sidebar from "@/components/navLayout/sideMenu/Sidebar";
 import PageWrapper from "@/components/PageWrapper";
 import MarginWidthWrapper from "@/components/MarginWidthWrapper";

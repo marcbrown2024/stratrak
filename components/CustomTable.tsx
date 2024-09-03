@@ -135,8 +135,8 @@ const CustomTable = () => {
   };
 
   return (
-    <div className="relative w-full flex flex-col items-center justify-start gap-8">
-      <div className="h-36 w-full flex items-center justify-between z-10 bg-white">
+    <div className="relative w-full flex flex-col items-center justify-start">
+      <div className="h-24 w-full flex items-end justify-between bg-white z-10">
         <div className="h-16 w-full flex items-center justify-start gap-8">
           <button
             onClick={() => handleFilterChange("Users")}
@@ -169,17 +169,14 @@ const CustomTable = () => {
       </div>
       <div
         className={`absolute h-fit w-full flex flex-col items-start justify-center gap-8 pb-6 transition-all duration-500 ease-out transform ${
-          addUser ? "translate-y-36" : "-translate-y-28"
+          addUser ? "translate-y-32" : "-translate-y-36"
         } z-0`}
       >
         <div className="h-60 w-full flex flex-col items-start justify-center gap-8 bg-[#1286ff] p-6 rounded-xl">
           <span className="text-2xl text-white font-semibold">
             Create new user
           </span>
-          <form
-            onSubmit={handleAddUserSubmit}
-            className="h-full w-full flex"
-          >
+          <form onSubmit={handleAddUserSubmit} className="h-full w-full flex">
             <div className="h-full w-1/2 flex flex-col items-start justify-center gap-6">
               <div className="w-full flex items-center justify-between">
                 <label className="w-1/4 font-medium text-white">Email</label>
@@ -212,52 +209,57 @@ const CustomTable = () => {
             </div>
           </form>
         </div>
-        <div className="h-16 w-full flex items-center justify-center text-[#3b82fe] font-semibold -mb-8">
-          <span className="w-1/4 px-2">Users</span>
-          <span className="w-1/4 px-2">Admin</span>
-          <span className="w-1/4 px-2">Not Sure</span>
-          <span className="w-1/4 px-2">Status</span>
-          <span className="w-1/4 px-2">Action</span>
-        </div>
-        <div
-          className={`h-fit w-full flex flex-col items-center justify-start space-y-1 transition-transform duration-300 ${
-            transitioning ? "transform opacity-80" : ""
-          }`}
-        >
-          {currentItems.map((item, index) => (
-            <div
-              key={item.id}
-              className="w-full flex items-center bg-[#d3e1ee] hover:bg-[#c3d9f0] rounded-md cursor-pointer"
-            >
-              <span className="w-1/4 p-2">{item.name}</span>
-              <span className="w-1/4 p-2">{item.admin ? "Yes" : "No"}</span>
-              <span className="w-1/4 p-2">Not Sure</span>
-              <span className="w-1/4 p-2 flex items-center gap-2">
-                {item.status}
-              </span>
-              <span className="w-1/4 flex items-center justify-start gap-2 px-2">
-                <Tooltip title="Delete User" arrow>
-                  <span>
-                    <TiUserDelete
-                      size={24}
-                      className="text-[#1286ff] hover:scale-105"
-                    />
-                  </span>
-                </Tooltip>
-                <Tooltip
-                  title={item.admin ? "demote to user" : "Elevate to admin"}
-                  arrow
-                >
-                  <span>
-                    <RiExchangeFill
-                      size={24}
-                      className="text-[#1286ff] hover:scale-105"
-                    />
-                  </span>
-                </Tooltip>
-              </span>
-            </div>
-          ))}
+        <div className="h-fit w-full flex flex-col items-center justify-center border rounded-lg">
+          <div className="h-10 w-full flex items-center justify-center text-blue-500 font-semibold bg-sky-50">
+            <span className="w-1/4 px-2">Users</span>
+            <span className="w-1/4 px-2">Admin</span>
+            <span className="w-1/4 px-2">Not Sure</span>
+            <span className="w-1/4 px-2">Status</span>
+            <span className="w-1/4 px-2">Action</span>
+          </div>
+          <div
+            className={`h-fit w-full flex flex-col items-center justify-start space-y-1 transition-transform duration-300 ${
+              transitioning ? "transform opacity-80" : ""
+            }`}
+          >
+            {currentItems.map((item, index) => (
+              <div
+                key={item.id}
+                className={`w-full flex items-center text-slate-800 hover:bg-[#c3d9f046] 
+                  ${
+                    index !== currentItems.length - 1 ? "border-b" : ""
+                  }`}
+              >
+                <span className="w-1/4 p-2">{item.name}</span>
+                <span className="w-1/4 p-2">{item.admin ? "Yes" : "No"}</span>
+                <span className="w-1/4 p-2">Not Sure</span>
+                <span className="w-1/4 p-2 flex items-center gap-2">
+                  {item.status}
+                </span>
+                <span className="w-1/4 flex items-center justify-start gap-2 px-2">
+                  <Tooltip title="Delete User" arrow>
+                    <span>
+                      <TiUserDelete
+                        size={24}
+                        className="text-[#1286ff] hover:scale-105 cursor-pointer"
+                      />
+                    </span>
+                  </Tooltip>
+                  <Tooltip
+                    title={item.admin ? "demote to user" : "Elevate to admin"}
+                    arrow
+                  >
+                    <span>
+                      <RiExchangeFill
+                        size={24}
+                        className="text-[#1286ff] hover:scale-105 cursor-pointer"
+                      />
+                    </span>
+                  </Tooltip>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="w-full flex items-center justify-end">
           <div className="h-12 w-80 flex items-center justify-end gap-8">

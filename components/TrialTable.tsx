@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 // mui components
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import CustomToolbar from "@/components/mui/CustomToolbar";
+import CustomToolbar from "@/components/CustomToolbar";
 import Tooltip from "@mui/material/Tooltip";
 
 //icons
