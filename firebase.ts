@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
 import {
   addDoc,
   collection,
@@ -15,18 +15,22 @@ import {
   where,
 } from "firebase/firestore";
 
+import {getAuth} from "firebase/auth"
+
 const firebaseConfig = {
-  apiKey: process.env.FIRESTORE_API_KEY,
-  authDomain: "stratrak-4614e.firebaseapp.com",
-  projectId: "stratrak-4614e",
-  storageBucket: "stratrak-4614e.appspot.com",
-  messagingSenderId: "423217736137",
-  appId: "1:423217736137:web:cd78f54c5438a501afe018",
-  measurementId: "G-7QJWLM6YFP"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+export const auth = getAuth(app)
+
 export const db = getFirestore(app);
 
 type DBResponse = {
@@ -52,8 +56,7 @@ export const createLog = async (log: LogDetails, trialId: string) => {
       } as LogDetails,
     };
   } catch (e: any) {
-    console.error(e.message);
-    response = { success: false };
+    response = { success: false, data: e };
   }
   return response;
 };
@@ -71,8 +74,7 @@ export const getTrials = async () => {
     });
     response = { success: true, data: trials };
   } catch (e: any) {
-    console.error(e.message);
-    response = { success: false };
+    response = { success: false, data: e };
   }
   return response;
 };
@@ -90,8 +92,7 @@ export const getLogs = async (id: string) => {
     });
     response = { success: true, data: logs };
   } catch (e: any) {
-    console.error(e.message);
-    response = { success: false };
+    response = { success: false, data: e };
   }
   return response;
 };
@@ -103,8 +104,23 @@ export const getTrial = async (trialId: string) => {
 
     response = { success: true, data: trialsSnap.data() as TrialDetails };
   } catch (e: any) {
-    console.error(e.message);
-    response = { success: false };
+    response = { success: false, data: e };
   }
   return response;
 };
+
+
+// create user
+
+export const createUser = async (user: User) => {
+  try {
+    const usersRef = collection(db, "logs");
+    await addDoc(usersRef, user);
+    response = {
+      success: true,
+    };
+    return response;
+  } catch (e) {
+    response = { success: false, data: e };
+  }
+}

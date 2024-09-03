@@ -14,6 +14,8 @@ import { AiOutlineClose } from "react-icons/ai";
 import { MdLogout } from "react-icons/md";
 import { FaUserLock } from "react-icons/fa6";
 import { MdOutlineHelp } from "react-icons/md";
+import { signOut } from "firebase/auth";
+import {auth} from "@/firebase"
 
 const DropDownModal = () => {
   const { isModalOpen, toggleModal, closeModal } = useModalStore();
@@ -21,6 +23,11 @@ const DropDownModal = () => {
   const router = useRouter();
   const userPhotoUrl =
     "https://cdn-icons-png.flaticon.com/512/3237/3237472.png";
+
+  const handleSignOut = () => {
+    signOut(auth)
+    closeModal()
+  }
 
   return (
     <div
@@ -90,15 +97,13 @@ const DropDownModal = () => {
         </div>
         <hr className="w-full" />
         <div className="h-auto w-full flex items-center justify-start px-4 py-2 rounded-b-xl">
-          <button type="button">
-            <Link
-              onClick={closeModal}
-              href={"/login"}
-              className="h-8 w-full flex items-center justify-start gap-4 text-white font-medium mt-2"
+          <button 
+            type="button"
+            onClick={handleSignOut}
+            className="h-8 w-full flex items-center justify-start gap-4 text-white font-medium mt-2"
             >
               <MdLogout className="text-white text-xl" />
               Sign Out
-            </Link>
           </button>
         </div>
       </div>
