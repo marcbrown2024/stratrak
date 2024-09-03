@@ -53,3 +53,10 @@ type User = {
   status: string,
   userId: string,
 }
+
+// Define the type for help form data
+type HelpFormData = {
+  subject: string;
+  message: string;
+};
+
