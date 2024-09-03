@@ -8,9 +8,7 @@ import SiteNavBtns from "./SiteNavBtns";
 const PageWrapper = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
 
-  return pathname === "/login" ? (
-    <>{children}</>
-  ) : (
+  return (
     <div className="relative h-fit md:min-h-[calc(100vh-58px)] flex flex-col bg-white flex-grow pt-20">
       <SiteNavBtns />
       {children}

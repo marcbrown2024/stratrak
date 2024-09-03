@@ -1,23 +1,72 @@
 "use client";
 
 // react/nextjs components
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import {useSignInWithEmailAndPassword} from 'react-firebase-hooks/auth'
+import {auth} from '@/firebase'
+import { AlertType } from "@/enums";
+import { useAlertStore } from "@/store/AlertStore";
 // custom components
 
+interface FormData {
+  email: string;
+  password: string;
+}
+
+const initialFormData = {
+  email: "",
+  password: "",
+}
+
 const Page = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [formData, setFormData] = useState<FormData>(initialFormData)
+  const [setAlert] = useAlertStore(state => [state.setAlert])
+
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Handle form submission logic here
-    // For example, send the credentials, role, and userId to an API
-    router.push("/dashboard");
+    let alertBody: AlertBody
+
+    try {
+      await signInWithEmailAndPassword(formData.email, formData.password).then(userDetails => {
+        if (userDetails) {
+          alertBody = {
+            title: "Success!",
+            content: "User logged in"
+          }
+          setAlert(alertBody, AlertType.Success)
+        } else {
+          alertBody = {
+            title: "Error",
+            content: "User account does not exist"
+          }
+          setAlert(alertBody, AlertType.Error)
+        }
+      })
+      setFormData(initialFormData)
+      router.push('/')
+    } catch (e) {
+      alertBody = {
+        title: "Error",
+        content: "There was an error when attempting to log user in"
+      }
+      setAlert(alertBody, AlertType.Error)
+    }
+
   };
 
   return (
@@ -35,13 +84,14 @@ const Page = () => {
           {error && <p className="text-red-500">{error}</p>}
           <div className="space-y-2">
             <label htmlFor="username" className="block font-medium text-white">
-              Username
+              Email
             </label>
             <input
               type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               className="border border-gray-300 p-2 w-full rounded"
               required
             />
@@ -53,26 +103,12 @@ const Page = () => {
             <input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               className="border border-gray-300 p-2 w-full rounded"
               required
             />
-          </div>
-          <div className="flex items-center space-x-2 py-2">
-            <input
-              type="checkbox"
-              id="rememberMe"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-              className="h-4 w-4 text-blue-500 border-gray-300 rounded"
-            />
-            <label
-              htmlFor="rememberMe"
-              className="text-sm font-medium text-white"
-            >
-              Remember Me
-            </label>
           </div>
           <button
             type="submit"
