@@ -1,10 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { HiArrowUturnLeft, HiArrowUturnRight } from "react-icons/hi2";
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const SiteNavBtns = () => {
+  const pathname = usePathname()
 
   const router = useRouter(); // Initialize the useRouter hook
 
@@ -20,7 +21,7 @@ const SiteNavBtns = () => {
     router.forward(); // Use the router's back method to go to the previous page
   };
 
-  return (
+  return pathname !== '/login' && (
     <div className='absolute w-full flex justify-between space-x-4 top-7 px-8'>
       <button 
       onClick={handleBack}

@@ -2,17 +2,19 @@
 // react/nextjs components
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthState } from "react-firebase-hooks/auth";
+import {auth} from "@/firebase"
+import { useAuth } from "@/components/AuthProvider";
 
 const Home = () => {
-  const router = useRouter();
-
+  const { user, isAuthenticated } = useAuth();
   useEffect(() => {
-    router.push('/login');
-  }, [router]);
+    console.log("user: ", user)
+  }, [user, isAuthenticated])
 
   return (
     <div className="h-full w-full flex items-center justify-center">
-      <p>This is Home</p>
+      <p>Home</p>
     </div>
   );
 };

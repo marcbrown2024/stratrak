@@ -43,3 +43,13 @@ type AlertBody = {
   title?: string,
   content: string,
 }
+
+type User = {
+  isAdmin: Boolean,
+  fName: string,
+  lName: string,
+  orgId: string,
+  signature: string,
+  status: string,
+  userId: string,
+}
