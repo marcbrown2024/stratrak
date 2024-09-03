@@ -222,23 +222,27 @@ const CustomTable = () => {
         </button>
       </div>
       <div
-        className={`absolute h-fit w-full flex flex-col items-start justify-center gap-8 pb-6 transition-all duration-500 ease-out transform ${
-          addUser ? "translate-y-32" : "-translate-y-36"
+        className={`absolute h-fit w-full flex flex-col items-start justify-center gap-8 pb-6 transition-all duration-500 ease-in-out transform ${
+          addUser ? "translate-y-32" : "-translate-y-52"
         } z-0`}
       >
-        <div className="h-fit w-full flex flex-col items-start justify-center gap-8 bg-[#1286ff] p-6 rounded-xl">
-          <span className="text-2xl text-white font-semibold">
+        <div
+          className={`h-fit w-full flex flex-col items-start justify-center gap-8 bg-[#1286ff] rounded-xl transition-all duration-500 ease-in-out transform ${
+            addUser ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <span className="text-2xl text-white font-semibold px-6 pt-6">
             Create new user
           </span>
           <form onSubmit={handleAddUserSubmit} className="h-full w-full flex">
             {creatingUser ? (
               <Loader />
             ) : (
-              <>
-                <div className="h-full w-1/2 flex flex-col items-start justify-center gap-6">
-                  <div className="w-full flex items-center justify-between">
-                    <label className="w-1/4 font-medium text-white">
-                      First Name
+              <div className="h-full w-full flex flex-col items-start justify-center gap-6">
+                <div className="w-full flex items-center justify-center px-6 py-2">
+                  <div className="w-full flex items-center justify-start">
+                    <label className="w-24 font-medium text-white">
+                      First Name:
                     </label>
                     <input
                       type="text"
@@ -249,9 +253,9 @@ const CustomTable = () => {
                       required
                     />
                   </div>
-                  <div className="w-full flex items-center justify-between">
-                    <label className="w-1/4 font-medium text-white">
-                      Last Name
+                  <div className="w-full flex items-center justify-start">
+                    <label className="w-24 font-medium text-white">
+                      Last Name:
                     </label>
                     <input
                       type="text"
@@ -262,9 +266,11 @@ const CustomTable = () => {
                       required
                     />
                   </div>
-                  <div className="w-full flex items-center justify-between">
-                    <label className="w-1/4 font-medium text-white">
-                      Email
+                </div>
+                <div className="w-full flex items-center justify-center px-6 py-2">
+                  <div className="w-full flex items-center justify-start">
+                    <label className="w-24 font-medium text-white">
+                      Email:
                     </label>
                     <input
                       type="email"
@@ -275,9 +281,9 @@ const CustomTable = () => {
                       required
                     />
                   </div>
-                  <div className="w-full flex items-center justify-between">
-                    <label className="w-1/4 font-medium text-white">
-                      Password
+                  <div className="w-full flex items-center justify-start">
+                    <label className="w-24 font-medium text-white">
+                      Password:
                     </label>
                     <input
                       type="password"
@@ -288,29 +294,29 @@ const CustomTable = () => {
                       required
                     />
                   </div>
-                  <div className="w-full flex items-center justify-between">
-                    <label className="w-1/4 font-medium text-white">
-                      Admin
-                    </label>
+                </div>
+                <div className="w-full flex items-center justify-center bg-black/30 px-6 py-2 rounded-b-lg">
+                  <div className="w-1/2 flex items-center justify-start">
+                    <label className="w-24 font-medium text-white">Admin</label>
                     <input
                       type="checkbox"
                       name="isAdmin"
                       checked={formData.isAdmin}
                       onChange={handleChange}
-                      className="p-2"
+                      className="form-checkbox h-6 w-6 text-blue-900 rounded"
                     />
                   </div>
-                  {/* Add other input fields similarly */}
+                  <div className="w-1/2 flex items-end justify-end mr-12">
+                    <button
+                      type="submit"
+                      className="h-10 w-fit flex items-center justify-center font-medium bg-white p-3 rounded-md hover:bg-white/95"
+                    >
+                      Add User
+                    </button>
+                  </div>
                 </div>
-                <div className="w-1/2 flex items-end justify-end">
-                  <button
-                    type="submit"
-                    className="h-10 w-fit flex items-center justify-center font-medium bg-white p-3 rounded-md hover:bg-white/95 md:mb-3"
-                  >
-                    Add User
-                  </button>
-                </div>
-              </>
+                {/* Add other input fields similarly */}
+              </div>
             )}
           </form>
         </div>
@@ -331,9 +337,7 @@ const CustomTable = () => {
               <div
                 key={item.id}
                 className={`w-full flex items-center text-slate-800 hover:bg-[#c3d9f046] 
-                  ${
-                    index !== currentItems.length - 1 ? "border-b" : ""
-                  }`}
+                  ${index !== currentItems.length - 1 ? "border-b" : ""}`}
               >
                 <span className="w-1/4 p-2">{item.name}</span>
                 <span className="w-1/4 p-2">{item.admin ? "Yes" : "No"}</span>
