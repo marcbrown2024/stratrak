@@ -43,3 +43,9 @@ type AlertBody = {
   title?: string,
   content: string,
 }
+
+// Define the type for help form data
+type HelpFormData = {
+  subject: string;
+  message: string;
+};

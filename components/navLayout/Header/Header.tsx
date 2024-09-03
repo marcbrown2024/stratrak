@@ -50,7 +50,7 @@ const Header = () => {
       } ${selectedLayout ? "border-b border-zinc-200 bg-white" : ""} z-30`}
     >
       <div className="h-14 flex items-center justify-between px-4">
-        <span className="text-xl text-blue-800 font-bold">{title}</span>
+        <span className="text-xl font-bold tracking-wide">{title}</span>
         <div className="flex items-center space-x-4">
           <Link
             href="/"

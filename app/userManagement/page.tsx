@@ -8,7 +8,7 @@ import { getTrials } from "@/firebase";
 import Loader from "@/components/Loader";
 
 // custom components
-import CustomTable from "@/components/navLayout/CustomTable";
+import CustomTable from "@/components/CustomTable";
 
 // icons
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
@@ -24,8 +24,8 @@ const page = () => {
   }, []);
 
   return (
-    <div className="h-fit w-full flex flex-col items-center justify-center gap-10">
-      <div className="h-fit w-full flex items-center justify-center mt-4 gap-16">
+    <div className="h-fit w-full flex flex-col items-start justify-center bg-white px-10">
+      <div className="h-fit w-11/12 flex items-center justify-start gap-16 bg-white z-10">
         <div className="h-48 w-96 flex flex-col items-start justify-between bg-[#1286ff] p-6 rounded-xl hover:bg-[#1285dd]">
           <FaUser size={40} color="white" />
           <div className="w-full flex items-center justify-between text-lg text-white font-semibold tracking-widest">
@@ -50,7 +50,7 @@ const page = () => {
       </div>
       <div className="h-fit w-11/12 flex flex-col items-center justify-start gap-4">
         <div className="w-full flex flex-col items-center justify-start px-4">
-         <CustomTable/>
+          <CustomTable />
         </div>
       </div>
     </div>
