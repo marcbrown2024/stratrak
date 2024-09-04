@@ -32,14 +32,14 @@ type params = {
 };
 
 const CreateLog = ({ params }: params) => {
-  const {user} = useAuth()
+  const { user } = useAuth();
   const router = useRouter();
   const [savingLog, setSavingLog] = useState<boolean>(false);
 
   const [logs, clearLogs, updateLogs] = useLogStore((state) => [
     state.logs,
     state.clearLogs,
-    state.updateLogs
+    state.updateLogs,
   ]);
 
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0]);
@@ -47,12 +47,15 @@ const CreateLog = ({ params }: params) => {
 
   const trialId = params.trialId;
   const createLogTableRef = useRef<HTMLTableElement>(null);
-  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [
+    state.setAlert,
+    state.closeAlert,
+  ]);
 
   const [loading, setLoading] = useState<boolean>(true);
 
   const saveLogs = () => {
-    closeAlert()
+    closeAlert();
     let alert: AlertBody;
     let alertType: AlertType;
 
@@ -78,9 +81,8 @@ const CreateLog = ({ params }: params) => {
         alertType = AlertType.Error;
       }
       setSavingLog(false);
-      setAlert(alert, alertType)
-    })
-
+      setAlert(alert, alertType);
+    });
   };
 
   const resetLogs = () => {
@@ -88,8 +90,12 @@ const CreateLog = ({ params }: params) => {
     createLogTableRef.current
       ?.querySelectorAll("form")
       .forEach((form) => form.reset());
-    updateLogs(0, {...defaultLog, monitorName: `${user?.fName || ""} ${user?.lName || ""}`, signature: user?.signature ?? ""})
-    
+    updateLogs(0, {
+      ...defaultLog,
+      monitorName: `${user?.fName || ""} ${user?.lName || ""}`,
+      signature: user?.signature ?? "",
+    });
+
     setTableRowsIds([0]);
   };
 
@@ -101,8 +107,8 @@ const CreateLog = ({ params }: params) => {
   }, [trialId]);
 
   return (
-    <div className="h-full flex flex-col w-5/6 mx-auto justify-start gap-8">
-      <div className="px-8 py-2 bg-white mt-10 w-fit rounded-lg flex space-x-4 border">
+    <div className="h-full flex flex-col w-full max-w-screen-lg mx-auto justify-start gap-8 px-4 sm:px-8">
+      <div className="px-4 sm:px-8 py-2 bg-white mt-10 w-full sm:w-fit rounded-lg flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 border">
         <div className="font-bold text-gray-500">
           <p>Investigator Name:</p>
           <p>Protocol:</p>
@@ -119,7 +125,7 @@ const CreateLog = ({ params }: params) => {
         )}
       </div>
       {/* Create log form wrapper */}
-      <div className="w-full flex justify-end pr-6">
+      <div className="w-full flex justify-end">
         <button
           onClick={resetLogs}
           className="bg-red-500 text-white px-4 py-1 rounded-full disabled:opacity-30"
@@ -141,40 +147,40 @@ const CreateLog = ({ params }: params) => {
                   className="min-w-full divide-y divide-gray-200"
                 >
                   <thead className="bg-sky-50">
-                    <tr className="text-blue-500">
+                    <tr className="text-blue-500 text-xs sm:text-sm">
                       <th
                         scope="col"
-                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                        className="px-4 sm:px-8 py-3 text-start font-medium uppercase"
                       >
                         Monitor Name
                       </th>
                       <th
                         scope="col"
-                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                        className="px-4 sm:px-8 py-3 text-start font-medium uppercase"
                       >
                         Signature
                       </th>
                       <th
                         scope="col"
-                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                        className="px-4 sm:px-8 py-3 text-start font-medium uppercase"
                       >
                         Type of Visit
                       </th>
                       <th
                         scope="col"
-                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                        className="px-4 sm:px-8 py-3 text-start font-medium uppercase"
                       >
                         Purpose of Visit
                       </th>
                       <th
                         scope="col"
-                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                        className="px-4 sm:px-8 py-3 text-start font-medium uppercase"
                       >
                         Date of Visit
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 duration-200">
+                  <tbody className="divide-y divide-gray-200 duration-200 text-xs sm:text-sm">
                     {tableRowsIds.map((i, k) => (
                       <tr key={k}>
                         <CreateLogTableRow rowId={i} />
@@ -188,11 +194,11 @@ const CreateLog = ({ params }: params) => {
         </div>
       </div>
 
-      <div className="pl-6 w-full flex items-center justify-center">
+      <div className="w-full flex items-center justify-center py-4">
         <button
           disabled={savingLog || loading}
           onClick={saveLogs}
-          className="px-4 py-2 w-fit bg-blue-500 text-white rounded-full hover:opacity-90 disabled:hover:opacity-100"
+          className="px-4 py-2 w-full max-w-xs bg-blue-500 text-white rounded-full hover:opacity-90 disabled:hover:opacity-100 text-sm sm:text-base"
         >
           {savingLog ? "Saving log..." : "Save log"}
         </button>

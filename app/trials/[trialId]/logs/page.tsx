@@ -53,8 +53,8 @@ const LogsPage = () => {
   }, [trialId]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-start">
-      <div className="flex flex-col items-center justify-center gap-8">
+    <div className="h-full w-full flex flex-col items-center justify-start p-4 sm:p-8 lg:p-12">
+      <div className="w-full xl:w-11/12">
         {loading ? <Loader /> : <LogTable columns={columns} rows={logs} />}
       </div>
     </div>

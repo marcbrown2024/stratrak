@@ -82,7 +82,7 @@ const Page = () => {
     <div className="relative h-fit w-full flex items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className={`w-4/5 xl:w-1/2 space-y-6 pb-12 ${
+        className={`w-4/5 2xl:w-1/2 space-y-6 pb-12 ${
           signatureButton ? "blur-md" : ""
         } `}
       >

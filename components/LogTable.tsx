@@ -166,28 +166,31 @@ const LogTable = (props: Props) => {
   };
 
   return (
-    <DataGrid
-      className="h-fit w-[80rem] p-6 gap-4"
-      rows={props.rows}
-      columns={[
-        monitorNameColumn,
-        signatureColumn,
-        props.columns[0],
-        ...props.columns.slice(1),
-        actionColumn,
-      ]}
-      initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: 8,
+    <div className="w-full max-w-full overflow-x-auto">
+      <DataGrid
+        className="h-fit p-6 gap-4"
+        rows={props.rows}
+        columns={[
+          monitorNameColumn,
+          signatureColumn,
+          props.columns[0],
+          ...props.columns.slice(1),
+          actionColumn,
+        ]}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 8,
+            },
           },
-        },
-      }}
-      slots={{ toolbar: CustomToolbar }}
-      pageSizeOptions={[8]}
-      disableMultipleRowSelection
-      disableColumnMenu
-    />
+        }}
+        slots={{ toolbar: CustomToolbar }}
+        pageSizeOptions={[8]}
+        disableMultipleRowSelection
+        disableColumnMenu
+        autoHeight
+      />
+    </div>
   );
 };
 

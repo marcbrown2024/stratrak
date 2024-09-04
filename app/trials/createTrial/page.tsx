@@ -25,7 +25,7 @@ import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 import { useAuth } from "@/components/AuthProvider";
 
 const CreateTrials = () => {
-  const {user} = useAuth()
+  const { user } = useAuth();
   const router = useRouter();
   const [trials, removeLog, updateLogs, clearLogs] = useTrialStore((state) => [
     state.trials,
@@ -36,7 +36,10 @@ const CreateTrials = () => {
 
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0]);
   const createTrialTableRef = useRef<HTMLTableElement>(null);
-  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [
+    state.setAlert,
+    state.closeAlert,
+  ]);
   const [savingTrial, setSavingTrial] = useState<boolean>(false);
 
   const addRow = () => {
@@ -56,8 +59,8 @@ const CreateTrials = () => {
   };
 
   const saveTrial = () => {
-    setSavingTrial(true)
-    closeAlert()
+    setSavingTrial(true);
+    closeAlert();
     for (let rowId in trials) {
       createTrial(trials[rowId], user?.orgId).then((response) => {
         let alert: AlertBody;
@@ -79,12 +82,12 @@ const CreateTrials = () => {
           alert = {
             title: "Something went wrong",
             content:
-            "Could not save trial" +
-            (Object.keys(trials).length > 1 ? "s": ""),
+              "Could not save trial" +
+              (Object.keys(trials).length > 1 ? "s" : ""),
           };
           alertType = AlertType.Error;
         }
-        setSavingTrial(false)
+        setSavingTrial(false);
         setAlert(alert, alertType);
         resetTrials();
       });
@@ -100,18 +103,18 @@ const CreateTrials = () => {
   };
 
   return (
-    <div className="h-full flex flex-col w-5/6 mx-auto justify-start gap-6">
-      <div className="w-full flex justify-end pr-6">
+    <div className="h-full flex flex-col w-full lg:w-5/6 mx-auto justify-start gap-6">
+      <div className="w-full flex justify-end pr-4 lg:pr-6">
         <button
           onClick={resetTrials}
-          className="bg-red-500 text-white px-4 py-1 rounded-full disabled:opacity-30"
+          className="bg-red-500 text-white px-4 py-2 rounded-full disabled:opacity-30"
         >
           Reset
         </button>
       </div>
       <div className="flex flex-col">
-        <div className="-m-1.5 overflow-x-auto">
-          <div className="p-1.5 min-w-full inline-block align-middle">
+        <div className="-mx-1.5 overflow-x-auto">
+          <div className="px-1.5 min-w-full inline-block align-middle">
             <div className="border rounded-lg overflow-hidden">
               <table
                 ref={createTrialTableRef}
@@ -121,19 +124,19 @@ const CreateTrials = () => {
                   <tr className="text-blue-500">
                     <th
                       scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
+                      className="px-2 lg:px-8 py-3 text-start text-xs font-medium uppercase"
                     >
                       Investigator Name
                     </th>
                     <th
                       scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
+                      className="px-2 lg:px-8 py-3 text-start text-xs font-medium uppercase"
                     >
                       Protocol
                     </th>
                     <th
                       scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
+                      className="px-2 lg:px-8 py-3 text-start text-xs font-medium uppercase"
                     >
                       Site Visit
                     </th>
@@ -152,7 +155,7 @@ const CreateTrials = () => {
         </div>
       </div>
       {/* add or delete row */}
-      <div className="flex space-x-2 pl-8">
+      <div className="flex space-x-2 pl-4 lg:pl-8">
         <button onClick={remRow} disabled={tableRowsIds.length <= 1}>
           <FaMinusCircle
             className={`text-2xl text-slate-200 ${
@@ -164,15 +167,16 @@ const CreateTrials = () => {
           <FaPlusCircle className="text-2xl text-slate-200 hover:text-blue-500" />
         </button>
       </div>
-      <div className="pl-6 w-full flex items-center justify-center">
+      <div className="px-4 lg:px-6 w-full flex items-center justify-center">
         <button
           disabled={savingTrial}
           onClick={saveTrial}
           className="px-4 py-2 w-fit bg-blue-500 text-white rounded-full hover:opacity-90"
-        >{
-          savingTrial ? "Saving...":
-          `Save Trial${tableRowsIds.length > 1 ? "s" : ""}`
-          }</button>
+        >
+          {savingTrial
+            ? "Saving..."
+            : `Save Trial${tableRowsIds.length > 1 ? "s" : ""}`}
+        </button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 // react/nextjs components
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 // firebase components
@@ -52,18 +52,21 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   });
   const [signatureData, setSignatureData] = useState<string | null>(null);
 
-  const reDrawPreviousData = (ctx: CanvasRenderingContext2D) => {
-    drawingActions.forEach(({ path, style }) => {
-      ctx.beginPath();
-      ctx.strokeStyle = style.color;
-      ctx.lineWidth = style.lineWidth;
-      ctx.moveTo(path[0].x, path[0].y);
-      path.forEach((point) => {
-        ctx.lineTo(point.x, point.y);
+  const reDrawPreviousData = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      drawingActions.forEach(({ path, style }) => {
+        ctx.beginPath();
+        ctx.strokeStyle = style.color;
+        ctx.lineWidth = style.lineWidth;
+        ctx.moveTo(path[0].x, path[0].y);
+        path.forEach((point) => {
+          ctx.lineTo(point.x, point.y);
+        });
+        ctx.stroke();
       });
-      ctx.stroke();
-    });
-  };
+    },
+    [drawingActions] // Add drawingActions as a dependency
+  );
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -76,7 +79,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
         reDrawPreviousData(ctx);
       }
     }
-  }, [canvasRef.current, reDrawPreviousData]); // Ensure this effect runs when canvasRef.current changes
+  }, [reDrawPreviousData]); // only reDrawPreviousData is necessary here
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     if (context) {
@@ -195,7 +198,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
         }
         setAlert(alert, alertType);
         clearDrawing();
-        setSignatureButton(false)
+        setSignatureButton(false);
       } else {
         console.error("User ID is not available.");
       }
