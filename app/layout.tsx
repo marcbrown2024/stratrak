@@ -11,7 +11,6 @@ import HeaderMobile from "@/components/HeaderMobile";
 import Sidebar from "@/components/sideMenu/Sidebar";
 import PageWrapper from "@/components/PageWrapper";
 import MarginWidthWrapper from "@/components/MarginWidthWrapper";
-import DropDownModal from "@/components/DropDownModal";
 import Alert from "@/components/Alert";
 import { AuthProvider } from "@/components/AuthProvider";
 
@@ -39,7 +38,6 @@ export default function RootLayout({
                 <HeaderMobile />
                 <PageWrapper>{children}</PageWrapper>
               </MarginWidthWrapper>
-              <DropDownModal />
             </AuthProvider>
           </main>
           <Alert />

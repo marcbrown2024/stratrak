@@ -100,6 +100,7 @@ const initialFormData: FormData = {
   email: "",
   fName: "",
   lName: "",
+  id: "",
   isAdmin: false,
   orgId: "",
   signature: "",
@@ -203,7 +204,7 @@ const CustomTable = () => {
         AlertType.Error
       );
     }
-  }, [userCreationError]);
+  }, [userCreationError, setAlert]);
 
 
   const handleChange = (

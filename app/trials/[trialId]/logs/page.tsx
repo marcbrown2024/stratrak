@@ -17,20 +17,6 @@ import Loader from "@/components/Loader";
 
 const columns: GridColDef[] = [
   {
-    field: "monitorName",
-    headerClassName: "text-blue-500 uppercase bg-blue-50",
-    type: "string",
-    headerName: "Monitor Name",
-    flex: 1,
-  },
-  {
-    field: "signature",
-    headerClassName: "text-blue-500 uppercase bg-blue-50",
-    type: "string",
-    headerName: "Signature",
-    flex: 1,
-  },
-  {
     field: "typeOfVisit",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     type: "string",

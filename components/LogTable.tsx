@@ -2,9 +2,11 @@
 
 // react/nextjs components
 import React, { useState } from "react";
+import Image from "next/image";
 
 // firebase components/functions
 import { deleteLog } from "@/firebase";
+import { useAuth } from "@/components/AuthProvider";
 
 // global stores
 import { useAlertStore } from "@/store/AlertStore";
@@ -28,6 +30,7 @@ type Props = {
 };
 
 const LogTable = (props: Props) => {
+  const { user } = useAuth();
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteLogRow, setDeleteLogRow] = useState<boolean>(false);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
@@ -58,6 +61,47 @@ const LogTable = (props: Props) => {
       setAlert(alert, alertType);
     });
     setActiveRowId(null);
+  };
+
+  const monitorNameColumn: GridColDef = {
+    field: "monitorName",
+    headerClassName: "text-blue-500 uppercase bg-blue-50",
+    headerName: "Monitor Name",
+    flex: 1,
+    renderCell: (params) => {
+      if (user?.fName && user?.lName) {
+        return <span>{user.fName + " " + user.lName}</span>;
+      } else {
+        return <span>No Monitor name available</span>;
+      }
+    },
+  };
+
+  const signatureColumn: GridColDef = {
+    field: "signature",
+    headerClassName: "text-blue-500 uppercase bg-blue-50",
+    headerName: "Signature",
+    flex: 1,
+    renderCell: (params) => {
+      const { value } = params;
+      return (
+        <div className="h-[40px] w-fit flex items-center text-center">
+          {user && user.signature ? (
+            <Image
+              src={user.signature}
+              alt="User Signature"
+              style={{
+                maxWidth: "150px",
+                maxHeight: "80px",
+                objectFit: "contain",
+              }}
+            />
+          ) : (
+            <div>No signature available</div>
+          )}
+        </div>
+      );
+    },
   };
 
   const actionColumn: GridColDef = {
@@ -118,25 +162,30 @@ const LogTable = (props: Props) => {
       );
     },
   };
+
   return (
-    <div className="h-fit w-[80rem]">
-      <DataGrid
-        className="p-6 gap-4"
-        rows={props.rows}
-        columns={[...props.columns, actionColumn]}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 8,
-            },
+    <DataGrid
+      className="h-fit w-[80rem] p-6 gap-4"
+      rows={props.rows}
+      columns={[
+        monitorNameColumn,
+        signatureColumn,
+        props.columns[0],
+        ...props.columns.slice(1),
+        actionColumn,
+      ]}
+      initialState={{
+        pagination: {
+          paginationModel: {
+            pageSize: 8,
           },
-        }}
-        slots={{ toolbar: CustomToolbar }}
-        pageSizeOptions={[8]}
-        disableMultipleRowSelection
-        disableColumnMenu
-      />
-    </div>
+        },
+      }}
+      slots={{ toolbar: CustomToolbar }}
+      pageSizeOptions={[8]}
+      disableMultipleRowSelection
+      disableColumnMenu
+    />
   );
 };
 

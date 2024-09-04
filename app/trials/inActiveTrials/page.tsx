@@ -63,7 +63,7 @@ const TrialsPage = () => {
         loading ?
         <Loader />
         :
-        <TrialTable columns={columns} rows={trials} />
+        <TrialTable columns={columns} rows={trials} filter="Inactive" />
       }
     </div>
   );
