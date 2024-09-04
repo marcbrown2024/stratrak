@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 
 // firebase components/functions
@@ -28,7 +28,7 @@ const TableRow = ({ rowId }: params) => {
         updateLog(rowId, "signature", user.signature)
       }
     }
-  }, [user])
+  }, [user, rowId, updateLog])
 
   return (
     <>

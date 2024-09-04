@@ -3,9 +3,9 @@
 // react/nextjs components
 import React, { useEffect, useState } from "react";
 
-// firestore functions
+// firebase components/functions
 import { getTrials } from "@/firebase";
-import Loader from "@/components/Loader";
+import { useAuth } from "@/components/AuthProvider";
 
 // custom components
 import CustomTable from "@/components/CustomTable";
@@ -14,14 +14,15 @@ import CustomTable from "@/components/CustomTable";
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
 
 const Page = () => {
+  const { user } = useAuth();
   const [loading, setLoading] = useState<Boolean>(true);
 
   // Update the state with the imported data
   useEffect(() => {
-    getTrials().then((response) => {
+    getTrials(user.orgId).then((response) => {
       setLoading(false);
     });
-  }, []);
+  }, [user.orgId]);
 
   return (
     <div className="h-fit w-full flex flex-col items-center justify-center bg-slate-50 md:pl-20">

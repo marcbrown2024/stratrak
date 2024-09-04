@@ -58,7 +58,7 @@ const TrialsPage = () => {
       setTrials(response.data)
       setLoading(false)
     })
-  }, []);
+  }, [user?.orgId]);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
