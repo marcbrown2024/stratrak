@@ -29,24 +29,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-        <body className={`bg-white ${inter.className}`}>
-          <div className="flex">
-            <Sidebar />
-            <main className="flex-1">
+      <body className={`bg-white ${inter.className}`}>
+        <div className="flex">
+          <Sidebar />
+          <main className="flex-1">
+            <AuthProvider>
               <MarginWidthWrapper>
                 <Header />
                 <HeaderMobile />
-                <AuthProvider>
-                  <PageWrapper>
-                    {children}
-                  </PageWrapper>
-                </AuthProvider>
+                <PageWrapper>{children}</PageWrapper>
               </MarginWidthWrapper>
-            </main>
-            <DropDownModal />
-            <Alert />
-          </div>
-        </body>
-      </html>
+              <DropDownModal />
+            </AuthProvider>
+          </main>
+          <Alert />
+        </div>
+      </body>
+    </html>
   );
 }

@@ -1,5 +1,5 @@
 // react/nextjs components
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 // mui components
 import Tooltip from "@mui/material/Tooltip";
@@ -8,10 +8,13 @@ import Tooltip from "@mui/material/Tooltip";
 import { FaChevronLeft, FaChevronRight, FaCircle } from "react-icons/fa";
 import { TiUserDelete } from "react-icons/ti";
 import { RiExchangeFill } from "react-icons/ri";
-import { createUser } from "@/firebase";
+import { createUser, enrollUser, getUserFromDb, secondaryAuth } from "@/firebase";
 import { useAlertStore } from "@/store/AlertStore";
 import { AlertType } from "@/enums";
 import Loader from "./Loader";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useAuth } from "./AuthProvider";
+import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 
 type DataItem = {
   id: number;
@@ -104,13 +107,15 @@ const initialFormData: FormData = {
 const ITEMS_PER_PAGE = 4;
 
 const CustomTable = () => {
+  const {user} = useAuth()
+
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [transitioning, setTransitioning] = useState<boolean>(false);
   const [filter, setFilter] = useState<"Users" | "Admins" | "All Users">(
     "All Users"
   );
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [setAlert] = useAlertStore((state) => [state.setAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
 
   const [addUser, setAddUser] = useState<boolean>(false);
   const [creatingUser, setCreatingUser] = useState<boolean>(false);
@@ -150,35 +155,39 @@ const CustomTable = () => {
     }, 300);
   };
 
-  const handleAddUserSubmit = (e: FormEvent) => {
-    setCreatingUser(true);
-    e.preventDefault();
-    let alertBody: AlertBody;
 
+  const registerUser = async () => {
+    const firebaseUser = await createUserWithEmailAndPassword(secondaryAuth, formData.email, formData.password)
+    
     // Extract only the fields that are in User type
     const { password, ...userData } = formData; // Omit password when sending data
 
-    // Send userData to the database
-    createUser(userData).then((response) => {
-      if (response?.success) {
-        alertBody = {
-          title: "Success!",
-          content: "User was created successfully",
-        };
-        setAlert(alertBody, AlertType.Success);
-      } else {
-        alertBody = {
-          title: "Something went wrong",
-          content: "There was an error when attempting to create user",
-        };
-        setAlert(alertBody, AlertType.Error);
-      }
-    });
+    const userDetails = {...userData, userId: firebaseUser.user.uid, orgId: user?.orgId}
+    await createUser(userDetails)
+    
+  }
 
-    setCreatingUser(false);
-    // Clear form after submission
-    setFormData(initialFormData);
+  const { executeAuth: executeUserCreation, loading: userCreationLoading, error: userCreationError } = useFirebaseAuth(registerUser);
+
+  const handleAddUserSubmit = async (e: FormEvent) => {
+    closeAlert()
+    e.preventDefault();
+  
+    // Call the executeAuth function with the appropriate arguments
+    const { success, result } = await executeUserCreation();
+  
+    if (success) {
+      // On success, set success alert and clear form data
+      setAlert({ title: "Success!", content: "User created successfully." }, AlertType.Success);
+      setFormData(initialFormData);
+    }
   };
+
+  useEffect(() => {
+    if (userCreationError) {
+      setAlert({ title: "Something went wrong", content: userCreationError ?? "An unexpected error occurred." }, AlertType.Error);
+    }
+  }, [userCreationError])  
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -234,6 +243,8 @@ const CustomTable = () => {
           <span className="text-2xl text-white font-semibold px-6 pt-6">
             Create new user
           </span>
+          {
+            userCreationLoading ? <Loader /> :
           <form onSubmit={handleAddUserSubmit} className="h-full w-full flex">
             {creatingUser ? (
               <Loader />
@@ -319,6 +330,7 @@ const CustomTable = () => {
               </div>
             )}
           </form>
+          }
         </div>
         <div className="h-fit w-full flex flex-col items-center justify-center border rounded-lg">
           <div className="h-10 w-full flex items-center justify-center text-blue-500 font-semibold bg-sky-50">

@@ -9,6 +9,7 @@ import { useAuth } from "@/components/AuthProvider";
 const Home = () => {
   const { user, isAuthenticated } = useAuth();
   useEffect(() => {
+    console.log(user)
   }, [user, isAuthenticated])
 
   return (

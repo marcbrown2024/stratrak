@@ -1,13 +1,14 @@
 "use client";
 
 // react/nextjs components
-import React, { ChangeEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { redirect, useRouter } from "next/navigation";
 import {useSignInWithEmailAndPassword} from 'react-firebase-hooks/auth'
-import {auth, enrollUser, userExists} from '@/firebase'
+import {auth, enrollUser, secondaryAuth, userExists} from '@/firebase'
 import { AlertType } from "@/enums";
 import { useAlertStore } from "@/store/AlertStore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 // custom components
 
 interface FormData {
@@ -22,12 +23,12 @@ const initialFormData = {
 
 const Page = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData)
-  const [setAlert] = useAlertStore(state => [state.setAlert])
 
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
 
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(secondaryAuth)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,61 +39,39 @@ const Page = () => {
     }));
   };
 
-  const handleSignInErrors = () => {
-
+  const logInUser = async () => {
+    const userResponse = await signInWithEmailAndPassword(formData.email, formData.password)
+    return userResponse
+    console.log("user response: ", userResponse)
   }
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    let alertBody: AlertBody
+  const { executeAuth: executeUserLogin, loading: userLoginLoading, error: userLoginError } = useFirebaseAuth(logInUser);
 
-    try {
-      const userDetails = await signInWithEmailAndPassword(formData.email, formData.password)
-      if (userDetails) {
-        alertBody = {
-          title: "Success!",
-          content: "User logged in"
-        }
-        setAlert(alertBody, AlertType.Success)
-      } else {
-        const existResponse = await userExists(formData.email)
-        console.log("exist response: ", existResponse) //TODO: remove
-        const defaultPword = process.env.NEXT_PUBLIC_DEFAULT_PASSWORD!
+  const handleSubmit = async (e: React.FormEvent) => {
+    closeAlert()
+    e.preventDefault();
+  
+    // Call the executeAuth function with the appropriate arguments
+    // const { success, result } = await executeUserLogin();
 
-        if (existResponse.data.exists && formData.password === defaultPword) {
-          const createdUser = await createUserWithEmailAndPassword(auth, formData.email, defaultPword)
-          if (createdUser) { // if user was created successfully
-            console.log("createdUser: ", createdUser) //TODO: remove
-            alertBody = {
-              title: "Success!",
-              content: "User account activated. Please change password."
-            }
-            enrollUser(existResponse.data.id, createdUser.user.uid)
-            setAlert(alertBody, AlertType.Success)
-            setFormData(initialFormData)
-            router.push('/')
-            return
-          }
-        }
-        alertBody = {
-            title: "Error",
-            content: "User account does not exist"
-        }
-        setAlert(alertBody, AlertType.Error)
-      }
-      setFormData(initialFormData)
-      router.push('/')
-    } catch (e) {
-      alertBody = {
-        title: "Error",
-        content: "There was an error when attempting to sign in user"
-      }
-      setAlert(alertBody, AlertType.Error)
-      setFormData(initialFormData)
+    console.log("formData: ", formData)
+    signInWithEmailAndPassword(formData.email, formData.password).then(userResponse => {console.log(userResponse)})
 
-    }
+    // if (success) {
+    //   // On success, set success alert and clear form data
+    //   setAlert({ title: "Welcome!", content: "User logged in successfully." }, AlertType.Success);
+    //   setFormData(initialFormData);
+    //   router.push('/');
+    // }
 
   };
+
+
+  useEffect(() => {
+    if (userLoginError) {
+      setAlert({ title: "Something went wrong", content: userLoginError ?? "An unexpected error occurred." }, AlertType.Error);
+    }
+  }, [userLoginError])  
 
   return (
     <div className="relative h-screen w-full flex flex-col md:flex-row items-start justify-center gap-12 md:gap-0 overflow-hidden">

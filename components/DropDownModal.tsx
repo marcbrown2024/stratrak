@@ -1,7 +1,7 @@
 "use client";
 
 // react/nextjs components
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -16,8 +16,11 @@ import { FaUserLock } from "react-icons/fa6";
 import { MdOutlineHelp } from "react-icons/md";
 import { signOut } from "firebase/auth";
 import {auth} from "@/firebase"
+import { useAuth } from "./AuthProvider";
 
 const DropDownModal = () => {
+  const {user} = useAuth()
+
   const { isModalOpen, toggleModal, closeModal } = useModalStore();
   const userPhotoUrl =
     "https://cdn-icons-png.flaticon.com/512/3237/3237472.png";
@@ -26,6 +29,10 @@ const DropDownModal = () => {
     signOut(auth)
     closeModal()
   }
+
+  useEffect(() => {
+    console.log("user: ", user)
+  }, [user])
 
   return (
     <div
@@ -54,7 +61,7 @@ const DropDownModal = () => {
             className="h-16 w-16 rounded-full"
           />
           <div className="flex flex-col items-start justify-start gap-1">
-            <p className="text-blue-500 font-semibold">First Last</p>
+            <p className="text-blue-500 font-semibold">{user?.fName + " " + user?.lName}</p>
             <p className="text-sm text-blue-500 font-medium">Department</p>
             <p className="text-sm text-blue-500 font-medium">Company Name</p>
           </div>
