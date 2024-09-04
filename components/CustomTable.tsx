@@ -8,7 +8,12 @@ import Tooltip from "@mui/material/Tooltip";
 import { FaChevronLeft, FaChevronRight, FaCircle } from "react-icons/fa";
 import { TiUserDelete } from "react-icons/ti";
 import { RiExchangeFill } from "react-icons/ri";
-import { createUser, enrollUser, getUserFromDb, secondaryAuth } from "@/firebase";
+import {
+  createUser,
+  enrollUser,
+  getUserFromDb,
+  secondaryAuth,
+} from "@/firebase";
 import { useAlertStore } from "@/store/AlertStore";
 import { AlertType } from "@/enums";
 import Loader from "./Loader";
@@ -107,14 +112,17 @@ const initialFormData: FormData = {
 const ITEMS_PER_PAGE = 4;
 
 const CustomTable = () => {
-  const {user} = useAuth()
+  const { user } = useAuth();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filter, setFilter] = useState<"Users" | "Admins" | "All Users">(
     "All Users"
   );
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [
+    state.setAlert,
+    state.closeAlert,
+  ]);
 
   const [addUser, setAddUser] = useState<boolean>(false);
   const [creatingUser, setCreatingUser] = useState<boolean>(false);
@@ -144,45 +152,70 @@ const CustomTable = () => {
     setCurrentPage(1);
   };
 
-
   const registerUser = async () => {
-    const firebaseUser = await createUserWithEmailAndPassword(secondaryAuth, formData.email, formData.password)
-    
+    const firebaseUser = await createUserWithEmailAndPassword(
+      secondaryAuth,
+      formData.email,
+      formData.password
+    );
+
     // Extract only the fields that are in User type
     const { password, ...userData } = formData; // Omit password when sending data
 
-    const userDetails = {...userData, userId: firebaseUser.user.uid, orgId: user?.orgId}
-    await createUser(userDetails)
-    
-  }
+    const userDetails = {
+      ...userData,
+      userId: firebaseUser.user.uid,
+      orgId: user?.orgId,
+    };
+    await createUser(userDetails);
+  };
 
-  const { executeAuth: executeUserCreation, loading: userCreationLoading, error: userCreationError } = useFirebaseAuth(registerUser);
+  const {
+    executeAuth: executeUserCreation,
+    loading: userCreationLoading,
+    error: userCreationError,
+  } = useFirebaseAuth(registerUser);
 
   const handleAddUserSubmit = async (e: FormEvent) => {
-    closeAlert()
+    closeAlert();
     e.preventDefault();
-  
+
     // Call the executeAuth function with the appropriate arguments
     const { success, result } = await executeUserCreation();
-  
+
     if (success) {
       // On success, set success alert and clear form data
-      setAlert({ title: "Success!", content: "User created successfully." }, AlertType.Success);
+      setAlert(
+        { title: "Success!", content: "User created successfully." },
+        AlertType.Success
+      );
       setFormData(initialFormData);
     }
   };
 
   useEffect(() => {
     if (userCreationError) {
-      setAlert({ title: "Something went wrong", content: userCreationError ?? "An unexpected error occurred." }, AlertType.Error);
+      setAlert(
+        {
+          title: "Something went wrong",
+          content: userCreationError ?? "An unexpected error occurred.",
+        },
+        AlertType.Error
+      );
     }
-  }, [userCreationError])  
+  }, [userCreationError]);
 
   useEffect(() => {
     if (userCreationError) {
-      setAlert({ title: "Something went wrong", content: userCreationError ?? "An unexpected error occurred." }, AlertType.Error);
+      setAlert(
+        {
+          title: "Something went wrong",
+          content: userCreationError ?? "An unexpected error occurred.",
+        },
+        AlertType.Error
+      );
     }
-  }, [userCreationError])  
+  }, [userCreationError]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -247,12 +280,10 @@ const CustomTable = () => {
             addUser ? "opacity-100" : "opacity-0"
           }`}
         >
-          <span className="text-2xl text-white font-semibold px-6 pt-6">
-            Create new user
-          </span>
-          {
-            userCreationLoading ? <Loader /> :
           <form onSubmit={handleAddUserSubmit} className="h-full w-full flex">
+            {userCreationLoading ? (
+              <Loader />
+            ) : (
               <div className="h-full w-full flex flex-col items-start justify-center gap-1">
                 <div className="w-full flex items-center justify-center py-2">
                   <div className="w-1/2 flex flex-col items-start justify-start gap-3">
@@ -343,87 +374,113 @@ const CustomTable = () => {
                 </div>
                 {/* Add other input fields similarly */}
               </div>
-          </form>}
-        </div>
-        <div className="h-fit w-full flex flex-col items-center justify-center border rounded-lg">
-          <div className="h-10 w-full flex items-center justify-center text-blue-500 font-semibold bg-sky-50">
-            <span className="w-1/4 px-2">Users</span>
-            <span className="w-1/4 px-2">Admin</span>
-            <span className="w-1/4 px-2">Not Sure</span>
-            <span className="w-1/4 px-2">Status</span>
-            <span className="w-1/4 px-2">Action</span>
-          </div>
+            )}
+          </form>
           <div
-            className={`h-fit w-full flex flex-col items-center justify-start space-y-1 transition-transform duration-300 ${
-              transitioning ? "transform opacity-80" : ""
-            }`}
+            className={`absolute bottom-2 right-28 ${
+              createUserButton
+                ? "opacity-0 translate-x-32"
+                : "opacity-100 translate-x-0"
+            } transition-all duration-300 ease-in-out`}
           >
-            {currentItems.map((item, index) => (
-              <div
-                key={item.id}
-                className={`w-full flex items-center text-slate-800 hover:bg-[#c3d9f046] 
-                  ${index !== currentItems.length - 1 ? "border-b" : ""}`}
-              >
-                <span className="w-1/4 p-2">{item.name}</span>
-                <span className="w-1/4 p-2">{item.admin ? "Yes" : "No"}</span>
-                <span className="w-1/4 p-2">Not Sure</span>
-                <span className="w-1/4 p-2 flex items-center gap-2">
-                  {item.status}
-                </span>
-                <span className="w-1/4 flex items-center justify-start gap-2 px-2">
-                  <Tooltip title="Delete User" arrow>
-                    <span>
-                      <TiUserDelete
-                        size={24}
-                        className="text-[#1286ff] hover:scale-105 cursor-pointer"
-                      />
-                    </span>
-                  </Tooltip>
-                  <Tooltip
-                    title={item.admin ? "demote to user" : "Elevate to admin"}
-                    arrow
-                  >
-                    <span>
-                      <RiExchangeFill
-                        size={24}
-                        className="text-[#1286ff] hover:scale-105 cursor-pointer"
-                      />
-                    </span>
-                  </Tooltip>
-                </span>
-              </div>
-            ))}
+            <button
+              type="button"
+              onClick={() => setCreateUserButton(true)}
+              className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] px-5 py-3 rounded-md hover:scale-105"
+            >
+              Add User
+            </button>
           </div>
         </div>
-        <div className="w-full flex items-center justify-end">
-          <div className="h-12 w-80 flex items-center justify-end gap-8">
-            <div className="flex items-center justify-center gap-2 text-[#1286ff] tracking-wide">
-              <span>
-                {startIndex + 1}–{Math.min(endIndex, filteredData.length)}
-              </span>
-              <span>of</span>
-              <span>{filteredData.length}</span>
+        <div className="w-11/12 overflow-x-auto shadow-md sm:rounded-lg">
+          <table className="w-full text-blue-700">
+            <thead className="text-sm text-left uppercase bg-sky-100">
+              <tr>
+                <th scope="col" className="p-4">
+                  Users
+                </th>
+                <th scope="col" className="p-4">
+                  Admin
+                </th>
+                <th scope="col" className="p-4">
+                  Not Sure
+                </th>
+                <th scope="col" className="p-4">
+                  Status
+                </th>
+                <th scope="col" className="p-4">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.map((item) => (
+                <tr key={item.id} className={`odd:bg-white even:bg-sky-100`}>
+                  <td className="px-4 py-3 font-medium">{item.name}</td>
+                  <td className="px-4 py-3">{item.admin ? "Yes" : "No"}</td>
+                  <td className="px-4 py-3">Not Sure</td>
+                  <td className="flex items-center gap-2 px-4 py-3">
+                    {item.status}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Tooltip title="Delete User" arrow>
+                        <span>
+                          <TiUserDelete
+                            size={24}
+                            className="text-[#1286ff] hover:scale-105 cursor-pointer"
+                          />
+                        </span>
+                      </Tooltip>
+                      <Tooltip
+                        title={
+                          item.admin ? "Demote to user" : "Elevate to admin"
+                        }
+                        arrow
+                      >
+                        <span>
+                          <RiExchangeFill
+                            size={24}
+                            className="text-[#1286ff] hover:scale-105 cursor-pointer"
+                          />
+                        </span>
+                      </Tooltip>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="w-full flex items-center justify-end p-4">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-2 text-[#1286ff] tracking-wide">
+                <span>
+                  {startIndex + 1}â{Math.min(endIndex, filteredData.length)}
+                </span>
+                <span>of</span>
+                <span>{filteredData.length}</span>
+              </div>
+              <button
+                onClick={() => handlePageChange("previous")}
+                disabled={currentPage === 1}
+                className={`${
+                  currentPage === 1 ? "text-[#1285ff98]" : "text-[#1286ff]"
+                }`}
+              >
+                <FaChevronLeft size={16} />
+              </button>
+              <button
+                onClick={() => handlePageChange("next")}
+                disabled={endIndex >= filteredData.length}
+                className={`${
+                  endIndex >= filteredData.length
+                    ? "text-[#1285ff98]"
+                    : "text-[#1286ff]"
+                }`}
+              >
+                <FaChevronRight size={16} />
+              </button>
             </div>
-            <button
-              onClick={() => handlePageChange("previous")}
-              disabled={currentPage === 1}
-              className={`${
-                currentPage === 1 ? "text-[#1285ff98]" : "text-[#1286ff]"
-              }`}
-            >
-              <FaChevronLeft size={16} />
-            </button>
-            <button
-              onClick={() => handlePageChange("next")}
-              disabled={endIndex >= filteredData.length}
-              className={`${
-                endIndex >= filteredData.length
-                  ? "text-[#1285ff98]"
-                  : "text-[#1286ff]"
-              }`}
-            >
-              <FaChevronRight size={16} />
-            </button>
           </div>
         </div>
       </div>

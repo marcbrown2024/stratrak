@@ -4,7 +4,7 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { redirect, useRouter } from "next/navigation";
 import {useSignInWithEmailAndPassword} from 'react-firebase-hooks/auth'
-import {auth, enrollUser, secondaryAuth, userExists} from '@/firebase'
+import {auth, enrollUser, userExists} from '@/firebase'
 import { AlertType } from "@/enums";
 import { useAlertStore } from "@/store/AlertStore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -28,7 +28,7 @@ const Page = () => {
   const router = useRouter();
   const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
 
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(secondaryAuth)
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,7 +45,7 @@ const Page = () => {
     console.log("user response: ", userResponse)
   }
 
-  const { executeAuth: executeUserLogin, loading: userLoginLoading, error: userLoginError } = useFirebaseAuth(logInUser);
+  // const { executeAuth: executeUserLogin, loading: userLoginLoading, error: userLoginError } = useFirebaseAuth(logInUser);
 
   const handleSubmit = async (e: React.FormEvent) => {
     closeAlert()
@@ -67,11 +67,11 @@ const Page = () => {
   };
 
 
-  useEffect(() => {
-    if (userLoginError) {
-      setAlert({ title: "Something went wrong", content: userLoginError ?? "An unexpected error occurred." }, AlertType.Error);
-    }
-  }, [userLoginError])  
+  // useEffect(() => {
+  //   if (userLoginError) {
+  //     setAlert({ title: "Something went wrong", content: userLoginError ?? "An unexpected error occurred." }, AlertType.Error);
+  //   }
+  // }, [userLoginError])  
 
   return (
     <div className="relative h-screen w-full flex flex-col md:flex-row items-start justify-center gap-12 md:gap-0 overflow-hidden">
