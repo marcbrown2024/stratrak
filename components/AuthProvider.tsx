@@ -3,11 +3,11 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/firebase";
+import { auth, getUserFromDb } from "@/firebase";
 
 // Define the context type
 interface AuthContextType {
-  user: any; // Replace `any` with the appropriate user type
+  user: User; // Replace `any` with the appropriate user type
   loading: boolean;
   isAuthenticated: boolean;
 }
@@ -22,6 +22,17 @@ interface AuthProviderProps {
 // AuthProvider component
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, loading] = useAuthState(auth);
+  const [userFromDb, setUserFromDb] = useState<User>();
+
+  // fetch user from db and set that as the user
+  useEffect(() => {
+    if (user) {
+      getUserFromDb(user?.uid).then(response => {
+        const user = response?.data ?? null
+        setUserFromDb(user)
+      })
+    }
+  }, [user])
   const router = useRouter();
 
   useEffect(() => {
@@ -34,7 +45,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Provide the context to children
   return (
-    <AuthContext.Provider value={{ user, loading, isAuthenticated }}>
+    <AuthContext.Provider value={{ user: userFromDb!, loading, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
