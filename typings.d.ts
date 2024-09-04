@@ -65,7 +65,6 @@ type HelpFormData = {
 // Type definitions for profile form data
 type ProfileFormData = {
   signature: string;
-  about: string;
   photo: File | null;
   firstName: string;
   lastName: string;

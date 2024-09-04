@@ -32,13 +32,14 @@ export default function RootLayout({
         <div className="flex">
           <Sidebar />
           <main className="flex-1">
-            <AuthProvider>
-              <MarginWidthWrapper>
+            {/* <AuthProvider>
+
+            </AuthProvider> */}
+            <MarginWidthWrapper>
                 <Header />
                 <HeaderMobile />
                 <PageWrapper>{children}</PageWrapper>
               </MarginWidthWrapper>
-            </AuthProvider>
           </main>
           <Alert />
         </div>
