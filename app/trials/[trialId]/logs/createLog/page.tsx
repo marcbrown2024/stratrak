@@ -112,7 +112,7 @@ const CreateLog = ({ params }: params) => {
   }, [trialId]);
 
   return (
-    <div className="h-full flex flex-col w-5/6 mx-auto justify-start">
+    <div className="h-full flex flex-col w-5/6 mx-auto justify-start gap-8">
       <div className="px-8 py-2 bg-white mt-10 w-fit rounded-lg flex space-x-4 border">
         <div className="font-bold text-gray-500">
           <p>Investigator Name:</p>
@@ -193,7 +193,7 @@ const CreateLog = ({ params }: params) => {
         </div>
       </div>
       {/* add or delete row */}
-      <div className="flex space-x-2 pl-6">
+      <div className="flex space-x-2 pl-8">
         <button onClick={remRow} disabled={tableRowsIds.length <= 1}>
           <FaMinusCircle
             className={`text-2xl text-slate-200 ${

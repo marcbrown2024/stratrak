@@ -92,7 +92,7 @@ const CreateTrials = () => {
   };
 
   return (
-    <div className="h-full flex flex-col w-5/6 mx-auto justify-start">
+    <div className="h-full flex flex-col w-5/6 mx-auto justify-start gap-6">
       <div className="w-full flex justify-end pr-6">
         <button
           onClick={resetTrials}
@@ -144,7 +144,7 @@ const CreateTrials = () => {
         </div>
       </div>
       {/* add or delete row */}
-      <div className="flex space-x-2 pl-6">
+      <div className="flex space-x-2 pl-8">
         <button onClick={remRow} disabled={tableRowsIds.length <= 1}>
           <FaMinusCircle
             className={`text-2xl text-slate-200 ${

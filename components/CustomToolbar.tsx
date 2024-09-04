@@ -29,12 +29,12 @@ const CustomToolbar = () => {
         <GridToolbarExport />
       </div>
       {(currentPathname === "/trials" ||
-        currentPathname === `/trials/${trialId}/trialLogs`) && (
+        currentPathname === `/trials/${trialId}/logs`) && (
         <Link
           href={
             currentPathname === "/trials"
               ? "/trials/createTrial"
-              : `/trials/${trialId}/trialLogs/createLog`
+              : `/trials/${trialId}/logs/createLog`
           }
         >
           <Button

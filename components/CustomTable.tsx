@@ -110,7 +110,6 @@ const CustomTable = () => {
   const {user} = useAuth()
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [transitioning, setTransitioning] = useState<boolean>(false);
   const [filter, setFilter] = useState<"Users" | "Admins" | "All Users">(
     "All Users"
   );
@@ -119,6 +118,8 @@ const CustomTable = () => {
 
   const [addUser, setAddUser] = useState<boolean>(false);
   const [creatingUser, setCreatingUser] = useState<boolean>(false);
+
+  const [createUserButton, setCreateUserButton] = useState<boolean>(false);
 
   const filteredData = data.filter((item) => {
     if (filter === "Admins") return item.admin;
@@ -132,27 +133,15 @@ const CustomTable = () => {
 
   const handlePageChange = (direction: "next" | "previous") => {
     if (direction === "next" && endIndex < filteredData.length) {
-      setTransitioning(true);
-      setTimeout(() => {
-        setCurrentPage((prevPage) => prevPage + 1);
-        setTransitioning(false);
-      }, 300);
+      setCurrentPage((prevPage) => prevPage + 1);
     } else if (direction === "previous" && startIndex > 0) {
-      setTransitioning(true);
-      setTimeout(() => {
-        setCurrentPage((prevPage) => prevPage - 1);
-        setTransitioning(false);
-      }, 300);
+      setCurrentPage((prevPage) => prevPage - 1);
     }
   };
 
   const handleFilterChange = (newFilter: "Users" | "Admins" | "All Users") => {
     setFilter(newFilter);
     setCurrentPage(1);
-    setTransitioning(true);
-    setTimeout(() => {
-      setTransitioning(false);
-    }, 300);
   };
 
 
@@ -189,54 +178,72 @@ const CustomTable = () => {
     }
   }, [userCreationError])  
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  useEffect(() => {
+    if (userCreationError) {
+      setAlert({ title: "Something went wrong", content: userCreationError ?? "An unexpected error occurred." }, AlertType.Error);
+    }
+  }, [userCreationError])  
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+
+    if (name === "isAdmin") {
+      // Convert value to boolean
+      const isAdmin = value === "admin";
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: isAdmin,
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   return (
-    <div className="relative w-full flex flex-col items-center justify-start">
-      <div className="h-24 w-full flex items-end justify-between bg-white z-10">
+    <div className="relative w-full flex flex-col items-start justify-start">
+      <div className="h-24 w-11/12 flex items-end justify-between bg-slate-50 z-10">
         <div className="h-16 w-full flex items-center justify-start gap-8">
           <button
             onClick={() => handleFilterChange("Users")}
-            className="h-10 w-fit flex items-center justify-center font-medium bg-gray-200 p-3 rounded-md hover:bg-gray-300"
+            className="h-10 w-fit flex items-center justify-center font-medium bg-gray-200 px-4 py-3 rounded-md hover:bg-gray-300"
           >
             Users
           </button>
           <button
             onClick={() => handleFilterChange("Admins")}
-            className="h-10 w-fit flex items-center justify-center font-medium bg-gray-200 p-3 rounded-md hover:bg-gray-300"
+            className="h-10 w-fit flex items-center justify-center font-medium bg-gray-200 px-4 py-3 rounded-md hover:bg-gray-300"
           >
             Admins
           </button>
           <button
             onClick={() => handleFilterChange("All Users")}
-            className="h-10 w-fit flex items-center justify-center font-medium bg-gray-200 p-3 rounded-md hover:bg-gray-300"
+            className="h-10 w-fit flex items-center justify-center font-medium bg-gray-200 px-4 py-3 rounded-md hover:bg-gray-300"
           >
             All Users
           </button>
           <button
             onClick={() => setAddUser(!addUser)}
-            className="h-10 w-fit flex items-center justify-center font-medium bg-gray-200 p-3 rounded-md hover:bg-gray-300"
+            className="h-10 w-fit flex items-center justify-center font-medium bg-gray-200 px-4 py-3 rounded-md hover:bg-gray-300"
           >
             {addUser ? "Cancel" : "Add User"}
           </button>
         </div>
-        <button className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] p-3 rounded-md hover:scale-105 hover:bg-[#1285dd]">
+        <button className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] px-4 py-3 rounded-md hover:scale-105 hover:bg-[#1285dd] mr-5">
           Refresh
         </button>
       </div>
       <div
         className={`absolute h-fit w-full flex flex-col items-start justify-center gap-8 pb-6 transition-all duration-500 ease-in-out transform ${
-          addUser ? "translate-y-32" : "-translate-y-52"
+          addUser ? "translate-y-32" : "-translate-y-40"
         } z-0`}
       >
         <div
-          className={`h-fit w-full flex flex-col items-start justify-center gap-8 bg-[#1286ff] rounded-xl transition-all duration-500 ease-in-out transform ${
+          className={`relative h-fit w-full flex flex-col items-start justify-center gap-8 rounded-xl transition-all duration-500 ease-in-out transform ${
             addUser ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -246,91 +253,97 @@ const CustomTable = () => {
           {
             userCreationLoading ? <Loader /> :
           <form onSubmit={handleAddUserSubmit} className="h-full w-full flex">
-            {creatingUser ? (
-              <Loader />
-            ) : (
-              <div className="h-full w-full flex flex-col items-start justify-center gap-6">
-                <div className="w-full flex items-center justify-center px-6 py-2">
-                  <div className="w-full flex items-center justify-start">
-                    <label className="w-24 font-medium text-white">
-                      First Name:
-                    </label>
+              <div className="h-full w-full flex flex-col items-start justify-center gap-1">
+                <div className="w-full flex items-center justify-center py-2">
+                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                    <label className="] font-medium">First Name:</label>
                     <input
                       type="text"
                       name="fName"
                       value={formData.fName}
                       onChange={handleChange}
-                      className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
+                      className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
                       required
                     />
                   </div>
-                  <div className="w-full flex items-center justify-start">
-                    <label className="w-24 font-medium text-white">
-                      Last Name:
-                    </label>
+                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                    <label className="] font-medium">Last Name:</label>
                     <input
                       type="text"
                       name="lName"
                       value={formData.lName}
                       onChange={handleChange}
-                      className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
+                      className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
                       required
                     />
                   </div>
                 </div>
-                <div className="w-full flex items-center justify-center px-6 py-2">
-                  <div className="w-full flex items-center justify-start">
-                    <label className="w-24 font-medium text-white">
-                      Email:
-                    </label>
+                <div className="w-full flex items-center justify-center py-2">
+                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                    <label className="] font-medium">Email:</label>
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
+                      className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
                       required
                     />
                   </div>
-                  <div className="w-full flex items-center justify-start">
-                    <label className="w-24 font-medium text-white">
-                      Password:
-                    </label>
+                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                    <label className="font-medium">Password:</label>
                     <input
                       type="password"
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="w-3/4 p-2 text-white bg-black/30 border border-white/50 rounded-md focus-within:outline-none"
+                      className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
                       required
                     />
                   </div>
                 </div>
-                <div className="w-full flex items-center justify-center bg-black/30 px-6 py-2 rounded-b-lg">
-                  <div className="w-1/2 flex items-center justify-start">
-                    <label className="w-24 font-medium text-white">Admin</label>
-                    <input
-                      type="checkbox"
+                <div className="w-full flex items-end justify-center py-2">
+                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                    <label className="font-medium">Admin</label>
+                    <select
                       name="isAdmin"
-                      checked={formData.isAdmin}
+                      value={formData.isAdmin ? "admin" : "user"}
                       onChange={handleChange}
-                      className="form-checkbox h-6 w-6 text-blue-900 rounded"
-                    />
-                  </div>
-                  <div className="w-1/2 flex items-end justify-end mr-12">
-                    <button
-                      type="submit"
-                      className="h-10 w-fit flex items-center justify-center font-medium bg-white p-3 rounded-md hover:bg-white/95"
+                      className="w-[80%] text-sm text-gray-900 bg-slate-50 px-2 py-2 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
                     >
-                      Add User
-                    </button>
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <div className="w-1/2 flex items-center justify-start">
+                    <div className="h-full w-[80%] flex items-center justify-end gap-6">
+                      <div
+                        className={`flex justify-end gap-6 ${
+                          createUserButton
+                            ? "opacity-100 translate-x-0"
+                            : "opacity-0 translate-x-32"
+                        } transition-all duration-500 ease-in-out`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setCreateUserButton(false)}
+                          className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#cf3a27] px-5 py-3 rounded-md hover:scale-105"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] px-5 py-3 rounded-md hover:scale-105"
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 {/* Add other input fields similarly */}
               </div>
-            )}
-          </form>
-          }
+          </form>}
         </div>
         <div className="h-fit w-full flex flex-col items-center justify-center border rounded-lg">
           <div className="h-10 w-full flex items-center justify-center text-blue-500 font-semibold bg-sky-50">
