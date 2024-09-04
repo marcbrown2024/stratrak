@@ -11,7 +11,6 @@ import HeaderMobile from "@/components/HeaderMobile";
 import Sidebar from "@/components/sideMenu/Sidebar";
 import PageWrapper from "@/components/PageWrapper";
 import MarginWidthWrapper from "@/components/MarginWidthWrapper";
-import DropDownModal from "@/components/DropDownModal";
 import Alert from "@/components/Alert";
 import { AuthProvider } from "@/components/AuthProvider";
 
@@ -33,15 +32,14 @@ export default function RootLayout({
         <div className="flex">
           <Sidebar />
           <main className="flex-1">
-            <MarginWidthWrapper>
-              <Header />
-              <HeaderMobile />
-              {/* <AuthProvider>
-              </AuthProvider> */}
-              <PageWrapper>{children}</PageWrapper>
-            </MarginWidthWrapper>
+            <AuthProvider>
+              <MarginWidthWrapper>
+                <Header />
+                <HeaderMobile />
+                <PageWrapper>{children}</PageWrapper>
+              </MarginWidthWrapper>
+            </AuthProvider>
           </main>
-          <DropDownModal />
           <Alert />
         </div>
       </body>

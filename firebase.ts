@@ -30,8 +30,11 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
 export const auth = getAuth(app)
+
+export const secondaryApp = initializeApp(firebaseConfig, "secondary")
+export const secondaryAuth = getAuth(secondaryApp)
 
 export const db = getFirestore(app);
 
@@ -168,14 +171,16 @@ export const deleteLog = async (logId: string) => {
 // create user
 
 export const createUser = async (user: User) => {
-  const userDetails = {...user, enrolled: false}
   try {
+
     const usersRef = collection(db, "users");
-    await addDoc(usersRef, userDetails);
-    
+    const newUserRef = await addDoc(usersRef, user);
+    const userSnap = await getDoc(newUserRef)
+  
+    await enrollUser(userSnap.id) // add userId to org
     response = {
       success: true,
-      data: userDetails
+      data: user
     };
   } catch (e) {
     response = { success: false, data: e };
@@ -207,24 +212,16 @@ export const userExists = async (email: string) => {
   } catch (e) {
     response = { success: false, data: e };
   }
-  console.log("exist response: ", response)
 
   return response;
 }
 
-export const enrollUser = async (userId: string, firebaseUserId: string) => { //first time user logging in 
-  console.log("userId: ", userId)
-  console.log("firebaseUserId: ", firebaseUserId)
+export const enrollUser = async (userId: string) => { //first time user logging in 
   try {
     const userRef = doc(db, 'users', userId)
     const userSnap = await getDoc(userRef)
     const orgRef = doc(db, 'organizations', userSnap.data()?.orgId)
     const orgSnap = await getDoc(orgRef)
-
-    await setDoc(userRef, {
-      userId: firebaseUserId,
-      enrolled: true,
-    }, {merge: true})
 
     await setDoc(orgRef, {
       users: [...orgSnap.data()?.users, userId]
@@ -242,5 +239,32 @@ export const enrollUser = async (userId: string, firebaseUserId: string) => { //
 
   console.log("enroll User response: ", response)
   return response;
+}
+
+export const getUserFromDb = async (firebaseUserId: string) => {
+  try {
+    const usersRef = collection(db, 'users')
+    const q = query(usersRef, where("userId", "==", firebaseUserId));
+    const userSnap = await getDocs(q);
+
+    if (!userSnap.empty) { 
+      response = {
+        success: true,  
+        data: {
+          ...userSnap.docs[0].data(),
+          id: userSnap.docs[0].id,
+        }
+      }
+    } else {
+      response = {
+        success: true, 
+        data: null 
+      }
+    }
+  } catch (e) {
+    response = { success: false, data: e };
+  }
+
+  return response
 }
 
