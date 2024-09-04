@@ -36,9 +36,9 @@ export default function RootLayout({
             <MarginWidthWrapper>
               <Header />
               <HeaderMobile />
-              <AuthProvider>
-                <PageWrapper>{children}</PageWrapper>
-              </AuthProvider>
+              {/* <AuthProvider>
+              </AuthProvider> */}
+              <PageWrapper>{children}</PageWrapper>
             </MarginWidthWrapper>
           </main>
           <DropDownModal />

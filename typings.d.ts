@@ -62,3 +62,17 @@ type HelpFormData = {
   message: string;
 };
 
+// Type definitions for profile form data
+type ProfileFormData = {
+  signature: string;
+  about: string;
+  photo: File | null;
+  firstName: string;
+  lastName: string;
+  email: string;
+  country: string;
+  streetAddress: string;
+  city: string;
+  region: string;
+  postalCode: string;
+}
