@@ -455,7 +455,7 @@ const CustomTable = () => {
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2 text-[#1286ff] tracking-wide">
                 <span>
-                  {startIndex + 1}â{Math.min(endIndex, filteredData.length)}
+                  {startIndex + 1}-{Math.min(endIndex, filteredData.length)}
                 </span>
                 <span>of</span>
                 <span>{filteredData.length}</span>
