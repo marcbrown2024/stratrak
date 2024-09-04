@@ -110,7 +110,7 @@ const TrialTable = (props: Props) => {
             } transition duration-300 ease-in-out`}
           >
             <Tooltip title="Go to logs">
-              <Link href={`/trials/${id}/trialLogs`} className="flex">
+              <Link href={`/trials/${id}/logs`} className="flex">
                 <button
                   type="button"
                   className="transition-transform duration-300 hover:scale-110"

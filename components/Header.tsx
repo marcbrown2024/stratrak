@@ -51,9 +51,9 @@ const Header = () => {
 
   return (
     <div
-      className={`sticky inset-x-0 top-0 w-full transition-all border-b border-zinc-100/90 ${
-        scrolled ? "border-b border-zinc-200 bg-white/75 backdrop-blur-lg" : ""
-      } ${selectedLayout ? "border-b border-zinc-200 bg-white" : ""} z-30`}
+      className={`sticky inset-x-0 top-0 w-full transition-all border-b border-zinc-300 ${
+        scrolled ? "border-b border-zinc-200 bg-slate-50/75 backdrop-blur-lg" : ""
+      } ${selectedLayout ? "border-b border-zinc-200 bg-slate-50" : ""} z-30`}
     >
       <div className="h-14 flex items-center justify-between px-4">
         <span className="text-xl font-bold tracking-wide">
