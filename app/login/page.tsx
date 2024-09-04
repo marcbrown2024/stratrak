@@ -74,7 +74,7 @@ const Page = () => {
     if (userLoginError) {
       setAlert({ title: "Something went wrong", content: userLoginError ?? "An unexpected error occurred." }, AlertType.Error);
     }
-  }, [userLoginError])  
+  }, [userLoginError, setAlert])  
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#e0e3e4] overflow-hidden">
@@ -86,13 +86,13 @@ const Page = () => {
       <div className="h-full w-full md:w-1/2 flex items-center justify-center">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-[22rem] space-y-6 bg-[#013e91] p-4 sm:p-6 md:p-8 border border-gray-700 rounded-xl shadow "
+          className="w-full max-w-[22rem] space-y-6 bg-[#013e91] p-8 border border-gray-700 rounded-xl shadow "
         >
           {error && <p className="text-red-500 mb-4">{error}</p>}
           <span className="text-3xl font-medium text-white ">
             Sign In
           </span>
-          <div className="space-y-10">
+          <div className="space-y-8">
             <div>
               <label
                 htmlFor="email"
@@ -128,11 +128,11 @@ const Page = () => {
               />
             </div>
             <div className="flex items-start">
-              <div className="flex items-center h-5">
+              <div className="h-fit flex items-center">
                 <input
                   id="remember"
                   type="checkbox"
-                  className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
+                  className="h-4 w-4 bg-gray-50 border border-gray-300 rounded focus:ring-3 focus:ring-blue-300"
                 />
               </div>
               <label
@@ -150,7 +150,7 @@ const Page = () => {
             </div>
             <button
               type="submit"
-              className="w-full text-sm text-blue-500  text-center font-medium bg-white px-5 py-2.5 rounded-lg hover:bg-slate-100"
+              className="w-full text-blue-800 text-center font-medium bg-white px-5 py-2.5 rounded-lg  hover:bg-slate-100"
             >
               Login to your account
             </button>

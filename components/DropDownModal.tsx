@@ -1,9 +1,8 @@
 "use client";
 
 // react/nextjs components
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
 // zustand stores
@@ -21,7 +20,7 @@ import { useAuth } from "./AuthProvider";
 const DropDownModal = () => {
   const {user} = useAuth()
 
-  const { isModalOpen, toggleModal, closeModal } = useModalStore();
+  const { isModalOpen, closeModal } = useModalStore();
   const userPhotoUrl =
     "https://cdn-icons-png.flaticon.com/512/3237/3237472.png";
 
@@ -29,14 +28,9 @@ const DropDownModal = () => {
     signOut(auth)
     closeModal()
   }
-
-  useEffect(() => {
-    console.log("user: ", user)
-  }, [user])
-
   return (
     <div
-      className={`Popup absolute top-10 right-4 h-96 w-80 hidden md:flex flex-col items-center  ${
+      className={`Popup absolute -top-3 right-2 h-96 w-80 hidden md:flex flex-col items-center  ${
         isModalOpen ? "visible opacity-100" : "invisible opacity-0"
       } bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-100 ease-in-out`}
     >

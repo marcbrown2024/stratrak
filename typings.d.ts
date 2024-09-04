@@ -1,7 +1,6 @@
 // type for log details 
-interface LogDetails {
-  monitorName: string;
-  signature: string;
+type LogDetails = {
+  id: number;
   typeOfVisit: "Remote" | "Onsite" | "Waiver Call";
   purposeOfVisit: "SIV" | "IMV" | "COV" | "Audit";
   dateOfVisit: string | Date;
@@ -11,18 +10,18 @@ interface DBLog extends LogDetails {
   id: string,
 }
 
+// trial fetched from database
+interface DBTrial extends TrialDetails {
+  id: string
+}
+
 // type for trial details
-interface TrialDetails {
+type TrialDetails = {
   investigatorName: string;
   protocol: string;
   siteVisit: string;
   progress: string;
 };
-
-// trial fetched from database
-interface DBTrial extends TrialDetails {
-  id: string
-}
 
 // types for nav-menu are defined here
 type SideNavItem = {
@@ -48,6 +47,7 @@ type AlertBody = {
 type User = {
   email: string,
   isAdmin: boolean,
+  id: string,
   fName: string,
   lName: string,
   orgId: string,
@@ -64,11 +64,11 @@ type HelpFormData = {
 
 // Type definitions for profile form data
 type ProfileFormData = {
-  signature: string;
   photo: File | null;
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber: string;
   country: string;
   streetAddress: string;
   city: string;

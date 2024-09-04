@@ -1,5 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { getApp, getApps, initializeApp } from "firebase/app";
+
+import { getAuth } from "firebase/auth";
+
 import {
   addDoc,
   collection,
@@ -17,8 +20,6 @@ import {
   where,
 } from "firebase/firestore";
 
-import {getAuth} from "firebase/auth"
-
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -26,15 +27,15 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
-export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
-export const auth = getAuth(app)
+export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+export const auth = getAuth(app);
 
-export const secondaryApp = initializeApp(firebaseConfig, "secondary")
-export const secondaryAuth = getAuth(secondaryApp)
+export const secondaryApp = initializeApp(firebaseConfig, "secondary");
+export const secondaryAuth = getAuth(secondaryApp);
 
 export const db = getFirestore(app);
 
@@ -105,7 +106,10 @@ export const deleteTrial = async (trialId: string) => {
   return response;
 };
 
-export const updateTrialProgress = async (trialId: string, progress: string): Promise<{ success: boolean }> => {
+export const updateTrialProgress = async (
+  trialId: string,
+  progress: string
+): Promise<{ success: boolean }> => {
   try {
     const trialRef = doc(db, "trials", trialId);
     await updateDoc(trialRef, { progress });
@@ -155,7 +159,6 @@ export const createLog = async (log: LogDetails, trialId: string) => {
   return response;
 };
 
-
 export const deleteLog = async (logId: string) => {
   try {
     const logRef = doc(db, "logs", logId);
@@ -172,99 +175,123 @@ export const deleteLog = async (logId: string) => {
 
 export const createUser = async (user: User) => {
   try {
-
     const usersRef = collection(db, "users");
     const newUserRef = await addDoc(usersRef, user);
-    const userSnap = await getDoc(newUserRef)
-  
-    await enrollUser(userSnap.id) // add userId to org
+    const userSnap = await getDoc(newUserRef);
+
+    await enrollUser(userSnap.id); // add userId to org
     response = {
       success: true,
-      data: user
+      data: user,
     };
   } catch (e) {
     response = { success: false, data: e };
   }
   return response;
-}
+};
 
 export const userExists = async (email: string) => {
   try {
-    const usersRef = collection(db, "users")
-    const q = query(usersRef, where("email", "==", email), where("enrolled", "==", false)); // user has never logged in before
+    const usersRef = collection(db, "users");
+    const q = query(
+      usersRef,
+      where("email", "==", email),
+      where("enrolled", "==", false)
+    ); // user has never logged in before
 
     const userSnap = await getDocs(q);
-    if (!userSnap.empty) { //user exists in org and we should create firebase user
+    if (!userSnap.empty) {
+      //user exists in org and we should create firebase user
       response = {
-        success: true, //successfully fulfilled request 
+        success: true, //successfully fulfilled request
         data: {
           ...userSnap.docs[0],
           id: userSnap.docs[0].id,
           exists: true,
-        } //user exists in org and we should create firebase user
-      }
+        }, //user exists in org and we should create firebase user
+      };
     } else {
       response = {
-        success: true, //successfully fulfilled request 
-        data: null //user does not exist in org and we should create firebase user
-      }
+        success: true, //successfully fulfilled request
+        data: null, //user does not exist in org and we should create firebase user
+      };
     }
   } catch (e) {
     response = { success: false, data: e };
   }
 
   return response;
-}
+};
 
-export const enrollUser = async (userId: string) => { //first time user logging in 
+export const enrollUser = async (userId: string) => {
+  //first time user logging in
   try {
-    const userRef = doc(db, 'users', userId)
-    const userSnap = await getDoc(userRef)
-    const orgRef = doc(db, 'organizations', userSnap.data()?.orgId)
-    const orgSnap = await getDoc(orgRef)
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    const orgRef = doc(db, "organizations", userSnap.data()?.orgId);
+    const orgSnap = await getDoc(orgRef);
 
-    await setDoc(orgRef, {
-      users: [...orgSnap.data()?.users, userId]
-    }, {merge: true})
-    
+    await setDoc(
+      orgRef,
+      {
+        users: [...orgSnap.data()?.users, userId],
+      },
+      { merge: true }
+    );
+
     response = {
-      success: true
-    }
+      success: true,
+    };
   } catch (e) {
     response = {
       success: false,
-      data: e
-    }
+      data: e,
+    };
   }
 
-  console.log("enroll User response: ", response)
+  console.log("enroll User response: ", response);
   return response;
-}
+};
 
 export const getUserFromDb = async (firebaseUserId: string) => {
   try {
-    const usersRef = collection(db, 'users')
+    const usersRef = collection(db, "users");
     const q = query(usersRef, where("userId", "==", firebaseUserId));
     const userSnap = await getDocs(q);
 
-    if (!userSnap.empty) { 
+    if (!userSnap.empty) {
       response = {
-        success: true,  
+        success: true,
         data: {
           ...userSnap.docs[0].data(),
           id: userSnap.docs[0].id,
-        }
-      }
+        },
+      };
     } else {
       response = {
-        success: true, 
-        data: null 
-      }
+        success: true,
+        data: null,
+      };
     }
   } catch (e) {
     response = { success: false, data: e };
   }
 
-  return response
-}
+  return response;
+};
 
+export const uploadSignature = async (userId: string, base64String: string) => {
+  try {
+    // Create a document reference for the user
+    const userRef = doc(db, "users", userId);
+
+    // Save the base64 string to the user's document
+    await setDoc(userRef, { signature: base64String }, { merge: true });
+
+    return { success: true };
+  } catch (e) {
+    const error = e as Error;
+    console.error(error.message);
+    return { success: false, data: e };
+  }
+};

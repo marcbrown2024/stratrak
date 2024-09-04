@@ -56,7 +56,7 @@ const Header = () => {
       } ${selectedLayout ? "border-b border-zinc-200 bg-slate-50" : ""} z-30`}
     >
       <div className="h-14 flex items-center justify-between px-4">
-        <span className="text-xl font-bold tracking-wide">
+        <span className="hidden md:flex text-xl font-bold tracking-wide">
           {pathname == "/" ? "Home" : currentPath}
         </span>
         <div className="flex items-center space-x-4">
@@ -69,7 +69,7 @@ const Header = () => {
           </Link>
         </div>
         <button
-          onClick={toggleModal}
+          onClick={() => toggleModal()}
           className="Popup h-10 w-10 md:flex hidden items-center justify-center text-center bg-[#1286ff] rounded-full"
         >
           <span className="text-sm text-white font-extrabold">HQ</span>

@@ -27,7 +27,8 @@ import { IoClose } from "react-icons/io5";
 
 type Props = {
   columns: GridColDef[];
-  rows: object[];
+  rows: TrialDetails[];
+  filter?: string;
 };
 
 const TrialTable = (props: Props) => {
@@ -35,6 +36,10 @@ const TrialTable = (props: Props) => {
   const [deleteTrialRow, setDeleteTrialRow] = useState<boolean>(false);
   const [changeProgress, setChangeProgress] = useState<boolean>(false);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
+
+  const filteredRows = props.filter
+    ? props.rows.filter((row) => row.progress === props.filter)
+    : props.rows;
 
   const handleChangeProgress = (id: number) => {
     setActiveRowId(id);
@@ -227,7 +232,7 @@ const TrialTable = (props: Props) => {
     <div className="h-fit w-[80rem]">
       <DataGrid
         className="p-8 gap-4"
-        rows={props.rows}
+        rows={filteredRows}
         columns={[...props.columns, actionColumn]}
         initialState={{
           pagination: {

@@ -25,7 +25,6 @@ const CustomToolbar = () => {
       <div className="flex gap-1 opacity-70">
         <GridToolbarColumnsButton />
         <GridToolbarDensitySelector />
-        <GridToolbarFilterButton />
         <GridToolbarExport />
       </div>
       {(currentPathname === "/trials" ||

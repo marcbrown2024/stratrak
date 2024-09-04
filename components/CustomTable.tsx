@@ -203,7 +203,7 @@ const CustomTable = () => {
         AlertType.Error
       );
     }
-  }, [userCreationError]);
+  }, [userCreationError, setAlert]);
 
   useEffect(() => {
     if (userCreationError) {

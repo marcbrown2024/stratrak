@@ -7,25 +7,25 @@ import {
 } from "react-icons/md";
 
 export const SIDENAV_ITEMS: SideNavItem[] = [
-  {
-    title: "Home",
-    path: "/",
-    icon: <FaHome size={24} />,
-  },
-  {
-    title: "Dashboard",
-    path: "/dashboard",
-    icon: <MdDashboardCustomize size={24} />,
-  },
+  // {
+  //   title: "Home",
+  //   path: "/",
+  //   icon: <FaHome size={24} />,
+  // },
+  // {
+  //   title: "Dashboard",
+  //   path: "/dashboard",
+  //   icon: <MdDashboardCustomize size={24} />,
+  // },
   {
     title: "Trials",
     path: "/trials",
     icon: <MdFolderShared size={24} />,
     subMenu: true,
     subMenuItems: [
-      { title: "Active Trials", path: "/trials/active" },
-      { title: "Inactive Trials", path: "/trials/inactive" },
-      { title: "Completed Trials", path: "/trials/completed" },
+      { title: "Active Trials", path: "/trials/activeTrials" },
+      { title: "Inactive Trials", path: "/trials/inActiveTrials" },
+      { title: "Completed Trials", path: "/trials/completedTrials" },
     ],
   },
   {
@@ -33,11 +33,11 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     path: "/userManagement",
     icon: <MdAdminPanelSettings size={24} />,
   },
-  {
-    title: "Settings",
-    path: "/settings",
-    icon: <FaCog size={24} />,
-  },
+  // {
+  //   title: "Settings",
+  //   path: "/settings",
+  //   icon: <FaCog size={24} />,
+  // },
   {
     title: "Profile",
     path: "/profile",
