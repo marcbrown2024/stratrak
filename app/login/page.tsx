@@ -3,7 +3,7 @@
 // react/nextjs components
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { redirect, useRouter } from "next/navigation";
-import {useSignInWithEmailAndPassword} from 'react-firebase-hooks/auth'
+import {useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword} from 'react-firebase-hooks/auth'
 import {auth, enrollUser, userExists} from '@/firebase'
 import { AlertType } from "@/enums";
 import { useAlertStore } from "@/store/AlertStore";
@@ -29,6 +29,7 @@ const Page = () => {
   const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
 
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
+  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,33 +46,30 @@ const Page = () => {
     console.log("user response: ", userResponse)
   }
 
-  // const { executeAuth: executeUserLogin, loading: userLoginLoading, error: userLoginError } = useFirebaseAuth(logInUser);
+  const { executeAuth: executeUserLogin, loading: userLoginLoading, error: userLoginError } = useFirebaseAuth(logInUser);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     closeAlert()
-    e.preventDefault();
   
     // Call the executeAuth function with the appropriate arguments
-    // const { success, result } = await executeUserLogin();
+    const { success, result } = await executeUserLogin();
 
-    console.log("formData: ", formData)
-    signInWithEmailAndPassword(formData.email, formData.password).then(userResponse => {console.log(userResponse)})
-
-    // if (success) {
-    //   // On success, set success alert and clear form data
-    //   setAlert({ title: "Welcome!", content: "User logged in successfully." }, AlertType.Success);
-    //   setFormData(initialFormData);
-    //   router.push('/');
-    // }
+    if (success) {
+      // On success, set success alert and clear form data
+      setAlert({ title: "Welcome!", content: "User logged in successfully." }, AlertType.Success);
+      setFormData(initialFormData);
+      router.push('/');
+    }
 
   };
 
 
-  // useEffect(() => {
-  //   if (userLoginError) {
-  //     setAlert({ title: "Something went wrong", content: userLoginError ?? "An unexpected error occurred." }, AlertType.Error);
-  //   }
-  // }, [userLoginError])  
+  useEffect(() => {
+    if (userLoginError) {
+      setAlert({ title: "Something went wrong", content: userLoginError ?? "An unexpected error occurred." }, AlertType.Error);
+    }
+  }, [userLoginError])  
 
   return (
     <div className="relative h-screen w-full flex flex-col md:flex-row items-start justify-center gap-12 md:gap-0 overflow-hidden">
