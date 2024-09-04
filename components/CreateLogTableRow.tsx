@@ -1,10 +1,13 @@
 "use client";
 
-import { useLogStore } from "@/store/CreateLogStore";
 import React from "react";
+import Image from "next/image";
 
 // firebase components/functions
 import { useAuth } from "@/components/AuthProvider";
+
+// global store
+import { useLogStore } from "@/store/CreateLogStore";
 
 type params = {
   rowId: number;
@@ -34,7 +37,7 @@ const TableRow = ({ rowId }: params) => {
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
         <div className="h-[40px] w-fit flex items-center text-center border bg-white">
           {user && user.signature ? (
-            <img
+            <Image
               src={user.signature}
               alt="User Signature"
               style={{

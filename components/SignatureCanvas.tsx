@@ -1,9 +1,6 @@
 // react/nextjs components
 import React, { useEffect, useRef, useState } from "react";
-
-// icons
-import { IoCloseCircle } from "react-icons/io5";
-import { FaSave } from "react-icons/fa";
+import Image from "next/image";
 
 // firebase components
 import { uploadSignature } from "@/firebase";
@@ -14,6 +11,10 @@ import { useAlertStore } from "@/store/AlertStore";
 
 // enums
 import { AlertType } from "@/enums";
+
+// icons
+import { IoCloseCircle } from "react-icons/io5";
+import { FaSave } from "react-icons/fa";
 
 type DrawingAction = {
   path: { x: number; y: number }[];
@@ -51,6 +52,19 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   });
   const [signatureData, setSignatureData] = useState<string | null>(null);
 
+  const reDrawPreviousData = (ctx: CanvasRenderingContext2D) => {
+    drawingActions.forEach(({ path, style }) => {
+      ctx.beginPath();
+      ctx.strokeStyle = style.color;
+      ctx.lineWidth = style.lineWidth;
+      ctx.moveTo(path[0].x, path[0].y);
+      path.forEach((point) => {
+        ctx.lineTo(point.x, point.y);
+      });
+      ctx.stroke();
+    });
+  };
+
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
@@ -62,7 +76,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
         reDrawPreviousData(ctx);
       }
     }
-  }, [canvasRef.current]); // Ensure this effect runs when canvasRef.current changes
+  }, [canvasRef.current, reDrawPreviousData]); // Ensure this effect runs when canvasRef.current changes
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     if (context) {
@@ -153,19 +167,6 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
         setSignatureData(null); // Clear the saved signature when clearing the canvas
       }
     }
-  };
-
-  const reDrawPreviousData = (ctx: CanvasRenderingContext2D) => {
-    drawingActions.forEach(({ path, style }) => {
-      ctx.beginPath();
-      ctx.strokeStyle = style.color;
-      ctx.lineWidth = style.lineWidth;
-      ctx.moveTo(path[0].x, path[0].y);
-      path.forEach((point) => {
-        ctx.lineTo(point.x, point.y);
-      });
-      ctx.stroke();
-    });
   };
 
   const saveSignature = async () => {
@@ -276,7 +277,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
       {signatureData && (
         <div className="mt-4">
           <h3 className="text-lg font-bold mb-2">Saved Signature:</h3>
-          <img
+          <Image
             src={signatureData}
             alt="Signature"
             className="border-2 border-gray-400"

@@ -2,6 +2,7 @@
 
 // react/nextjs components
 import React, { useState } from "react";
+import Image from "next/image";
 
 // custom components
 import SignatureCanvas from "@/components/SignatureCanvas";
@@ -106,7 +107,7 @@ const Page = () => {
                 </label>
                 <div className="border rounded-lg">
                   {user && user.signature ? (
-                    <img
+                    <Image
                       src={user.signature}
                       alt="User Signature"
                       style={{ maxWidth: "20%", height: "auto" }}

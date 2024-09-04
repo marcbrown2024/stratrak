@@ -2,6 +2,7 @@
 
 // react/nextjs components
 import React, { useState } from "react";
+import Image from "next/image";
 
 // firebase components/functions
 import { deleteLog } from "@/firebase";
@@ -22,11 +23,6 @@ import { AlertType } from "@/enums";
 import { MdDelete } from "react-icons/md";
 import { FaFileCircleMinus } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
-
-type LogDetails = {
-  id: number;
-  signature?: string;
-};
 
 type Props = {
   columns: GridColDef[];
@@ -91,7 +87,7 @@ const LogTable = (props: Props) => {
       return (
         <div className="h-[40px] w-fit flex items-center text-center">
           {user && user.signature ? (
-            <img
+            <Image
               src={user.signature}
               alt="User Signature"
               style={{

@@ -1,6 +1,5 @@
 // type for log details 
 type LogDetails = {
-  id: number;
   typeOfVisit: "Remote" | "Onsite" | "Waiver Call";
   purposeOfVisit: "SIV" | "IMV" | "COV" | "Audit";
   dateOfVisit: string | Date;

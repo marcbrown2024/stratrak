@@ -1,6 +1,4 @@
 export const defaultLog: LogDetails = {
-  monitorName: "",
-  signature: "",
   typeOfVisit: "Remote",
   purposeOfVisit: "SIV",
   dateOfVisit: getCurrentDate(),
