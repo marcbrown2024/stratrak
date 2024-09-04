@@ -237,7 +237,6 @@ export const enrollUser = async (userId: string) => { //first time user logging 
     }
   }
 
-  console.log("enroll User response: ", response)
   return response;
 }
 

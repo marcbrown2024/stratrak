@@ -49,22 +49,6 @@ const CreateLog = ({ params }: params) => {
 
   const [loading, setLoading] = useState<Boolean>(true);
 
-  const addRow = () => {
-    updateLogs(tableRowsIds.length, defaultLog);
-    setTableRowsIds((rowArr) => [...rowArr, rowArr.length]);
-  };
-
-  const remRow = () => {
-    if (tableRowsIds.length == 1) return;
-
-    removeLog(tableRowsIds.length - 1);
-
-    setTableRowsIds((rowArr) => {
-      if (rowArr.length == 1) return rowArr;
-      return rowArr.slice(0, -1);
-    });
-  };
-
   const saveLogs = () => {
     for (let log in logs) {
       createLog(logs[log], trialId).then((response) => {
@@ -192,19 +176,7 @@ const CreateLog = ({ params }: params) => {
           </div>
         </div>
       </div>
-      {/* add or delete row */}
-      <div className="flex space-x-2 pl-8">
-        <button onClick={remRow} disabled={tableRowsIds.length <= 1}>
-          <FaMinusCircle
-            className={`text-2xl text-slate-200 ${
-              tableRowsIds.length > 1 && "hover:text-blue-500"
-            }`}
-          />
-        </button>
-        <button onClick={addRow}>
-          <FaPlusCircle className="text-2xl text-slate-200 hover:text-blue-500" />
-        </button>
-      </div>
+
       <div className="pl-6 w-full flex items-center justify-center">
         <button
           onClick={saveLogs}

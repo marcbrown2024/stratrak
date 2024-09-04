@@ -7,7 +7,7 @@ import {useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword} from '
 import {auth, enrollUser, userExists} from '@/firebase'
 import { AlertType } from "@/enums";
 import { useAlertStore } from "@/store/AlertStore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 // custom components
 
@@ -28,8 +28,7 @@ const Page = () => {
   const router = useRouter();
   const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
 
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
-  const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth)
+  // const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,9 +40,8 @@ const Page = () => {
   };
 
   const logInUser = async () => {
-    const userResponse = await signInWithEmailAndPassword(formData.email, formData.password)
+    const userResponse = await signInWithEmailAndPassword(auth, formData.email, formData.password)
     return userResponse
-    console.log("user response: ", userResponse)
   }
 
   const { executeAuth: executeUserLogin, loading: userLoginLoading, error: userLoginError } = useFirebaseAuth(logInUser);
@@ -53,7 +51,7 @@ const Page = () => {
     closeAlert()
   
     // Call the executeAuth function with the appropriate arguments
-    const { success, result } = await executeUserLogin();
+    const { success } = await executeUserLogin();
 
     if (success) {
       // On success, set success alert and clear form data

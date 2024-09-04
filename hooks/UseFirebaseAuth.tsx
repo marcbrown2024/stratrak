@@ -11,11 +11,11 @@ const useFirebaseAuth = (authFunction: FirebaseAuthFunction) => {
   const executeAuth = async (...args: any[]) => {
     setLoading(true);
     setError(null);
-
     try {
       const result = await authFunction(...args);
       return { result, success: true }; // Return success status and result
     } catch (e: unknown) {
+      console.log("error: ", e)
       if (e instanceof FirebaseError) {
         switch (e.code) {
           case AuthErrorCodes.EMAIL_EXISTS:
@@ -32,10 +32,14 @@ const useFirebaseAuth = (authFunction: FirebaseAuthFunction) => {
             break;
           case AuthErrorCodes.INVALID_EMAIL:
             setError("The email address is badly formatted.");
+          case AuthErrorCodes.WEAK_PASSWORD:
+            setError("Password is too short")
             break;
           default:
             setError("An unknown error occurred. Please try again.");
         }
+      } else if (e instanceof Error) {
+        setError(e.message); // Catch any non-Firebase-specific errors
       } else {
         setError("An error occurred. Please try again.");
       }

@@ -30,10 +30,6 @@ const DropDownModal = () => {
     closeModal()
   }
 
-  useEffect(() => {
-    console.log("user: ", user)
-  }, [user])
-
   return (
     <div
       className={`Popup absolute top-10 right-4 h-96 w-80 hidden md:flex flex-col items-center  ${
