@@ -23,9 +23,9 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: <MdFolderShared size={24} />,
     subMenu: true,
     subMenuItems: [
-      { title: "Active Trials", path: "/trials/activeTrials" },
-      { title: "Inactive Trials", path: "/trials/inActiveTrials" },
-      { title: "Completed Trials", path: "/trials/completedTrials" },
+      { title: "Active Trials", path: "/trials/active" },
+      { title: "Inactive Trials", path: "/trials/inactive" },
+      { title: "Completed Trials", path: "/trials/completed" },
     ],
   },
   {

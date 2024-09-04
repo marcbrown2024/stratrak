@@ -108,6 +108,8 @@ const Page = () => {
                 <div className="border rounded-lg">
                   {user && user.signature ? (
                     <Image
+                      width={400}
+                      height={400}
                       src={user.signature}
                       alt="User Signature"
                       style={{ maxWidth: "20%", height: "auto" }}

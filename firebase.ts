@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { getApp, getApps, initializeApp } from "firebase/app";
+import moment from 'moment';
 
 import { getAuth } from "firebase/auth";
 
@@ -46,12 +47,13 @@ type DBResponse = {
 
 let response: DBResponse;
 
-export const getTrials = async () => {
+export const getTrials = async (orgId: string) => {
   const trials: TrialDetails[] = [];
 
   try {
     const trialsRef = collection(db, "trials");
-    const trialsSnap = await getDocs(trialsRef);
+    const q = query(trialsRef, where("orgId", "==", orgId))
+    const trialsSnap = await getDocs(q);
 
     trialsSnap.forEach((doc) => {
       // Use Firestore's document ID as the `id` for each trial
@@ -76,19 +78,18 @@ export const getTrial = async (trialId: string) => {
   return response;
 };
 
-export const createTrial = async (trial: TrialDetails) => {
+export const createTrial = async (trial: TrialDetails, orgId: string) => {
   try {
     const trialsRef = collection(db, "trials");
-    const newTrialsRef = await addDoc(trialsRef, trial);
+    const newTrialsRef = await addDoc(trialsRef, {...trial, orgId: orgId, progress: 'Active'});
     const newTrialsSnap = await getDoc(newTrialsRef);
     response = {
       success: true,
       data: {
         ...newTrialsSnap.data(),
-      } as LogDetails,
+      } as TrialDetails,
     };
   } catch (e: any) {
-    console.error(e.message);
     response = { success: false };
   }
   return response;
@@ -120,19 +121,20 @@ export const updateTrialProgress = async (
   }
 };
 
-export const getLogs = async (id: string) => {
+export const getLogs = async (trialId: string) => {
   const logs: LogDetails[] = [];
 
   try {
     const logsRef = collection(db, "logs");
-    const q = query(logsRef, where("trialId", "==", id));
+    const q = query(logsRef, where("trialId", "==", trialId));
 
     const logsSnap = await getDocs(q);
     logsSnap.forEach((doc) => {
-      logs.push({ id: doc.id, ...doc.data() } as DBLog);
+      logs.push({ id: doc.id, ...doc.data(), dateOfVisit: convertTimestampToDate(doc.data().dateOfVisit) ?? doc.data().dateOfVisit} as DBLog);
     });
     response = { success: true, data: logs };
   } catch (e: any) {
+    console.log(e)
     response = { success: false, data: e };
   }
   return response;
@@ -141,16 +143,18 @@ export const getLogs = async (id: string) => {
 export const createLog = async (log: LogDetails, trialId: string) => {
   try {
     const logsRef = collection(db, "logs");
-    const newLogsRef = await addDoc(logsRef, {
+    const newLogRef = await addDoc(logsRef, {
       ...log,
       trialId: trialId,
+      dateOfVisit: convertToFirestoreTimestamp(log.dateOfVisit)
     });
-    const newLogsSnap = await getDoc(newLogsRef);
+    const newLogSnap = await getDoc(newLogRef);
+
     response = {
       success: true,
       data: {
-        ...newLogsSnap.data(),
-        dateOfVisit: new Date(newLogsSnap.data()!.dateOfVisit),
+        ...newLogSnap.data(),
+        dateOfVisit: newLogSnap.data()!.dateOfVisit, //TODO: fix
       } as LogDetails,
     };
   } catch (e: any) {
@@ -249,7 +253,6 @@ export const enrollUser = async (userId: string) => {
     };
   }
 
-  console.log("enroll User response: ", response);
   return response;
 };
 
@@ -293,5 +296,27 @@ export const uploadSignature = async (userId: string, base64String: string) => {
     const error = e as Error;
     console.error(error.message);
     return { success: false, data: e };
+  }
+};
+
+const convertToFirestoreTimestamp = (dateString: string): Timestamp => {
+  // Create a JavaScript Date object from the date string
+  const date = new Date(dateString);
+
+  // Convert to Firestore Timestamp
+  return Timestamp.fromDate(date);
+};
+
+// Function to convert Firestore Timestamp to a formatted date string
+const convertTimestampToDate = (timestamp: Timestamp | string): string => {
+  try {
+    // Convert Firestore Timestamp to JavaScript Date object
+    const date = (timestamp as Timestamp).toDate();
+  
+    // Format the date to 'YYYY-MM-DDThh:mm'
+    const formattedDate = moment(date.toISOString().slice(0, 16)).format('YYYY-MM-DD, h:mm A');
+    return formattedDate;
+  } catch (e) {
+    return timestamp as string
   }
 };

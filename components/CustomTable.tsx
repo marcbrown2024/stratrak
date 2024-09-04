@@ -206,17 +206,6 @@ const CustomTable = () => {
     }
   }, [userCreationError, setAlert]);
 
-  useEffect(() => {
-    if (userCreationError) {
-      setAlert(
-        {
-          title: "Something went wrong",
-          content: userCreationError ?? "An unexpected error occurred.",
-        },
-        AlertType.Error
-      );
-    }
-  }, [userCreationError, setAlert]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>

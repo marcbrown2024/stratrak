@@ -12,6 +12,7 @@ import Loader from "@/components/Loader";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
+import { useAuth } from "@/components/AuthProvider";
 
 const columns: GridColDef[] = [
   {
@@ -45,12 +46,14 @@ const columns: GridColDef[] = [
 ];
 
 const TrialsPage = () => {
+  const {user} = useAuth()
+
   const [trials, setTrials] = useState<TrialDetails[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
 
   // Update the state with the imported data
   useEffect(() => {
-    getTrials()
+    getTrials(user?.orgId)
     .then(response => {
       setTrials(response.data)
       setLoading(false)
@@ -63,7 +66,7 @@ const TrialsPage = () => {
         loading ?
         <Loader />
         :
-        <TrialTable columns={columns} rows={trials} filter="Active" />
+        <TrialTable columns={columns} rows={trials} filter="Inactive" orgId={user?.orgId} />
       }
     </div>
   );
