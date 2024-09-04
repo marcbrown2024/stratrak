@@ -88,6 +88,8 @@ const LogTable = (props: Props) => {
         <div className="h-[40px] w-fit flex items-center text-center">
           {user && user.signature ? (
             <Image
+              width={400}
+              height={400}
               src={user.signature}
               alt="User Signature"
               style={{
@@ -121,7 +123,7 @@ const LogTable = (props: Props) => {
               isProgressActive ? "-translate-x-8" : "translate-x-0"
             } transition duration-300 ease-in-out`}
           >
-            <Tooltip title="Delete Trial">
+            <Tooltip title="Delete Log">
               <button
                 type="button"
                 onClick={() => handleSetDelete(id)}

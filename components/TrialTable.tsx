@@ -1,11 +1,11 @@
 "use client";
 
 // react/nextjs components
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 // firebase components/functions
-import { deleteTrial, updateTrialProgress } from "@/firebase";
+import { deleteTrial, getTrials, updateTrialProgress } from "@/firebase";
 
 // global stores
 import { useAlertStore } from "@/store/AlertStore";
@@ -24,11 +24,14 @@ import { MdFolderDelete, MdCancel, MdDelete } from "react-icons/md";
 import { TbAdjustmentsCheck } from "react-icons/tb";
 import { FaCircle } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
+import { useAuth } from "./AuthProvider";
+import Loader from "./Loader";
 
 type Props = {
   columns: GridColDef[];
   rows: TrialDetails[];
   filter?: string;
+  orgId: string;
 };
 
 const TrialTable = (props: Props) => {
@@ -36,10 +39,20 @@ const TrialTable = (props: Props) => {
   const [deleteTrialRow, setDeleteTrialRow] = useState<boolean>(false);
   const [changeProgress, setChangeProgress] = useState<boolean>(false);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [filteredRows, setFilteredRows] = useState<TrialDetails[]>([]);
 
-  const filteredRows = props.filter
-    ? props.rows.filter((row) => row.progress === props.filter)
-    : props.rows;
+  useEffect(() => {
+    if (props.rows.length > 0) {
+      setLoading(false);
+      console.log(props);
+      setFilteredRows(
+        props.filter
+          ? props.rows.filter((row) => row.progress === props.filter)
+          : props.rows
+      );
+    }
+  }, [props]);
 
   const handleChangeProgress = (id: number) => {
     setActiveRowId(id);
@@ -62,6 +75,11 @@ const TrialTable = (props: Props) => {
           content: "Trial was deleted successfully.",
         };
         alertType = AlertType.Success;
+        getTrials(props.orgId).then((response) => {
+          if (response.success) {
+            setFilteredRows(response.data);
+          }
+        });
       } else {
         alert = {
           title: "Error!",
@@ -85,6 +103,11 @@ const TrialTable = (props: Props) => {
           content: "Trial Progress was updated successfully.",
         };
         alertType = AlertType.Success;
+        getTrials(props.orgId).then((response) => {
+          if (response.success) {
+            setFilteredRows(response.data);
+          }
+        });
       } else {
         alert = {
           title: "Error!",
@@ -230,22 +253,28 @@ const TrialTable = (props: Props) => {
 
   return (
     <div className="h-fit w-[80rem]">
-      <DataGrid
-        className="p-8 gap-4"
-        rows={filteredRows}
-        columns={[...props.columns, actionColumn]}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 15,
+      {loading ? (
+        <div className="w-full h-full flex items-center justify-center">
+          <Loader />
+        </div>
+      ) : (
+        <DataGrid
+          className="p-8 gap-4"
+          rows={filteredRows}
+          columns={[...props.columns, actionColumn]}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 15,
+              },
             },
-          },
-        }}
-        slots={{ toolbar: CustomToolbar }}
-        pageSizeOptions={[15]}
-        disableMultipleRowSelection
-        disableColumnMenu
-      />
+          }}
+          slots={{ toolbar: CustomToolbar }}
+          pageSizeOptions={[15]}
+          disableMultipleRowSelection
+          disableColumnMenu
+        />
+      )}
     </div>
   );
 };

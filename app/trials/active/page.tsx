@@ -13,6 +13,8 @@ import Loader from "@/components/Loader";
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
 
+import { useAuth } from "@/components/AuthProvider";
+
 const columns: GridColDef[] = [
   {
     field: "investigatorName",
@@ -44,18 +46,19 @@ const columns: GridColDef[] = [
   },
 ];
 
-const TrialsPage = () => {
+const ActiveTrialsPage = () => {
+  const {user} = useAuth()
   const [trials, setTrials] = useState<TrialDetails[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
 
   // Update the state with the imported data
   useEffect(() => {
-    getTrials()
+    getTrials(user?.orgId)
     .then(response => {
       setTrials(response.data)
       setLoading(false)
     })
-  }, []);
+  }, [user]);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
@@ -63,10 +66,10 @@ const TrialsPage = () => {
         loading ?
         <Loader />
         :
-        <TrialTable columns={columns} rows={trials} filter="Completed" />
+        <TrialTable columns={columns} rows={trials} filter="Active" orgId={user?.orgId} />
       }
     </div>
   );
 };
 
-export default TrialsPage;
+export default ActiveTrialsPage;

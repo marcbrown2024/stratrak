@@ -1,7 +1,9 @@
 export const defaultLog: LogDetails = {
+  monitorName: "",
+  signature: "",
   typeOfVisit: "Remote",
   purposeOfVisit: "SIV",
-  dateOfVisit: getCurrentDate(),
+  dateOfVisit: getCurrentDateTime(),
 };
 
 export const defaultTrial: TrialDetails = {
@@ -11,10 +13,19 @@ export const defaultTrial: TrialDetails = {
   progress: "",
 };
 
-function getCurrentDate() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-based, so add 1
-  const day = String(today.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+// Function to format the current date and time in 'YYYY-MM-DDThh:mm' format
+function getCurrentDateTime() {
+  const now = new Date();
+
+  // Pad single-digit numbers with leading zeros
+  const padWithZero = (num: number) => (num < 10 ? `0${num}` : num);
+
+  const year = now.getFullYear();
+  const month = padWithZero(now.getMonth() + 1); // Months are 0-based
+  const day = padWithZero(now.getDate());
+  const hours = padWithZero(now.getHours());
+  const minutes = padWithZero(now.getMinutes());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+

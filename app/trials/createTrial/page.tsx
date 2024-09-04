@@ -22,8 +22,10 @@ import { AlertType } from "@/enums";
 
 // icons
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
+import { useAuth } from "@/components/AuthProvider";
 
 const CreateTrials = () => {
+  const {user} = useAuth()
   const router = useRouter();
   const [trials, removeLog, updateLogs, clearLogs] = useTrialStore((state) => [
     state.trials,
@@ -34,7 +36,8 @@ const CreateTrials = () => {
 
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0]);
   const createTrialTableRef = useRef<HTMLTableElement>(null);
-  const [setAlert] = useAlertStore((state) => [state.setAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
+  const [savingTrial, setSavingTrial] = useState<boolean>(false);
 
   const addRow = () => {
     updateLogs(tableRowsIds.length, defaultTrial);
@@ -53,8 +56,10 @@ const CreateTrials = () => {
   };
 
   const saveTrial = () => {
-    for (let log in trials) {
-      createTrial(trials[log]).then((response) => {
+    setSavingTrial(true)
+    closeAlert()
+    for (let rowId in trials) {
+      createTrial(trials[rowId], user?.orgId).then((response) => {
         let alert: AlertBody;
         let alertType: AlertType;
 
@@ -62,7 +67,7 @@ const CreateTrials = () => {
           alert = {
             title: "Success!",
             content:
-              "Log" +
+              "Trial" +
               (Object.keys(trials).length > 1 ? "s were" : " was") +
               "  saved successfully.",
           };
@@ -73,10 +78,13 @@ const CreateTrials = () => {
         } else {
           alert = {
             title: "Something went wrong",
-            content: "Could not save logs, please try again",
+            content:
+            "Could not save trial" +
+            (Object.keys(trials).length > 1 ? "s": ""),
           };
           alertType = AlertType.Error;
         }
+        setSavingTrial(false)
         setAlert(alert, alertType);
         resetTrials();
       });
@@ -158,9 +166,13 @@ const CreateTrials = () => {
       </div>
       <div className="pl-6 w-full flex items-center justify-center">
         <button
+          disabled={savingTrial}
           onClick={saveTrial}
           className="px-4 py-2 w-fit bg-blue-500 text-white rounded-full hover:opacity-90"
-        >{`Save Trial${tableRowsIds.length > 1 ? "s" : ""}`}</button>
+        >{
+          savingTrial ? "Saving...":
+          `Save Trial${tableRowsIds.length > 1 ? "s" : ""}`
+          }</button>
       </div>
     </div>
   );

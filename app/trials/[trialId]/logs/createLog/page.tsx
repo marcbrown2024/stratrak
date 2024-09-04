@@ -23,6 +23,7 @@ import { AlertType } from "@/enums";
 
 // icons
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
+import { useAuth } from "@/components/AuthProvider";
 
 type params = {
   params: {
@@ -31,13 +32,14 @@ type params = {
 };
 
 const CreateLog = ({ params }: params) => {
+  const {user} = useAuth()
   const router = useRouter();
+  const [savingLog, setSavingLog] = useState<boolean>(false);
 
-  const [logs, removeLog, updateLogs, clearLogs] = useLogStore((state) => [
+  const [logs, clearLogs, updateLogs] = useLogStore((state) => [
     state.logs,
-    state.removeLog,
-    state.updateLogs,
     state.clearLogs,
+    state.updateLogs
   ]);
 
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0]);
@@ -45,39 +47,40 @@ const CreateLog = ({ params }: params) => {
 
   const trialId = params.trialId;
   const createLogTableRef = useRef<HTMLTableElement>(null);
-  const [setAlert] = useAlertStore((state) => [state.setAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
 
-  const [loading, setLoading] = useState<Boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const saveLogs = () => {
-    for (let log in logs) {
-      createLog(logs[log], trialId).then((response) => {
-        let alert: AlertBody;
-        let alertType: AlertType;
+    closeAlert()
+    let alert: AlertBody;
+    let alertType: AlertType;
 
-        if (response.success) {
-          alert = {
-            title: "Success!",
-            content:
-              "Log" +
-              (Object.keys(logs).length > 1 ? "s were" : " was") +
-              "  saved successfully.",
-          };
-          alertType = AlertType.Success;
-          setTimeout(() => {
-            router.push("/trials");
-          }, 3000);
-        } else {
-          alert = {
-            title: "Something went wrong",
-            content: "Could not save logs, please try again",
-          };
-          alertType = AlertType.Error;
-        }
-        setAlert(alert, alertType);
-        resetLogs();
-      });
-    }
+    setSavingLog(true);
+    createLog(logs[0], trialId).then((response) => {
+      if (response.success) {
+        alert = {
+          title: "Success!",
+          content:
+            "Log" +
+            (Object.keys(logs).length > 1 ? "s were" : " was") +
+            "  saved successfully.",
+        };
+        alertType = AlertType.Success;
+        setTimeout(() => {
+          router.back();
+        }, 3000);
+      } else {
+        alert = {
+          title: "Something went wrong",
+          content: "Could not save log, please try again",
+        };
+        alertType = AlertType.Error;
+      }
+      setSavingLog(false);
+      setAlert(alert, alertType)
+    })
+
   };
 
   const resetLogs = () => {
@@ -85,6 +88,8 @@ const CreateLog = ({ params }: params) => {
     createLogTableRef.current
       ?.querySelectorAll("form")
       .forEach((form) => form.reset());
+    updateLogs(0, {...defaultLog, monitorName: `${user?.fName || ""} ${user?.lName || ""}`, signature: user?.signature ?? ""})
+    
     setTableRowsIds([0]);
   };
 
@@ -126,52 +131,58 @@ const CreateLog = ({ params }: params) => {
         <div className="-m-1.5 overflow-x-auto">
           <div className="p-1.5 min-w-full inline-block align-middle">
             <div className="border rounded-lg overflow-hidden">
-              <table
-                ref={createLogTableRef}
-                className="min-w-full divide-y divide-gray-200"
-              >
-                <thead className="bg-sky-50">
-                  <tr className="text-blue-500">
-                    <th
-                      scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
-                    >
-                      Monitor Name
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
-                    >
-                      Signature
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
-                    >
-                      Type of Visit
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
-                    >
-                      Purpose of Visit
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-8 py-3 text-start text-xs font-medium uppercase"
-                    >
-                      Date of Visit
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 duration-200">
-                  {tableRowsIds.map((i, k) => (
-                    <tr key={k}>
-                      <CreateLogTableRow rowId={i} />
+              {savingLog ? (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Loader />
+                </div>
+              ) : (
+                <table
+                  ref={createLogTableRef}
+                  className="min-w-full divide-y divide-gray-200"
+                >
+                  <thead className="bg-sky-50">
+                    <tr className="text-blue-500">
+                      <th
+                        scope="col"
+                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                      >
+                        Monitor Name
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                      >
+                        Signature
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                      >
+                        Type of Visit
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                      >
+                        Purpose of Visit
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-8 py-3 text-start text-xs font-medium uppercase"
+                      >
+                        Date of Visit
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 duration-200">
+                    {tableRowsIds.map((i, k) => (
+                      <tr key={k}>
+                        <CreateLogTableRow rowId={i} />
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         </div>
@@ -179,9 +190,12 @@ const CreateLog = ({ params }: params) => {
 
       <div className="pl-6 w-full flex items-center justify-center">
         <button
+          disabled={savingLog || loading}
           onClick={saveLogs}
-          className="px-4 py-2 w-fit bg-blue-500 text-white rounded-full hover:opacity-90"
-        >{`Save Log${tableRowsIds.length > 1 ? "s" : ""}`}</button>
+          className="px-4 py-2 w-fit bg-blue-500 text-white rounded-full hover:opacity-90 disabled:hover:opacity-100"
+        >
+          {savingLog ? "Saving log..." : "Save log"}
+        </button>
       </div>
     </div>
   );
