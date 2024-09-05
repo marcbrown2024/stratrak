@@ -425,12 +425,13 @@ const convertTimestampToDate = (timestamp: Timestamp | string): string => {
   }
 };
 
-export const getAllUsers = async () => {
+export const getAllUsers = async (orgId: string) => {
   const users: User[] = [];
 
   try {
     const usersRef = collection(db, "users");
-    const usersSnap = await getDocs(usersRef);
+    const q = query(usersRef, where("orgId", "==", orgId))
+    const usersSnap = await getDocs(q);
 
     usersSnap.forEach((doc) => {
       users.push({

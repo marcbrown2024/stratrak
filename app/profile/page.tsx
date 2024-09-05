@@ -1,7 +1,7 @@
 "use client";
 
 // react/nextjs components
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 // custom components
@@ -32,6 +32,19 @@ const Page = () => {
   const [formButton, setFormButton] = useState<boolean>(false);
   const [signatureButton, setSignatureButton] = useState<boolean>(false);
   const [signature, setSignature] = useState<string | null>(null);
+  const [signatureDone, setSignatureDone] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (signatureDone){
+      setTimeout(() => {
+        location.reload()
+      }, (2000));
+      }
+  }, [signatureDone])
+
+  const updateSignature = () => {
+    setSignatureDone(true)
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -375,6 +388,7 @@ const Page = () => {
       <SignatureCanvas
         signatureButton={signatureButton}
         setSignatureButton={setSignatureButton}
+        updateSignature={updateSignature}
       />
     </div>
   );

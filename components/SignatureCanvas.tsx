@@ -29,13 +29,15 @@ type Style = {
 type SignatureCanvasProps = {
   signatureButton: boolean;
   setSignatureButton: React.Dispatch<React.SetStateAction<boolean>>;
+  updateSignature: (done: boolean) => void
 };
 const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   signatureButton,
   setSignatureButton,
+  updateSignature
 }) => {
   const { user } = useAuth();
-  const [setAlert] = useAlertStore((state) => [state.setAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
@@ -173,6 +175,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   };
 
   const saveSignature = async () => {
+    closeAlert()
     if (canvasRef.current) {
       const canvas = canvasRef.current;
       const base64String = canvas.toDataURL("image/png"); // Get the base64 string of the image
@@ -199,6 +202,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
         setAlert(alert, alertType);
         clearDrawing();
         setSignatureButton(false);
+        updateSignature(true)
       } else {
         console.error("User ID is not available.");
       }
