@@ -47,6 +47,12 @@ const initialFormData: FormData = {
   lastActivity: "",
   userId: "",
   password: "",
+  phoneNumber: "",
+  country: "",
+  streetAddress: "",
+  city: "",
+  state: "",
+  postalCode: "",
 };
 
 type CustomTableProps = {
@@ -638,7 +644,9 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                     >
                       <Tooltip title="Delete">
                         <button
-                          onClick={() => handleDeleteUser(item.userId??"default")}
+                          onClick={() =>
+                            handleDeleteUser(item.userId ?? "default")
+                          }
                           type="button"
                           className="transition-transform duration-300 hover:scale-110"
                         >

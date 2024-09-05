@@ -56,6 +56,12 @@ type User = {
   signature: string;
   lastActivity: string;
   userId: string;
+  phoneNumber: string;
+  country: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  postalCode: string;
 };
 
 // Define the type for help form data
@@ -66,14 +72,12 @@ type HelpFormData = {
 
 // Type definitions for profile form data
 type ProfileFormData = {
-  photo: File | null;
   firstName: string;
   lastName: string;
-  email: string;
   phoneNumber: string;
   country: string;
   streetAddress: string;
   city: string;
-  region: string;
+  state: string;
   postalCode: string;
 };

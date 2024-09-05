@@ -436,3 +436,33 @@ export const getAllUsers = async (orgId: string) => {
     return { success: false, data: e };
   }
 };
+
+export const updateUserProfile = async (
+  userId: string,
+  formData: ProfileFormData
+): Promise<{ success: boolean }> => {
+  try {
+    // Reference to the users collection
+    const usersRef = collection(db, "users");
+
+    // Query to find the document with the specific userId
+    const q = query(usersRef, where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    // Check if any documents matched the query
+    if (querySnapshot.empty) {
+      console.error("User not found");
+      return { success: false };
+    }
+
+    // Assuming userId is unique, update the first matching document
+    const userDoc = querySnapshot.docs[0]; // Get the first document from the results
+    const userDocRef = doc(db, "users", userDoc.id); // Get a reference to the document
+
+    await updateDoc(userDocRef, formData);
+    return { success: true };
+  } catch (e: any) {
+    console.error(e.message);
+    return { success: false };
+  }
+};
