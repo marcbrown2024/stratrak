@@ -419,13 +419,13 @@ export const getAllUsers = async (orgId: string) => {
   }
 };
 
-export const deleteUser = async (email: string): Promise<{ success: boolean }> => {
+export const deleteUser = async (userId: string): Promise<{ success: boolean }> => {
   try {
     // Reference to the "users" collection
     const usersCollection = collection(db, "users");
     
-    // Create a query to find the document with the matching email
-    const q = query(usersCollection, where("email", "==", email));
+    // Create a query to find the document with the matching userId
+    const q = query(usersCollection, where("userId", "==", userId));
     
     // Execute the query
     const querySnapshot = await getDocs(q);

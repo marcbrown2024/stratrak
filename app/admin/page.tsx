@@ -53,7 +53,7 @@ const Page = () => {
       if (!user.isAdmin) redirect("/");
       fetchUsers()
     }
-  }, [user, fetchUsers()]);
+  }, [user]);
 
   return (
     <>

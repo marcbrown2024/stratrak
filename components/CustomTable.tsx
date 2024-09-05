@@ -107,9 +107,9 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
     setChangePrivilege(false);
   };
 
-  const handleDeleteUser = (email: string) => {
+  const handleDeleteUser = (userId: string) => {
     closeAlert()
-    deleteUser(email).then((response) => {
+    deleteUser(userId).then((response) => {
       let alert: AlertBody;
       let alertType: AlertType;
 
@@ -519,7 +519,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
             </thead>
             <tbody>
               {currentItems.map((item, index) => (
-                <tr key={item.id} className={`odd:bg-white even:bg-sky-100`}>
+                <tr key={item.userId} className={`odd:bg-white even:bg-sky-100`}>
                   <td className="px-4 py-3 font-medium">{item.fName}</td>
                   <td className="px-4 py-3 font-medium">{item.lName}</td>
                   <td className="px-4 py-3">{item.isAdmin ? "Yes" : "No"}</td>
@@ -612,7 +612,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                     >
                       <Tooltip title="Delete">
                         <button
-                          onClick={() => handleDeleteUser(item.email)}
+                          onClick={() => handleDeleteUser(item.userId)}
                           type="button"
                           className="transition-transform duration-300 hover:scale-110"
                         >

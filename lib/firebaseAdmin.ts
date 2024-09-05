@@ -49,10 +49,10 @@ export async function initAdmin() {
 }
 
 export const deleteUser = async (
-  email: string
+  userId: string
 ): Promise<{ success: boolean }> => {
-  if (!email) {
-    console.error("Email is required to delete a user.");
+  if (!userId) {
+    console.error("userId is required to delete a user.");
     return { success: false };
   }
 
@@ -62,12 +62,13 @@ export const deleteUser = async (
     const db = admin.firestore(adminApp); // Use admin.firestore(adminApp)
 
     // Delete user from Firebase Authentication
-    const userRecord = await auth.getUserByEmail(email);
-    await auth.deleteUser(userRecord.uid);
+    const userRecord = await auth.deleteUser(userId);
+
+    console.log(userRecord)
 
     // Delete user document from Firestore
     const usersCollection = db.collection("users");
-    const q = usersCollection.where("email", "==", email);
+    const q = usersCollection.where("userId", "==", userId ?? "default");
     const querySnapshot = await q.get();
 
     if (querySnapshot.empty) {
