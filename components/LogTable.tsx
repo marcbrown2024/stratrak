@@ -111,6 +111,7 @@ const LogTable = (props: Props) => {
                 maxWidth: "150px",
                 maxHeight: "80px",
                 objectFit: "contain",
+                margin: "0 -20px"
               }}
             />
           ) : (
@@ -181,9 +182,10 @@ const LogTable = (props: Props) => {
   };
 
   return (
+  <div className="w-full max-w-full overflow-x-auto">
     <DataGrid
       className="h-fit w-[80rem] p-6 gap-4"
-      rows={logs}
+      rows={props.rows}
       columns={[
         monitorNameColumn,
         signatureColumn,
@@ -203,6 +205,7 @@ const LogTable = (props: Props) => {
       disableMultipleRowSelection
       disableColumnMenu
     />
+  </div>
   );
 };
 

@@ -3,12 +3,18 @@
 // react/nextjs components
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { redirect, useRouter } from "next/navigation";
-import { auth } from '@/firebase';
-import { AlertType } from "@/enums";
-import { useAlertStore } from "@/store/AlertStore";
-import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
+
+// firebase components
+import { auth, updateUserLastActivity } from "@/firebase";
 import { useAuth } from "@/components/AuthProvider";
-import { signInWithEmailAndPassword } from "firebase/auth";
+
+// enums
+import { AlertType } from "@/enums";
+
+// global store
+import { useAlertStore } from "@/store/AlertStore";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 
 // custom components
 
@@ -52,28 +58,61 @@ const Page = () => {
     return userResponse;
   }
 
-  const { executeAuth: executeUserLogin, loading: userLoginLoading, error: userLoginError } = useFirebaseAuth(logInUser);
+  const {
+    executeAuth: executeUserLogin,
+    loading: userLoginLoading,
+    error: userLoginError,
+  } = useFirebaseAuth(logInUser);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     closeAlert();
   
     // Call the executeAuth function with the appropriate arguments
-    const { success } = await executeUserLogin();
+    const { success, result } = await executeUserLogin();
 
     if (success) {
       // On success, set success alert and clear form data
-      setAlert({ title: "Welcome!", content: "User logged in successfully." }, AlertType.Success);
+      setAlert(
+        { title: "Welcome!", content: "User logged in successfully." },
+        AlertType.Success
+      );
       setFormData(initialFormData);
-      router.push('/');
+
+      // Redirect to the home page
+      router.push("/");
     }
   };
 
   useEffect(() => {
     if (userLoginError) {
-      setAlert({ title: "Something went wrong", content: userLoginError ?? "An unexpected error occurred." }, AlertType.Error);
+      setAlert(
+        {
+          title: "Something went wrong",
+          content: userLoginError ?? "An unexpected error occurred.",
+        },
+        AlertType.Error
+      );
     }
   }, [userLoginError, setAlert]);
+
+  useEffect(() => {
+    // Check if user is available and has an id
+    if (user && user.id) {
+      // Call updateUserLastActivity with user.id
+      updateUserLastActivity(user.id)
+        .then(result => {
+          if (result.success) {
+            console.log("User's last activity updated successfully.");
+          } else {
+            console.error("Failed to update user's last activity.");
+          }
+        })
+        .catch(error => {
+          console.error("Error updating user's last activity:", error);
+        });
+    }
+  }, [user]);
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#e0e3e4] overflow-hidden">

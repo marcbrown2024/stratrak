@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { getApp, getApps, initializeApp } from "firebase/app";
-import moment from 'moment';
+import moment from "moment";
 
 import { getAuth } from "firebase/auth";
 
@@ -52,7 +52,7 @@ export const getTrials = async (orgId: string) => {
 
   try {
     const trialsRef = collection(db, "trials");
-    const q = query(trialsRef, where("orgId", "==", orgId))
+    const q = query(trialsRef, where("orgId", "==", orgId));
     const trialsSnap = await getDocs(q);
 
     trialsSnap.forEach((doc) => {
@@ -81,7 +81,11 @@ export const getTrial = async (trialId: string) => {
 export const createTrial = async (trial: TrialDetails, orgId: string) => {
   try {
     const trialsRef = collection(db, "trials");
-    const newTrialsRef = await addDoc(trialsRef, {...trial, orgId: orgId, progress: 'Active'});
+    const newTrialsRef = await addDoc(trialsRef, {
+      ...trial,
+      orgId: orgId,
+      progress: "Active",
+    });
     const newTrialsSnap = await getDoc(newTrialsRef);
     response = {
       success: true,
@@ -107,6 +111,34 @@ export const deleteTrial = async (trialId: string) => {
   return response;
 };
 
+export const deleteUser = async (email: string): Promise<{ success: boolean }> => {
+  try {
+    // Reference to the "users" collection
+    const usersCollection = collection(db, "users");
+    
+    // Create a query to find the document with the matching email
+    const q = query(usersCollection, where("email", "==", email));
+    
+    // Execute the query
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      // No document found with the specified email
+      console.error("No matching documents.");
+      return { success: false };
+    }
+
+    // Assume there's only one document per email, delete the first document found
+    const docToDelete = querySnapshot.docs[0];
+    await deleteDoc(docToDelete.ref);
+
+    return { success: true };
+  } catch (e: any) {
+    console.error(e.message);
+    return { success: false };
+  }
+};
+
 export const updateTrialProgress = async (
   trialId: string,
   progress: string
@@ -114,6 +146,55 @@ export const updateTrialProgress = async (
   try {
     const trialRef = doc(db, "trials", trialId);
     await updateDoc(trialRef, { progress });
+    return { success: true };
+  } catch (e: any) {
+    console.error(e.message);
+    return { success: false };
+  }
+};
+
+export const updatePrivilege = async (email: string, isAdmin: boolean): Promise<{ success: boolean }> => {
+  try {
+    // Reference to the "users" collection
+    const usersCollection = collection(db, "users");
+    
+    // Create a query to find the document with the matching email
+    const q = query(usersCollection, where("email", "==", email));
+    
+    // Execute the query
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      // No document found with the specified email
+      console.error("No matching documents.");
+      return { success: false };
+    }
+
+    // Assume there's only one document per email, get the first document found
+    const docToUpdate = querySnapshot.docs[0];
+    
+    // Update the isAdmin field
+    await updateDoc(docToUpdate.ref, { isAdmin });
+
+    return { success: true };
+  } catch (e: any) {
+    console.error(e.message);
+    return { success: false };
+  }
+};
+
+export const updateUserLastActivity = async (
+  id: string
+): Promise<{ success: boolean }> => {
+  try {
+    const userRef = doc(db, "users", id);
+    
+    // Get the current date and time in local time
+    const now = new Date();
+    const localTime = now.toLocaleString(); // Formats date to local time zone and more readable format
+
+    await updateDoc(userRef, { lastActivity: localTime });
+
     return { success: true };
   } catch (e: any) {
     console.error(e.message);
@@ -130,11 +211,17 @@ export const getLogs = async (trialId: string) => {
 
     const logsSnap = await getDocs(q);
     logsSnap.forEach((doc) => {
-      logs.push({ id: doc.id, ...doc.data(), dateOfVisit: convertTimestampToDate(doc.data().dateOfVisit) ?? doc.data().dateOfVisit} as DBLog);
+      logs.push({
+        id: doc.id,
+        ...doc.data(),
+        dateOfVisit:
+          convertTimestampToDate(doc.data().dateOfVisit) ??
+          doc.data().dateOfVisit,
+      } as DBLog);
     });
     response = { success: true, data: logs };
   } catch (e: any) {
-    console.log(e)
+    console.log(e);
     response = { success: false, data: e };
   }
   return response;
@@ -146,7 +233,7 @@ export const createLog = async (log: LogDetails, trialId: string) => {
     const newLogRef = await addDoc(logsRef, {
       ...log,
       trialId: trialId,
-      dateOfVisit: convertToFirestoreTimestamp(log.dateOfVisit)
+      dateOfVisit: convertToFirestoreTimestamp(log.dateOfVisit),
     });
     const newLogSnap = await getDoc(newLogRef);
 
@@ -336,7 +423,30 @@ const convertTimestampToDate = (timestamp: Timestamp | string): string => {
     const formattedDate = moment(date.slice(0, 16)).format('YYYY-MM-DD, h:mm A');
     return formattedDate;
   } catch (e) {
-    return timestamp as string
+    return timestamp as string;
   }
 };
 
+
+};
+
+export const getAllUsers = async () => {
+  const users: User[] = [];
+
+  try {
+    const usersRef = collection(db, "users");
+    const usersSnap = await getDocs(usersRef);
+
+    usersSnap.forEach((doc) => {
+      users.push({
+        id: doc.id,
+        ...doc.data(),
+      } as User);
+    });
+
+    return { success: true, data: users };
+  } catch (e: any) {
+    console.error(e.message);
+    return { success: false, data: e };
+  }
+};

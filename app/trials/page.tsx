@@ -46,29 +46,29 @@ const columns: GridColDef[] = [
 ];
 
 const TrialsPage = () => {
-  const {user} = useAuth();
+  const { user } = useAuth();
   const [trials, setTrials] = useState<TrialDetails[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
 
   // Update the state with the imported data
   useEffect(() => {
     if (user) {
-      getTrials(user?.orgId)
-      .then(response => {
-        setTrials(response.data)
-        setLoading(false)
-      })
+      getTrials(user?.orgId).then((response) => {
+        setTrials(response.data);
+        setLoading(false);
+      });
     }
   }, [user]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-start">
-      {
-        loading ?
+    <div className="h-full w-full flex flex-col items-center justify-start p-4 sm:p-8 lg:p-12">
+      {loading ? (
         <Loader />
-        :
-        <TrialTable columns={columns} rows={trials} orgId={user?.orgId} />
-      }
+      ) : (
+        <div className="w-full xl:w-11/12">
+          <TrialTable columns={columns} rows={trials} orgId={user?.orgId} />
+        </div>
+      )}
     </div>
   );
 };

@@ -18,6 +18,9 @@ import Tooltip from "@mui/material/Tooltip";
 // enums
 import { AlertType } from "@/enums";
 
+// custom components
+import Loader from "./Loader";
+
 //icons
 import { FaFolderOpen } from "react-icons/fa6";
 import { MdFolderDelete, MdCancel, MdDelete } from "react-icons/md";
@@ -25,7 +28,6 @@ import { TbAdjustmentsCheck } from "react-icons/tb";
 import { FaCircle } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { useAuth } from "./AuthProvider";
-import Loader from "./Loader";
 
 type Props = {
   columns: GridColDef[];
@@ -45,7 +47,6 @@ const TrialTable = (props: Props) => {
   useEffect(() => {
     if (props.rows.length > 0) {
       setLoading(false);
-      console.log(props);
       setFilteredRows(
         props.filter
           ? props.rows.filter((row) => row.progress === props.filter)
@@ -252,14 +253,14 @@ const TrialTable = (props: Props) => {
   };
 
   return (
-    <div className="h-fit w-[80rem]">
+    <div className="h-fit w-full max-w-[80rem] mx-auto px-4 sm:px-6 lg:px-8">
       {loading ? (
         <div className="w-full h-full flex items-center justify-center">
           <Loader />
         </div>
       ) : (
         <DataGrid
-          className="p-8 gap-4"
+          className="p-4 gap-4"
           rows={filteredRows}
           columns={[...props.columns, actionColumn]}
           initialState={{
@@ -273,6 +274,7 @@ const TrialTable = (props: Props) => {
           pageSizeOptions={[15]}
           disableMultipleRowSelection
           disableColumnMenu
+          autoHeight
         />
       )}
     </div>

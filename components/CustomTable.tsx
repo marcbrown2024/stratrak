@@ -4,95 +4,35 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 // mui components
 import Tooltip from "@mui/material/Tooltip";
 
-// icons
-import { FaChevronLeft, FaChevronRight, FaCircle } from "react-icons/fa";
-import { TiUserDelete } from "react-icons/ti";
-import { RiExchangeFill } from "react-icons/ri";
+// firebase components
 import {
   createUser,
   enrollUser,
   getUserFromDb,
   secondaryAuth,
   userEmailExists,
+  getAllUsers,
+  deleteUser,
+  updatePrivilege,
 } from "@/firebase";
 import { useAlertStore } from "@/store/AlertStore";
-import { AlertType } from "@/enums";
-import Loader from "./Loader";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "./AuthProvider";
 import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 import { FirebaseError } from "firebase/app";
 
-type DataItem = {
-  id: number;
-  name: string;
-  admin: boolean;
-  status: string | React.ReactNode | null;
-  action?: React.ReactNode | null;
-};
+// custom components
+import Loader from "./Loader";
 
-const data: DataItem[] = [
-  {
-    id: 1,
-    name: "Item 1",
-    admin: true,
-    status: (
-      <>
-        <FaCircle color="green" title="Online" className="opacity-30" /> Online
-      </>
-    ),
-  },
-  {
-    id: 2,
-    name: "Item 2",
-    admin: false,
-    status: (
-      <>
-        <FaCircle color="green" title="Online" className="opacity-30" /> Online
-      </>
-    ),
-  },
-  {
-    id: 3,
-    name: "Item 3",
-    admin: true,
-    status: (
-      <>
-        <FaCircle color="red" title="Offline" className="opacity-30" /> Offline
-      </>
-    ),
-  },
-  {
-    id: 4,
-    name: "Item 4",
-    admin: true,
-    status: (
-      <>
-        <FaCircle color="green" title="Online" className="opacity-30" /> Online
-      </>
-    ),
-  },
-  {
-    id: 5,
-    name: "Item 5",
-    admin: false,
-    status: (
-      <>
-        <FaCircle color="green" title="Online" className="opacity-30" /> Online
-      </>
-    ),
-  },
-  {
-    id: 6,
-    name: "Item 6",
-    admin: true,
-    status: (
-      <>
-        <FaCircle color="red" title="Offline" className="opacity-30" /> Offline
-      </>
-    ),
-  },
-];
+// enums
+import { AlertType } from "@/enums";
+
+// icons
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { TiUserDelete } from "react-icons/ti";
+import { RiExchangeFill } from "react-icons/ri";
+import { IoCheckmarkDoneSharp, IoClose } from "react-icons/io5";
+import { MdDelete } from "react-icons/md";
 
 type FormData = User & {
   password: string;
@@ -106,7 +46,7 @@ const initialFormData: FormData = {
   isAdmin: false,
   orgId: "",
   signature: "",
-  online: false,
+  lastActivity: "",
   userId: "",
   password: "",
 };
@@ -129,30 +69,79 @@ const CustomTable = () => {
 
   const [addUser, setAddUser] = useState<boolean>(false);
   const [creatingUser, setCreatingUser] = useState<boolean>(false);
-
+  const [users, setUsers] = useState<User[]>([]);
   const [createUserButton, setCreateUserButton] = useState<boolean>(false);
 
-  const filteredData = data.filter((item) => {
-    if (filter === "Admins") return item.admin;
-    if (filter === "Users") return !item.admin;
-    return true;
-  });
-
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredData.length);
-  const currentItems = filteredData.slice(startIndex, endIndex);
-
-  const handlePageChange = (direction: "next" | "previous") => {
-    if (direction === "next" && endIndex < filteredData.length) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    } else if (direction === "previous" && startIndex > 0) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
-  };
+  const [deleteUserRow, setDeleteUserRow] = useState<boolean>(false);
+  const [changePrivilege, setChangePrivilege] = useState<boolean>(false);
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
   const handleFilterChange = (newFilter: "Users" | "Admins" | "All Users") => {
     setFilter(newFilter);
     setCurrentPage(1);
+  };
+
+  // const handleDeleteClick = (id: string) => {
+  //   setSelectedRowId(id);
+  //   setDeleteUserRow(true);
+  // };
+
+  const handlePrivilegeChangeClick = (id: string) => {
+    setSelectedRowId(id);
+    setChangePrivilege(true);
+  };
+
+  const handleDeleteUser = (email: string) => {
+    deleteUser(email).then((response) => {
+      let alert: AlertBody;
+      let alertType: AlertType;
+
+      if (response.success) {
+        alert = {
+          title: "Success!",
+          content: "User was deleted successfully.",
+        };
+        alertType = AlertType.Success;
+      } else {
+        alert = {
+          title: "Error!",
+          content: "Could not delete user. Please try again.",
+        };
+        alertType = AlertType.Error;
+      }
+      setAlert(alert, alertType);
+    });
+    setSelectedRowId(null);
+  };
+
+  const handleUpdatePrivilege = (email: string, isAdmin: boolean) => {
+    updatePrivilege(email, isAdmin).then((response) => {
+      let alert: AlertBody;
+      let alertType: AlertType;
+
+      if (response.success) {
+        alert = {
+          title: "Success!",
+          content: "User privilege updated successfully.",
+        };
+        alertType = AlertType.Success;
+      } else {
+        alert = {
+          title: "Error!",
+          content: "Could not update user privilege. Please try again.",
+        };
+        alertType = AlertType.Error;
+      }
+      setAlert(alert, alertType);
+    });
+
+    setSelectedRowId(null);
+  };
+
+  const handleCancel = () => {
+    setSelectedRowId(null);
+    setDeleteUserRow(false);
+    setChangePrivilege(false);
   };
 
   const registerUser = async () => {
@@ -183,6 +172,7 @@ const CustomTable = () => {
     };
 
     await createUser(userDetails);
+    setCreateUserButton(false);
   };
 
   const {
@@ -256,6 +246,38 @@ const CustomTable = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const response = await getAllUsers();
+      if (response.success) {
+        setUsers(response.data);
+      } else {
+        console.error("Failed to fetch users:", response.data);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  // Filter users based on the selected filter
+  const filteredData = users.filter((item) => {
+    if (filter === "Admins") return item.isAdmin;
+    if (filter === "Users") return !item.isAdmin;
+    return true;
+  });
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredData.length);
+  const currentItems = filteredData.slice(startIndex, endIndex);
+
+  const handlePageChange = (direction: "next" | "previous") => {
+    if (direction === "next" && endIndex < filteredData.length) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    } else if (direction === "previous" && startIndex > 0) {
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
+  };
+
   return (
     <div className="relative w-full flex flex-col items-start justify-start">
       <div className="h-24 w-11/12 flex items-end justify-between bg-slate-50 z-10">
@@ -285,7 +307,7 @@ const CustomTable = () => {
             {addUser ? "Cancel" : "Add User"}
           </button>
         </div>
-        <button className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] px-4 py-3 rounded-md hover:scale-105 hover:bg-[#1285dd] mr-5">
+        <button className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] px-4 py-3 rounded-md hover:scale-105 hover:bg-[#1285dd]">
           Refresh
         </button>
       </div>
@@ -396,7 +418,7 @@ const CustomTable = () => {
             )}
           </form>
           <div
-            className={`absolute bottom-2 right-28 ${
+            className={`absolute bottom-2 md:right-20 2xl:right-28 ${
               createUserButton
                 ? "opacity-0 translate-x-32"
                 : "opacity-100 translate-x-0"
@@ -416,16 +438,19 @@ const CustomTable = () => {
             <thead className="text-sm text-left uppercase bg-sky-100">
               <tr>
                 <th scope="col" className="p-4">
-                  Users
+                  First Name
+                </th>
+                <th scope="col" className="p-4">
+                  Last Name
                 </th>
                 <th scope="col" className="p-4">
                   Admin
                 </th>
                 <th scope="col" className="p-4">
-                  Not Sure
+                  Email
                 </th>
                 <th scope="col" className="p-4">
-                  Status
+                  Last Activity
                 </th>
                 <th scope="col" className="p-4">
                   Action
@@ -435,36 +460,98 @@ const CustomTable = () => {
             <tbody>
               {currentItems.map((item) => (
                 <tr key={item.id} className={`odd:bg-white even:bg-sky-100`}>
-                  <td className="px-4 py-3 font-medium">{item.name}</td>
-                  <td className="px-4 py-3">{item.admin ? "Yes" : "No"}</td>
-                  <td className="px-4 py-3">Not Sure</td>
-                  <td className="flex items-center gap-2 px-4 py-3">
-                    {item.status}
-                  </td>
+                  <td className="px-4 py-3 font-medium">{item.fName}</td>
+                  <td className="px-4 py-3 font-medium">{item.lName}</td>
+                  <td className="px-4 py-3">{item.isAdmin ? "Yes" : "No"}</td>
+                  <td className="px-4 py-3">{item.email}</td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
+                    {item.lastActivity ? item.lastActivity : "N/A"}
+                  </td>
+                  <td className="flex items-center justify-center px-4 py-3">
+                    <div
+                      className={`flex gap-3 ${
+                        deleteUserRow && selectedRowId === item.id
+                          ? "-translate-x-9"
+                          : "-translate-x-6"
+                      } transition duration-300 ease-in-out`}
+                    >
                       <Tooltip title="Delete User" arrow>
-                        <span>
+                        <button onClick={() => handleDeleteUser(item.email)}>
                           <TiUserDelete
                             size={24}
-                            className="text-[#1286ff] hover:scale-105 cursor-pointer"
+                            className="text-[#1286ff] transition-transform duration-300 hover:scale-110"
                           />
-                        </span>
+                        </button>
                       </Tooltip>
                       <Tooltip
                         title={
-                          item.admin ? "Demote to user" : "Elevate to admin"
+                          item.isAdmin ? "Demote to user" : "Elevate to admin"
                         }
                         arrow
                       >
-                        <span>
+                        <button
+                          onClick={() =>
+                            handleUpdatePrivilege(item.email, !item.isAdmin)
+                          }
+                        >
                           <RiExchangeFill
                             size={24}
-                            className="text-[#1286ff] hover:scale-105 cursor-pointer"
+                            className="text-[#1286ff] transition-transform duration-300 hover:scale-110"
                           />
-                        </span>
+                        </button>
                       </Tooltip>
                     </div>
+                    {/* <div
+                      className={`gap-3 ${
+                        deleteUserRow && selectedRowId === item.id
+                          ? "flex"
+                          : "hidden"
+                      }`}
+                    >
+                      <Tooltip title="Delete">
+                        <button
+                          type="button"
+                          className="transition-transform duration-300 hover:scale-110"
+                        >
+                          <MdDelete className="text-xl text-[#7d1f2e]" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip title="Cancel">
+                        <button
+                          type="button"
+                          onClick={handleCancel}
+                          className="transition-transform duration-300 hover:scale-110"
+                        >
+                          <IoClose className="text-xl" />
+                        </button>
+                      </Tooltip>
+                    </div> */}
+                    {/* ----------------------------------------------------------- */}
+                    {/* <div
+                      className={`gap-3 ${
+                        changePrivilege && selectedRowId === item.id
+                          ? "flex"
+                          : "hidden"
+                      }`}
+                    >
+                      <Tooltip title="Inactive">
+                        <button
+                          type="button"
+                          className="transition-transform duration-300 hover:scale-110"
+                        >
+                          <IoCheckmarkDoneSharp className="text-xl text-green-600" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip title="Cancel">
+                        <button
+                          onClick={handleCancel}
+                          type="button"
+                          className="transition-transform duration-300 hover:scale-110"
+                        >
+                          <IoClose className="text-2xl text-red-600" />
+                        </button>
+                      </Tooltip>
+                    </div> */}
                   </td>
                 </tr>
               ))}
