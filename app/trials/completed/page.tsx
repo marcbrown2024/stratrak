@@ -61,12 +61,13 @@ const TrialsPage = () => {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
-      {
-        loading ?
-        <Loader />
-        :
-        <TrialTable columns={columns} rows={trials} filter="Completed" orgId={user?.orgId} />
-      }
+      <div className="flex flex-col items-center justify-center gap-8">
+        {loading ? (
+          <Loader />
+        ) : (
+            <TrialTable columns={columns} rows={trials} filter="Completed" orgId={user?.orgId} />
+        )}
+      </div>
     </div>
   );
 };

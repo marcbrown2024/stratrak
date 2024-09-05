@@ -52,10 +52,6 @@ const LogTable = (props: Props) => {
     }
   }, [props])
 
-  useEffect(() => {
-    console.log("logs: ", logs)
-  }, [logs])
-
   const handleSetDelete = (id: number) => {
     setActiveRowId(id);
     setDeleteLogRow(true);

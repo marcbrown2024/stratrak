@@ -23,20 +23,10 @@ const Page = () => {
   const [totalCount, setTotalCount] = useState<number>(0);
 
   const refreshUsers = () => {
-    getAllUsers(user?.orgId).then(response => {
-      if (response.success) {
-        setUsers(response.data)
-      }
-    })
+    fetchUsers()
   }
-
-  useEffect(() => {
-    if (user) {
-      if (!user.isAdmin) redirect("/");
-    }
-
-    const fetchUsers = async () => {
-      const response = await getAllUsers(user?.orgId);
+  const fetchUsers = () => {
+    getAllUsers(user?.orgId).then(response => {
       if (response.success) {
         const allUsers = response.data;
         const usersCount = allUsers.filter(
@@ -45,7 +35,7 @@ const Page = () => {
         const adminsCount = allUsers.filter(
           (user: User) => user.isAdmin
         ).length;
-
+  
         setUsers(allUsers);
         setUserCount(usersCount);
         setAdminCount(adminsCount);
@@ -53,9 +43,14 @@ const Page = () => {
       } else {
         console.error("Failed to fetch users:", response.data);
       }
-    };
+    })
+  };
 
-    fetchUsers();
+  useEffect(() => {
+    if (user) {
+      if (!user.isAdmin) redirect("/");
+      fetchUsers()
+    }
   }, [user]);
 
   return (

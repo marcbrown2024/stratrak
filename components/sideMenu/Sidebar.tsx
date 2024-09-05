@@ -6,9 +6,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { SIDENAV_ITEMS } from "@/constants";
+import logo from '@/public/logo-blue-bg-removed.png'
 
 // custom components
 import MenuItem from "./MenuItem";
+import Image from "next/image";
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -23,10 +25,15 @@ const Sidebar = () => {
           href="/"
           className="h-14 w-full flex flex-row items-center justify-center md:justify-start space-x-3 md:px-6 border-b border-zinc-100/20"
         >
-          <span className="h-8 w-8 bg-white rounded-lg" />
-          <span className="md:flex hidden text-xl text-white font-bold">
-            Logo
-          </span>
+          <div className="h-14 w-full">
+            <Image
+              src={logo}
+              width={200}
+              height={75}
+              alt={'site logo'}
+              className="object-cover w-full h-full -ml-10 transform scale-75"
+            />
+          </div>
         </Link>
 
         <div className="flex flex-col space-y-2 md:px-6">

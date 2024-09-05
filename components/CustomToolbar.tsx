@@ -19,7 +19,7 @@ const CustomToolbar = () => {
   const { trialId } = useParams();
   const currentPathname = usePathname();
 
-  const isAdminAndTrialPath = user.isAdmin && currentPathname === "/trials";
+  const isAdminAndTrialPath = user?.isAdmin && currentPathname === "/trials";
   const isLogPath = currentPathname === `/trials/${trialId}/logs`;
 
   return (
@@ -44,7 +44,7 @@ const CustomToolbar = () => {
         </Link>
       ) : (
         isLogPath && (
-          <Link href={`/trials/${trialId}/logs`}>
+          <Link href={`/trials/${trialId}/logs/createLog`}>
             <Button
               variant="contained"
               style={{ backgroundColor: "#007bff", color: "#fff" }}
