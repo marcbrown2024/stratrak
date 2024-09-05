@@ -12,10 +12,15 @@ import {
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
+import { useAuth } from "./AuthProvider";
 
 const CustomToolbar = () => {
+  const { user } = useAuth();
   const { trialId } = useParams();
   const currentPathname = usePathname();
+
+  const isAdminAndTrialPath = user.isAdmin && currentPathname === "/trials";
+  const isLogPath = currentPathname === `/trials/${trialId}/logs`;
 
   return (
     <div className="flex justify-between items-center gap-8">
@@ -25,24 +30,29 @@ const CustomToolbar = () => {
       <div className="flex gap-1 opacity-70">
         <GridToolbarColumnsButton />
         <GridToolbarDensitySelector />
+        <GridToolbarFilterButton />
         <GridToolbarExport />
       </div>
-      {(currentPathname === "/trials" ||
-        currentPathname === `/trials/${trialId}/logs`) && (
-        <Link
-          href={
-            currentPathname === "/trials"
-              ? "/trials/createTrial"
-              : `/trials/${trialId}/logs/createLog`
-          }
-        >
+      {isAdminAndTrialPath ? (
+        <Link href="/trials/createTrial">
           <Button
             variant="contained"
             style={{ backgroundColor: "#007bff", color: "#fff" }}
           >
-            {currentPathname === "/trials" ? "Add Trial" : "Add Log"}
+            Add Trial
           </Button>
         </Link>
+      ) : (
+        isLogPath && (
+          <Link href={`/trials/${trialId}/logs`}>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: "#007bff", color: "#fff" }}
+            >
+              Add Log
+            </Button>
+          </Link>
+        )
       )}
     </div>
   );
