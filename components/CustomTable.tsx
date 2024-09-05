@@ -52,12 +52,13 @@ const initialFormData: FormData = {
 
 type CustomTableProps = {
   users: User[];
+  refreshUsers: () => void
 };
 
 // Total items per page
 const ITEMS_PER_PAGE = 4;
 
-const CustomTable: React.FC<CustomTableProps> = ({ users }) => {
+const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
   const { user } = useAuth();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -94,6 +95,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users }) => {
   };
 
   const handleDeleteUser = (email: string) => {
+    closeAlert()
     deleteUser(email).then((response) => {
       let alert: AlertBody;
       let alertType: AlertType;
@@ -104,6 +106,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users }) => {
           content: "User was deleted successfully.",
         };
         alertType = AlertType.Success;
+        refreshUsers()
       } else {
         alert = {
           title: "Error!",
@@ -117,6 +120,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users }) => {
   };
 
   const handleUpdatePrivilege = (email: string, isAdmin: boolean) => {
+    closeAlert()
     updatePrivilege(email, isAdmin).then((response) => {
       let alert: AlertBody;
       let alertType: AlertType;
@@ -127,6 +131,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users }) => {
           content: "User privilege updated successfully.",
         };
         alertType = AlertType.Success;
+        refreshUsers()
       } else {
         alert = {
           title: "Error!",
@@ -138,12 +143,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users }) => {
     });
 
     setSelectedRowId(null);
-  };
-
-  const handleCancel = () => {
-    setSelectedRowId(null);
-    setDeleteUserRow(false);
-    setChangePrivilege(false);
   };
 
   const registerUser = async () => {
@@ -197,6 +196,8 @@ const CustomTable: React.FC<CustomTableProps> = ({ users }) => {
         AlertType.Success
       );
       setFormData(initialFormData);
+      refreshUsers()
+      
     }
   };
 
@@ -296,9 +297,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users }) => {
             {addUser ? "Cancel" : "Add User"}
           </button>
         </div>
-        <button className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] px-4 py-3 rounded-md hover:scale-105 hover:bg-[#1285dd]">
-          Refresh
-        </button>
       </div>
       <div
         className={`absolute h-fit w-full flex flex-col items-start justify-center gap-8 pb-6 transition-all duration-500 ease-in-out transform ${

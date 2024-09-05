@@ -22,13 +22,21 @@ const Page = () => {
   const [adminCount, setAdminCount] = useState<number>(0);
   const [totalCount, setTotalCount] = useState<number>(0);
 
+  const refreshUsers = () => {
+    getAllUsers(user?.orgId).then(response => {
+      if (response.success) {
+        setUsers(response.data)
+      }
+    })
+  }
+
   useEffect(() => {
     if (user) {
       if (!user.isAdmin) redirect("/");
     }
 
     const fetchUsers = async () => {
-      const response = await getAllUsers();
+      const response = await getAllUsers(user?.orgId);
       if (response.success) {
         const allUsers = response.data;
         const usersCount = allUsers.filter(
@@ -48,7 +56,7 @@ const Page = () => {
     };
 
     fetchUsers();
-  }, []);
+  }, [user]);
 
   return (
     <div className="h-fit w-full flex flex-col items-center justify-center bg-slate-50 md:pl-20">
@@ -79,7 +87,7 @@ const Page = () => {
       {/* Custom Table */}
       <div className="h-fit w-full flex flex-col items-center justify-center gap-4 px-4 pb-4">
         <div className="w-full">
-          <CustomTable users={users} />
+          <CustomTable users={users} refreshUsers={refreshUsers} />
         </div>
       </div>
     </div>
