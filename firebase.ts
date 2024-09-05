@@ -2,7 +2,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import moment from "moment";
 
-import { getAuth } from "firebase/auth";
+import { getAuth, deleteUser as deleteAuthUser, signInWithEmailAndPassword } from "firebase/auth";
 
 import {
   addDoc,
@@ -12,9 +12,7 @@ import {
   getDoc,
   getDocs,
   getFirestore,
-  orderBy,
   query,
-  serverTimestamp,
   setDoc,
   Timestamp,
   updateDoc,

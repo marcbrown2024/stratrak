@@ -127,13 +127,13 @@ const LogTable = (props: Props) => {
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     headerName: "Action",
     headerAlign: "left",
-    flex: 1,
+    flex: 0.6,
     renderCell: (params) => {
       const { id } = params.row;
       const isProgressActive = id === activeRowId;
 
       return (
-        <div className="h-full w-full flex items-center justify-start">
+        <div className="h-full w-full flex items-center justify-center 2xl:justify-start">
           <div
             className={`flex gap-3 ${
               isProgressActive ? "-translate-x-8" : "translate-x-0"
@@ -182,9 +182,9 @@ const LogTable = (props: Props) => {
   };
 
   return (
-  <div className="w-full max-w-full overflow-x-auto">
+  <div className="w-full flex items-center">
     <DataGrid
-      className="h-fit w-[80rem] p-6 gap-4"
+      className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4"
       rows={props.rows}
       columns={[
         monitorNameColumn,
