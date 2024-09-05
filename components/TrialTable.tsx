@@ -53,10 +53,6 @@ const TrialTable = (props: Props) => {
   }, [user, isAuthenticated])
 
   useEffect(() => {
-    console.log(isAdmin)
-  }, [isAdmin])
-
-  useEffect(() => {
     if (props.rows.length > 0) {
       setLoading(false);
       setFilteredRows(

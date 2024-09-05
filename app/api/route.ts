@@ -3,16 +3,17 @@ import { deleteUser } from '@/lib/firebaseAdmin';
 
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
+    const { userId } = await request.json();
 
-    if (!email) {
+    if (!userId) {
       return NextResponse.json(
-        { success: false, message: 'Email is required' },
+        { success: false, message: 'UserId is required' },
         { status: 400 }
       );
     }
 
-    const response = await deleteUser(email);
+    const response = await deleteUser(userId);
+    console.log(response)
     return NextResponse.json(response);
   } catch (error) {
     console.error('Error deleting user:', error);

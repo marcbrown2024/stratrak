@@ -107,28 +107,52 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
     setChangePrivilege(false);
   };
 
-  const handleDeleteUser = (userId: string) => {
-    closeAlert()
-    deleteUser(userId).then((response) => {
+  const handleDeleteUser = async (userId: string) => {
+    closeAlert();
+
+    try {
+      // Make a POST request to the API route
+      const response = await fetch("/api", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await response.json();
+
+      // console.log(data);
+
       let alert: AlertBody;
       let alertType: AlertType;
 
-      if (response.success) {
+      if (data.success) {
         alert = {
           title: "Success!",
           content: "User was deleted successfully.",
         };
         alertType = AlertType.Success;
-        refreshUsers()
+        refreshUsers();
       } else {
         alert = {
           title: "Error!",
-          content: "Could not delete user. Please try again.",
+          content: data.message || "Could not delete user. Please try again.",
         };
         alertType = AlertType.Error;
       }
       setAlert(alert, alertType);
-    });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      setAlert(
+        {
+          title: "Error!",
+          content: "Could not delete user. Please try again.",
+        },
+        AlertType.Error
+      );
+    }
+
     setSelectedRowId(null);
   };
 
@@ -283,7 +307,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
         AlertType.Error
       );
     }
-  }, [userCreationError, setAlert]);
+  }, [userCreationError]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -519,7 +543,10 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
             </thead>
             <tbody>
               {currentItems.map((item, index) => (
-                <tr key={item.userId} className={`odd:bg-white even:bg-sky-100`}>
+                <tr
+                  key={item.userId}
+                  className={`odd:bg-white even:bg-sky-100`}
+                >
                   <td className="px-4 py-3 font-medium">{item.fName}</td>
                   <td className="px-4 py-3 font-medium">{item.lName}</td>
                   <td className="px-4 py-3">{item.isAdmin ? "Yes" : "No"}</td>
@@ -612,7 +639,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                     >
                       <Tooltip title="Delete">
                         <button
-                          onClick={() => handleDeleteUser(item.userId)}
+                          onClick={() => handleDeleteUser(item.userId??"default")}
                           type="button"
                           className="transition-transform duration-300 hover:scale-110"
                         >
