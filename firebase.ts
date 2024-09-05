@@ -2,7 +2,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import moment from "moment";
 
-import { getAuth, deleteUser as deleteAuthUser, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 import {
   addDoc,
@@ -107,34 +107,6 @@ export const deleteTrial = async (trialId: string) => {
     response = { success: false };
   }
   return response;
-};
-
-export const deleteUser = async (email: string): Promise<{ success: boolean }> => {
-  try {
-    // Reference to the "users" collection
-    const usersCollection = collection(db, "users");
-    
-    // Create a query to find the document with the matching email
-    const q = query(usersCollection, where("email", "==", email));
-    
-    // Execute the query
-    const querySnapshot = await getDocs(q);
-    
-    if (querySnapshot.empty) {
-      // No document found with the specified email
-      console.error("No matching documents.");
-      return { success: false };
-    }
-
-    // Assume there's only one document per email, delete the first document found
-    const docToDelete = querySnapshot.docs[0];
-    await deleteDoc(docToDelete.ref);
-
-    return { success: true };
-  } catch (e: any) {
-    console.error(e.message);
-    return { success: false };
-  }
 };
 
 export const updateTrialProgress = async (
@@ -444,5 +416,33 @@ export const getAllUsers = async (orgId: string) => {
   } catch (e: any) {
     console.error(e.message);
     return { success: false, data: e };
+  }
+};
+
+export const deleteUser = async (email: string): Promise<{ success: boolean }> => {
+  try {
+    // Reference to the "users" collection
+    const usersCollection = collection(db, "users");
+    
+    // Create a query to find the document with the matching email
+    const q = query(usersCollection, where("email", "==", email));
+    
+    // Execute the query
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      // No document found with the specified email
+      console.error("No matching documents.");
+      return { success: false };
+    }
+
+    // Assume there's only one document per email, delete the first document found
+    const docToDelete = querySnapshot.docs[0];
+    await deleteDoc(docToDelete.ref);
+
+    return { success: true };
+  } catch (e: any) {
+    console.error(e.message);
+    return { success: false };
   }
 };

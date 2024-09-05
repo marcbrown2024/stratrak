@@ -7,13 +7,11 @@ import Tooltip from "@mui/material/Tooltip";
 // firebase components
 import {
   createUser,
-  enrollUser,
-  getUserFromDb,
   secondaryAuth,
   userEmailExists,
-  deleteUser,
   updatePrivilege,
 } from "@/firebase";
+
 import { useAlertStore } from "@/store/AlertStore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "./AuthProvider";
@@ -53,7 +51,7 @@ const initialFormData: FormData = {
 
 type CustomTableProps = {
   users: User[];
-  refreshUsers: () => void
+  refreshUsers: () => void;
 };
 
 // Total items per page
@@ -75,7 +73,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
   const [addUser, setAddUser] = useState<boolean>(false);
   const [creatingUser, setCreatingUser] = useState<boolean>(false);
   const [createUserButton, setCreateUserButton] = useState<boolean>(false);
-
   const [deleteUserRow, setDeleteUserRow] = useState<boolean>(false);
   const [changePrivilege, setChangePrivilege] = useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
@@ -85,20 +82,53 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
     setCurrentPage(1);
   };
 
+  const handleDeleteClick = (id: string) => {
+    if (selectedRowId === id) {
+      setSelectedRowId(null);
+    } else {
+      setSelectedRowId(id);
+      setDeleteUserRow(true);
+    }
+  };
 
-  const handleDeleteUser = (email: string) => {
-    closeAlert()
-    deleteUser(email).then((response) => {
+  const handlePrivilegeChangeClick = (id: string) => {
+    if (selectedRowId === id) {
+      setSelectedRowId(null);
+    } else {
+      setSelectedRowId(id);
+      setChangePrivilege(true);
+    }
+  };
+
+  const handleCancel = () => {
+    setSelectedRowId(null);
+    setDeleteUserRow(false);
+    setChangePrivilege(false);
+  };
+
+  const handleDeleteUser = async (email: string) => {
+    closeAlert();
+
+    try {
+      const response = await fetch("/api/deleteUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
       let alert: AlertBody;
       let alertType: AlertType;
 
-      if (response.success) {
+      if (data.success) {
         alert = {
           title: "Success!",
           content: "User was deleted successfully.",
         };
         alertType = AlertType.Success;
-        refreshUsers()
+        refreshUsers();
       } else {
         alert = {
           title: "Error!",
@@ -106,13 +136,24 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
         };
         alertType = AlertType.Error;
       }
+
       setAlert(alert, alertType);
-    });
+    } catch (error) {
+      console.error("Error:", error);
+      setAlert(
+        {
+          title: "Error!",
+          content: "An unexpected error occurred. Please try again.",
+        },
+        AlertType.Error
+      );
+    }
+
     setSelectedRowId(null);
   };
 
   const handleUpdatePrivilege = (email: string, isAdmin: boolean) => {
-    closeAlert()
+    closeAlert();
     updatePrivilege(email, isAdmin).then((response) => {
       let alert: AlertBody;
       let alertType: AlertType;
@@ -123,7 +164,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
           content: "User privilege updated successfully.",
         };
         alertType = AlertType.Success;
-        refreshUsers()
+        refreshUsers();
       } else {
         alert = {
           title: "Error!",
@@ -166,7 +207,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
         "auth/email-already-in-use", // Custom error code
         "The email address is already in use by another account." // Custom error message
       );
-    } 
+    }
 
     // Proceed with the registration process if the email is not in use
     const firebaseUser = await createUserWithEmailAndPassword(
@@ -329,7 +370,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
       <div
         className={`absolute h-fit w-full flex flex-col items-start justify-center gap-8 pb-6 transition-all duration-500 ease-in-out transform ${
           addUser ? "translate-y-32" : "-translate-y-40"
-        } z-0`}
+        } -z-10`}
       >
         <div
           className={`relative h-fit w-full flex flex-col items-start justify-center gap-8 rounded-xl transition-all duration-500 ease-in-out transform ${
@@ -452,7 +493,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
           </div>
         </div>
         <div className="w-11/12 overflow-x-auto shadow-md sm:rounded-lg">
-          <table className="w-full text-blue-700">
+          <table className="w-full text-blue-700 overflow-hidden">
             <thead className="text-sm text-left uppercase bg-sky-100">
               <tr>
                 <th scope="col" className="p-4">
@@ -470,37 +511,45 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                 <th scope="col" className="p-4">
                   Last Activity
                 </th>
-                <th scope="col" className="px-2 py-4">
+                <th scope="col" className="w-40 px-2 py-4">
                   Action
                 </th>
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((item) => (
+              {currentItems.map((item, index) => (
                 <tr key={item.id} className={`odd:bg-white even:bg-sky-100`}>
                   <td className="px-4 py-3 font-medium">{item.fName}</td>
                   <td className="px-4 py-3 font-medium">{item.lName}</td>
                   <td className="px-4 py-3">{item.isAdmin ? "Yes" : "No"}</td>
                   <td className="px-4 py-3">{item.email}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 z-5">
                     {item.lastActivity ? item.lastActivity : "N/A"}
                   </td>
-                  <td className="flex items-center justify-center px-4 py-3">
+                  <td className="relative w-40 flex items-center justify-start gap-3 py-3 px-2">
                     <div
-                      className={`flex gap-3 ${
-                        deleteUserRow && selectedRowId === item.id
-                          ? "-translate-x-9"
-                          : "-translate-x-6"
-                      } transition duration-300 ease-in-out`}
+                      className={`transform ${
+                        selectedRowId === item.userId
+                          ? "translate-x-12 -z-10"
+                          : "translate-x-0"
+                      } transition-all duration-500 ease-in-out`}
                     >
                       <Tooltip title="Delete User" arrow>
-                        <button onClick={() => handleDeleteUser(item.email)}>
+                        <button onClick={() => handleDeleteClick(item.userId)}>
                           <TiUserDelete
                             size={24}
                             className="text-[#1286ff] transition-transform duration-300 hover:scale-110"
                           />
                         </button>
                       </Tooltip>
+                    </div>
+                    <div
+                      className={`transform ${
+                        selectedRowId === item.userId
+                          ? "translate-x-12 -z-10"
+                          : "translate-x-0"
+                      } transition-all duration-500 ease-in-out`}
+                    >
                       <Tooltip
                         title={
                           item.isAdmin ? "Demote to user" : "Elevate to admin"
@@ -509,7 +558,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                       >
                         <button
                           onClick={() =>
-                            handleUpdatePrivilege(item.email, !item.isAdmin)
+                            handlePrivilegeChangeClick(item.userId)
                           }
                         >
                           <RiExchangeFill
@@ -519,41 +568,21 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                         </button>
                       </Tooltip>
                     </div>
-                    {/* <div
-                      className={`gap-3 ${
-                        deleteUserRow && selectedRowId === item.id
-                          ? "flex"
-                          : "hidden"
-                      }`}
-                    >
-                      <Tooltip title="Delete">
-                        <button
-                          type="button"
-                          className="transition-transform duration-300 hover:scale-110"
-                        >
-                          <MdDelete className="text-xl text-[#7d1f2e]" />
-                        </button>
-                      </Tooltip>
-                      <Tooltip title="Cancel">
-                        <button
-                          type="button"
-                          onClick={handleCancel}
-                          className="transition-transform duration-300 hover:scale-110"
-                        >
-                          <IoClose className="text-xl" />
-                        </button>
-                      </Tooltip>
-                    </div> */}
                     {/* ----------------------------------------------------------- */}
-                    {/* <div
-                      className={`gap-3 ${
-                        changePrivilege && selectedRowId === item.id
-                          ? "flex"
-                          : "hidden"
-                      }`}
+                    <div
+                      className={`absolute flex gap-3 ${
+                        index % 2 === 1 ? "bg-sky-100" : "bg-white"
+                      } transform ${
+                        changePrivilege && selectedRowId === item.userId
+                          ? "translate-x-0"
+                          : "translate-x-10 -z-10"
+                      } transition-transform duration-700 ease-in-out`}
                     >
                       <Tooltip title="Inactive">
                         <button
+                          onClick={() =>
+                            handleUpdatePrivilege(item.email, !item.isAdmin)
+                          }
                           type="button"
                           className="transition-transform duration-300 hover:scale-110"
                         >
@@ -569,7 +598,36 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                           <IoClose className="text-2xl text-red-600" />
                         </button>
                       </Tooltip>
-                    </div> */}
+                    </div>
+                    {/* ----------------------------------------------------------- */}
+                    <div
+                      className={`absolute flex gap-3 ${
+                        index % 2 === 1 ? "bg-sky-100" : "bg-white"
+                      } transform ${
+                        deleteUserRow && selectedRowId === item.userId
+                          ? "translate-x-0"
+                          : "translate-x-10 -z-10"
+                      } transition-transform duration-700 ease-in-out`}
+                    >
+                      <Tooltip title="Delete">
+                        <button
+                          onClick={() => handleDeleteUser(item.email)}
+                          type="button"
+                          className="transition-transform duration-300 hover:scale-110"
+                        >
+                          <MdDelete className="text-xl text-[#7d1f2e]" />
+                        </button>
+                      </Tooltip>
+                      <Tooltip title="Cancel">
+                        <button
+                          type="button"
+                          onClick={handleCancel}
+                          className="transition-transform duration-300 hover:scale-110"
+                        >
+                          <IoClose className="text-xl" />
+                        </button>
+                      </Tooltip>
+                    </div>
                   </td>
                 </tr>
               ))}
