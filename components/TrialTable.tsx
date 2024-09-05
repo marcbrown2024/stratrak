@@ -276,30 +276,24 @@ const TrialTable = (props: Props) => {
   };
 
   return (
-    <div className="h-fit w-full max-w-[80rem] mx-auto px-4 sm:px-6 lg:px-8">
-      {loading ? (
-        <div className="w-full h-full flex items-center justify-center">
-          <Loader />
-        </div>
-      ) : (
-        <DataGrid
-          className="p-4 gap-4"
-          rows={filteredRows}
-          columns={[...props.columns, actionColumn]}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 15,
-              },
+    <div className="w-full flex items-center">
+      <DataGrid
+        className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4"
+        rows={filteredRows}
+        columns={[...props.columns, actionColumn]}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 15,
             },
-          }}
-          slots={{ toolbar: CustomToolbar }}
-          pageSizeOptions={[15]}
-          disableMultipleRowSelection
-          disableColumnMenu
-          autoHeight
-        />
-      )}
+          },
+        }}
+        slots={{ toolbar: CustomToolbar }}
+        pageSizeOptions={[15]}
+        disableMultipleRowSelection
+        disableColumnMenu
+        autoHeight
+      />
     </div>
   );
 };

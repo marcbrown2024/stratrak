@@ -11,7 +11,6 @@ import {
   getUserFromDb,
   secondaryAuth,
   userEmailExists,
-  getAllUsers,
   deleteUser,
   updatePrivilege,
 } from "@/firebase";
@@ -51,10 +50,14 @@ const initialFormData: FormData = {
   password: "",
 };
 
+type CustomTableProps = {
+  users: User[];
+};
+
 // Total items per page
 const ITEMS_PER_PAGE = 4;
 
-const CustomTable = () => {
+const CustomTable: React.FC<CustomTableProps> = ({ users }) => {
   const { user } = useAuth();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -69,7 +72,6 @@ const CustomTable = () => {
 
   const [addUser, setAddUser] = useState<boolean>(false);
   const [creatingUser, setCreatingUser] = useState<boolean>(false);
-  const [users, setUsers] = useState<User[]>([]);
   const [createUserButton, setCreateUserButton] = useState<boolean>(false);
 
   const [deleteUserRow, setDeleteUserRow] = useState<boolean>(false);
@@ -245,19 +247,6 @@ const CustomTable = () => {
       return null; // Return null if there's an error
     }
   };
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const response = await getAllUsers();
-      if (response.success) {
-        setUsers(response.data);
-      } else {
-        console.error("Failed to fetch users:", response.data);
-      }
-    };
-
-    fetchUsers();
-  }, []);
 
   // Filter users based on the selected filter
   const filteredData = users.filter((item) => {
@@ -452,7 +441,7 @@ const CustomTable = () => {
                 <th scope="col" className="p-4">
                   Last Activity
                 </th>
-                <th scope="col" className="p-4">
+                <th scope="col" className="px-2 py-4">
                   Action
                 </th>
               </tr>

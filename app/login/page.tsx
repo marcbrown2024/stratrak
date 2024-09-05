@@ -13,7 +13,10 @@ import { AlertType } from "@/enums";
 
 // global store
 import { useAlertStore } from "@/store/AlertStore";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 
 // custom components
@@ -32,7 +35,7 @@ const Page = () => {
   const { user, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  
+
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const [setAlert, closeAlert] = useAlertStore((state) => [
@@ -41,7 +44,7 @@ const Page = () => {
   ]);
 
   useEffect(() => {
-    if (user && isAuthenticated) redirect('/');
+    if (user && isAuthenticated) redirect("/");
   }, [user, isAuthenticated]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -54,9 +57,13 @@ const Page = () => {
   };
 
   const logInUser = async () => {
-    const userResponse = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+    const userResponse = await signInWithEmailAndPassword(
+      auth,
+      formData.email,
+      formData.password
+    );
     return userResponse;
-  }
+  };
 
   const {
     executeAuth: executeUserLogin,
@@ -67,7 +74,7 @@ const Page = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     closeAlert();
-  
+
     // Call the executeAuth function with the appropriate arguments
     const { success, result } = await executeUserLogin();
 
@@ -101,14 +108,14 @@ const Page = () => {
     if (user && user.id) {
       // Call updateUserLastActivity with user.id
       updateUserLastActivity(user.id)
-        .then(result => {
+        .then((result) => {
           if (result.success) {
             console.log("User's last activity updated successfully.");
           } else {
             console.error("Failed to update user's last activity.");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error updating user's last activity:", error);
         });
     }
@@ -127,9 +134,7 @@ const Page = () => {
           className="w-full max-w-[22rem] space-y-6 bg-[#013e91] p-8 border border-gray-700 rounded-xl shadow"
         >
           {error && <p className="text-red-500 mb-4">{error}</p>}
-          <span className="text-3xl font-medium text-white">
-            Sign In
-          </span>
+          <span className="text-3xl font-medium text-white">Sign In</span>
           <div className="space-y-8">
             <div>
               <label
@@ -170,7 +175,7 @@ const Page = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 cursor-pointer"
                 >
-                  {showPassword ? 'Hide' : 'Show'}
+                  {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
             </div>
@@ -182,12 +187,6 @@ const Page = () => {
                   className="h-4 w-4 bg-gray-50 border border-gray-300 rounded focus:ring-3 focus:ring-blue-300"
                 />
               </div>
-              <label
-                htmlFor="remember"
-                className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                Remember me
-              </label>
               <a
                 href="#"
                 className="text-sm ms-auto text-white hover:underline"
