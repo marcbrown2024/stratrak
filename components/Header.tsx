@@ -13,8 +13,10 @@ import UseScroll from "@/hooks/UseScroll";
 
 // zustand stores
 import { useModalStore } from "@/store/DropDownModalStore";
+import { useAuth } from "./AuthProvider";
 
 const Header = () => {
+  const {user} = useAuth()
   const scrolled = UseScroll(5);
   const pathname = usePathname();
   const selectedLayout = useSelectedLayoutSegment();
@@ -49,6 +51,16 @@ const Header = () => {
     return null;
   }
 
+  const getInitials = (user?: User): string => {
+    if (!user) return '';
+  
+    // Get the first letter of first name and last name
+    const firstInitial = user.fName ? user.fName.charAt(0).toUpperCase() : '';
+    const lastInitial = user.lName ? user.lName.charAt(0).toUpperCase() : '';
+  
+    return `${firstInitial}${lastInitial}`;
+  };
+
   return (
     <div
       className={`sticky inset-x-0 top-0 w-full transition-all border-b border-zinc-300 ${
@@ -72,7 +84,7 @@ const Header = () => {
           onClick={() => toggleModal()}
           className="Popup h-10 w-10 md:flex hidden items-center justify-center text-center bg-[#1286ff] rounded-full"
         >
-          <span className="text-sm text-white font-extrabold">HQ</span>
+          <span className="text-sm text-white font-extrabold">{getInitials(user)}</span>
         </button>
       </div>
     </div>

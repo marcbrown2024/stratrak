@@ -122,24 +122,24 @@ const Page = () => {
   }, [user]);
 
   return (
-    <div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#e0e3e4] overflow-hidden">
+<div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#D8E1F2] overflow-hidden">
       <div className="h-full w-full md:w-1/2 flex items-center justify-center">
-        <h1 className="text-6xl md:text-9xl font-bold text-blue-800">
-          TrialList
+        <h1 className="text-6xl md:text-9xl font-bold text-[#4E81BD]">
+          Trialist
         </h1>
       </div>
       <div className="h-full w-full md:w-1/2 flex items-center justify-center">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-[22rem] space-y-6 bg-[#013e91] p-8 border border-gray-700 rounded-xl shadow"
+          className="w-full max-w-md space-y-6 bg-white p-8 border border-gray-300 rounded-xl shadow-lg"
         >
           {error && <p className="text-red-500 mb-4">{error}</p>}
-          <span className="text-3xl font-medium text-white">Sign In</span>
-          <div className="space-y-8">
+          <h2 className="text-3xl font-medium text-[#015FCC]">Sign In</h2>
+          <div className="space-y-6">
             <div>
               <label
                 htmlFor="email"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-[#4E81BD]"
               >
                 Your email
               </label>
@@ -149,14 +149,14 @@ const Page = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full text-sm text-gray-900 bg-white border border-transparent p-2.5 rounded-lg focus-within:outline-0"
+                className="w-full text-sm text-gray-900 bg-[#F5F7FA] border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015FCC]"
                 required
               />
             </div>
             <div>
               <label
                 htmlFor="password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-[#4E81BD]"
               >
                 Your password
               </label>
@@ -167,7 +167,7 @@ const Page = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full text-sm text-gray-900 bg-white border border-transparent p-2.5 rounded-lg focus-within:outline-0"
+                  className="w-full text-sm text-gray-900 bg-[#F5F7FA] border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#015FCC]"
                   required
                 />
                 <button
@@ -179,24 +179,24 @@ const Page = () => {
                 </button>
               </div>
             </div>
-            <div className="flex items-start">
-              <div className="h-fit flex items-center">
+            <div className="flex items-center justify-between">
+              <label className="inline-flex items-center text-sm text-[#4E81BD]">
                 <input
-                  id="remember"
                   type="checkbox"
-                  className="h-4 w-4 bg-gray-50 border border-gray-300 rounded focus:ring-3 focus:ring-blue-300"
+                  className="form-checkbox"
                 />
-              </div>
+                <span className="ml-2">Remember me</span>
+              </label>
               <a
                 href="#"
-                className="text-sm ms-auto text-white hover:underline"
+                className="text-sm text-[#015FCC] hover:underline"
               >
                 Forget Password?
               </a>
             </div>
             <button
               type="submit"
-              className="w-full text-blue-800 text-center font-medium bg-white px-5 py-2.5 rounded-lg hover:bg-slate-100"
+              className="w-full text-white bg-[#015FCC] px-5 py-2.5 rounded-lg hover:bg-[#0048A8]"
             >
               Sign In
             </button>

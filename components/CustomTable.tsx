@@ -32,6 +32,7 @@ import { TiUserDelete } from "react-icons/ti";
 import { RiExchangeFill } from "react-icons/ri";
 import { IoCheckmarkDoneSharp, IoClose } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
+import { validateInput, validationRules } from "@/lib/defaults";
 
 type FormData = User & {
   password: string;
@@ -84,15 +85,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
     setCurrentPage(1);
   };
 
-  // const handleDeleteClick = (id: string) => {
-  //   setSelectedRowId(id);
-  //   setDeleteUserRow(true);
-  // };
-
-  const handlePrivilegeChangeClick = (id: string) => {
-    setSelectedRowId(id);
-    setChangePrivilege(true);
-  };
 
   const handleDeleteUser = (email: string) => {
     closeAlert()
@@ -145,6 +137,26 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
     setSelectedRowId(null);
   };
 
+  const validateData = () => {
+    const { isValid: emailIsValid, sanitizedValue: emailSanitized, errorMessage:emailError } = validateInput("email", formData.email);
+    const { isValid: passwordIsValid, sanitizedValue: passwordSanitized, errorMessage:passwordError } = validateInput("password", formData.password);
+    const { isValid: fNameIsValid, sanitizedValue: fNameSanitized, errorMessage:fNameError } = validateInput("firstName", formData.fName);
+    const { isValid: lNameIsValid, sanitizedValue: lNameSanitized, errorMessage:lNameError } = validateInput("lastName", formData.lName);
+    
+    if (emailError) {
+      throw new Error(emailError)
+    } else if (passwordError) {
+      throw new Error(passwordError)
+    } else if (fNameError) {
+      throw new Error(fNameError)
+    } else if (lNameError) {
+      throw new Error(lNameError)
+    } 
+
+    const data = {...formData, email: emailSanitized, password: passwordSanitized, fName: fNameSanitized, lName: lNameSanitized} 
+    
+    return {valid: emailIsValid && passwordIsValid && fNameIsValid && lNameIsValid, ...data}
+  }
   const registerUser = async () => {
     // Await the result of the asynchronous email check
     const inUse = await emailInUse(formData.email);
@@ -186,18 +198,34 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
     closeAlert();
     e.preventDefault();
 
-    // Call the executeAuth function with the appropriate arguments
-    const { success, result } = await executeUserCreation();
-
-    if (success) {
-      // On success, set success alert and clear form data
+    let dataValid;
+    let response;
+    try {
+      response = validateData()
+      dataValid = response.valid
+    } catch (e) {
       setAlert(
-        { title: "Success!", content: "User created successfully." },
-        AlertType.Success
+        { title: "Error", content: (e as Error).message },
+        AlertType.Error
       );
-      setFormData(initialFormData);
-      refreshUsers()
-      
+      dataValid = false
+    }
+
+
+    if (dataValid) {
+      // Call the executeAuth function with the appropriate arguments
+      const { success, result } = await executeUserCreation();
+  
+      if (success) {
+        // On success, set success alert and clear form data
+        setAlert(
+          { title: "Success!", content: "User created successfully." },
+          AlertType.Success
+        );
+        setFormData(initialFormData);
+        refreshUsers()
+        
+      }
     }
   };
 
@@ -359,6 +387,9 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                       className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
                       required
                     />
+                    <div>
+                      
+                    </div>
                   </div>
                 </div>
                 <div className="w-full flex items-end justify-center py-2">
