@@ -2,7 +2,7 @@
 
 // react/nextjs components
 import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 // firebase components/functions
 import { createLog, getTrial } from "@/firebase";
@@ -71,7 +71,7 @@ const CreateLog = ({ params }: params) => {
         };
         alertType = AlertType.Success;
         setTimeout(() => {
-          router.back();
+          router.push(`/trials/${trialId}/logs`);
         }, 3000);
       } else {
         alert = {

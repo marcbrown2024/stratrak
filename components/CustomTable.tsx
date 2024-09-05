@@ -10,6 +10,7 @@ import {
   enrollUser,
   getUserFromDb,
   secondaryAuth,
+  userEmailExists,
   getAllUsers,
   deleteUser,
   updatePrivilege,
@@ -18,6 +19,7 @@ import { useAlertStore } from "@/store/AlertStore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "./AuthProvider";
 import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
+import { FirebaseError } from "firebase/app";
 
 // custom components
 import Loader from "./Loader";
@@ -143,6 +145,17 @@ const CustomTable = () => {
   };
 
   const registerUser = async () => {
+    // Await the result of the asynchronous email check
+    const inUse = await emailInUse(formData.email);
+
+    if (inUse === true || inUse === null) {
+      throw new FirebaseError(
+        "auth/email-already-in-use", // Custom error code
+        "The email address is already in use by another account." // Custom error message
+      );
+    } 
+
+    // Proceed with the registration process if the email is not in use
     const firebaseUser = await createUserWithEmailAndPassword(
       secondaryAuth,
       formData.email,
@@ -157,6 +170,7 @@ const CustomTable = () => {
       userId: firebaseUser.user.uid,
       orgId: user?.orgId,
     };
+
     await createUser(userDetails);
     setCreateUserButton(false);
   };
@@ -213,6 +227,22 @@ const CustomTable = () => {
         ...prevData,
         [name]: value,
       }));
+    }
+  };
+
+  const emailInUse = async (email: string): Promise<boolean | null> => {
+    try {
+      const response = await userEmailExists(email);
+      console.log("response: ", response);
+
+      if (response.success) {
+        return response.data;
+      }
+
+      return null; // Return null if the response was unsuccessful
+    } catch (error) {
+      console.error("Error checking email:", error);
+      return null; // Return null if there's an error
     }
   };
 

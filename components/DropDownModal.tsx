@@ -56,8 +56,7 @@ const DropDownModal = () => {
           />
           <div className="flex flex-col items-start justify-start gap-1">
             <p className="text-blue-500 font-semibold">{user?.fName + " " + user?.lName}</p>
-            <p className="text-sm text-blue-500 font-medium">Department</p>
-            <p className="text-sm text-blue-500 font-medium">Company Name</p>
+            {/* <p className=" text-blue-500 font-medium text-xs">{user?.orgId}</p> */}
           </div>
         </div>
         <Link

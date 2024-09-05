@@ -30,16 +30,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={`bg-slate-50 ${inter.className}`}>
         <div className="flex">
-          <Sidebar />
-          <main className="flex-1">
-            <AuthProvider>
+          <AuthProvider>
+            <Sidebar />
+            <main className="flex-1">
               <MarginWidthWrapper>
                 <Header />
                 <HeaderMobile />
                 <PageWrapper>{children}</PageWrapper>
               </MarginWidthWrapper>
-            </AuthProvider>
-          </main>
+            </main>
+          </AuthProvider>
           <Alert />
         </div>
       </body>

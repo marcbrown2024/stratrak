@@ -12,27 +12,18 @@ import CustomTable from "@/components/CustomTable";
 
 // icons
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
+import { redirect } from "next/navigation";
 
 const Page = () => {
-  const { user } = useAuth();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [trials, setTrials] = useState<TrialDetails[]>([]);
+  const { user } = useAuth()
+  const [loading, setLoading] = useState<Boolean>(true);
+
 
   useEffect(() => {
-    if (user?.orgId) {
-      getTrials(user.orgId)
-        .then((response) => {
-          setTrials(response.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching trials:", error);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false); // Set loading to false if user or orgId is undefined
+    if (user) {
+      if (!user.isAdmin) redirect('/')
     }
-  }, [user]);
+  }, [user])
 
   return (
     <div className="h-fit w-full flex flex-col items-center justify-center bg-slate-50 md:pl-20">

@@ -33,6 +33,7 @@ type SideNavItem = {
   subMenuItems?: SideNavItem[];
   signOut?: () => void;
   usage?: string;
+  requireAdmin: boolean;
 };
 
 type MenuItemWithSubMenuProps = {

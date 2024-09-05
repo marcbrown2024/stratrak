@@ -79,7 +79,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
         reDrawPreviousData(ctx);
       }
     }
-  }, [reDrawPreviousData]); // only reDrawPreviousData is necessary here
+  }, [canvasRef.current]); // Ensure this effect runs when canvasRef.current changes
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     if (context) {
