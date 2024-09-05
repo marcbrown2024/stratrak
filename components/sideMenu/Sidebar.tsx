@@ -31,6 +31,7 @@ const Sidebar = () => {
               width={200}
               height={75}
               alt={'site logo'}
+              priority
               className="object-cover w-full h-full -ml-10 transform scale-75"
             />
           </div>
