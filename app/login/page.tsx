@@ -2,13 +2,13 @@
 
 // react/nextjs components
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {useCreateUserWithEmailAndPassword, useSignInWithEmailAndPassword} from 'react-firebase-hooks/auth'
-import {auth} from '@/firebase'
+import { redirect, useRouter } from "next/navigation";
+import { auth } from '@/firebase';
 import { AlertType } from "@/enums";
 import { useAlertStore } from "@/store/AlertStore";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
+import { useAuth } from "@/components/AuthProvider";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 // custom components
 
@@ -23,8 +23,10 @@ const initialFormData = {
 };
 
 const Page = () => {
+  const { user, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState<FormData>(initialFormData);
-
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const [setAlert, closeAlert] = useAlertStore((state) => [
@@ -32,7 +34,9 @@ const Page = () => {
     state.closeAlert,
   ]);
 
-  // const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
+  useEffect(() => {
+    if (user && isAuthenticated) redirect('/');
+  }, [user, isAuthenticated]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -44,15 +48,15 @@ const Page = () => {
   };
 
   const logInUser = async () => {
-    const userResponse = await signInWithEmailAndPassword(auth, formData.email, formData.password)
-    return userResponse
+    const userResponse = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+    return userResponse;
   }
 
   const { executeAuth: executeUserLogin, loading: userLoginLoading, error: userLoginError } = useFirebaseAuth(logInUser);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    closeAlert()
+    e.preventDefault();
+    closeAlert();
   
     // Call the executeAuth function with the appropriate arguments
     const { success } = await executeUserLogin();
@@ -63,14 +67,13 @@ const Page = () => {
       setFormData(initialFormData);
       router.push('/');
     }
-
   };
 
   useEffect(() => {
     if (userLoginError) {
       setAlert({ title: "Something went wrong", content: userLoginError ?? "An unexpected error occurred." }, AlertType.Error);
     }
-  }, [userLoginError, setAlert])  
+  }, [userLoginError, setAlert]);
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#e0e3e4] overflow-hidden">
@@ -82,10 +85,10 @@ const Page = () => {
       <div className="h-full w-full md:w-1/2 flex items-center justify-center">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-[22rem] space-y-6 bg-[#013e91] p-8 border border-gray-700 rounded-xl shadow "
+          className="w-full max-w-[22rem] space-y-6 bg-[#013e91] p-8 border border-gray-700 rounded-xl shadow"
         >
           {error && <p className="text-red-500 mb-4">{error}</p>}
-          <span className="text-3xl font-medium text-white ">
+          <span className="text-3xl font-medium text-white">
             Sign In
           </span>
           <div className="space-y-8">
@@ -113,15 +116,24 @@ const Page = () => {
               >
                 Your password
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full text-sm text-gray-900 bg-white border border-transparent p-2.5 rounded-lg focus-within:outline-0"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full text-sm text-gray-900 bg-white border border-transparent p-2.5 rounded-lg focus-within:outline-0"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 cursor-pointer"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
             </div>
             <div className="flex items-start">
               <div className="h-fit flex items-center">
@@ -146,9 +158,9 @@ const Page = () => {
             </div>
             <button
               type="submit"
-              className="w-full text-blue-800 text-center font-medium bg-white px-5 py-2.5 rounded-lg  hover:bg-slate-100"
+              className="w-full text-blue-800 text-center font-medium bg-white px-5 py-2.5 rounded-lg hover:bg-slate-100"
             >
-              Login to your account
+              Sign In
             </button>
           </div>
         </form>

@@ -1,11 +1,11 @@
 "use client";
 
 // react/nextjs components
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 // firebase components/functions
-import { deleteLog } from "@/firebase";
+import { deleteLog, getLogs } from "@/firebase";
 import { useAuth } from "@/components/AuthProvider";
 
 // global stores
@@ -27,6 +27,7 @@ import { IoClose } from "react-icons/io5";
 type Props = {
   columns: GridColDef[];
   rows: LogDetails[];
+  trialId: string;
 };
 
 const LogTable = (props: Props) => {
@@ -34,14 +35,25 @@ const LogTable = (props: Props) => {
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteLogRow, setDeleteLogRow] = useState<boolean>(false);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
+  const [logs, setLogs] = useState<LogDetails[]>([])
+
+  useEffect(() => {
+    if (props.rows) {
+      setLogs(props.rows)
+    }
+  }, [props])
+
+  useEffect(() => {
+    console.log("logs: ", logs)
+  }, [logs])
 
   const handleSetDelete = (id: number) => {
     setActiveRowId(id);
     setDeleteLogRow(true);
   };
 
-  const handleDeleteLog = (id: number) => {
-    deleteLog(id.toString()).then((response) => {
+  const handleDeleteLog = (logId: string) => {
+    deleteLog(logId).then((response) => {
       let alert: AlertBody;
       let alertType: AlertType;
 
@@ -50,6 +62,8 @@ const LogTable = (props: Props) => {
           title: "Success!",
           content: "Log was deleted successfully.",
         };
+
+        getLogs(props.trialId).then(response => setLogs(response.data))
         alertType = AlertType.Success;
       } else {
         alert = {
@@ -69,8 +83,9 @@ const LogTable = (props: Props) => {
     headerName: "Monitor Name",
     flex: 1,
     renderCell: (params) => {
-      if (user?.fName && user?.lName) {
-        return <span>{user.fName + " " + user.lName}</span>;
+      const {row} = params
+      if (row.monitorName) {
+        return <span>{row.monitorName}</span>;
       } else {
         return <span>No Monitor name available</span>;
       }
@@ -83,14 +98,14 @@ const LogTable = (props: Props) => {
     headerName: "Signature",
     flex: 1,
     renderCell: (params) => {
-      const { value } = params;
+      const { row } = params;
       return (
         <div className="h-[40px] w-fit flex items-center text-center">
-          {user && user.signature ? (
+          {row.signature ? (
             <Image
               width={400}
               height={400}
-              src={user.signature}
+              src={row.signature}
               alt="User Signature"
               style={{
                 maxWidth: "150px",
@@ -168,7 +183,7 @@ const LogTable = (props: Props) => {
   return (
     <DataGrid
       className="h-fit w-[80rem] p-6 gap-4"
-      rows={props.rows}
+      rows={logs}
       columns={[
         monitorNameColumn,
         signatureColumn,

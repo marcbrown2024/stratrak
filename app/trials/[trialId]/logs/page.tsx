@@ -55,7 +55,7 @@ const LogsPage = () => {
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-8">
-        {loading ? <Loader /> : <LogTable columns={columns} rows={logs} />}
+        {loading ? <Loader /> : <LogTable columns={columns} rows={logs} trialId={trialId as string} />}
       </div>
     </div>
   );

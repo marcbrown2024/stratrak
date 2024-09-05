@@ -1,12 +1,17 @@
+'use client'
+
 // react/nextjs components
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { redirect, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 // icons
 import { FaChevronDown } from "react-icons/fa";
+import { useAuth } from "../AuthProvider";
 
 const MenuItem = ({ item }: { item: SideNavItem }) => {
+  const {user, isAuthenticated} = useAuth()
+
   const pathname = usePathname();
   const [subMenuOpen, setSubMenuOpen] = useState(false);
 
@@ -14,7 +19,8 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
     setSubMenuOpen(!subMenuOpen);
   };
 
-  return (
+  return (item.requireAdmin && !user?.isAdmin) ? null : (
+    
     <div>
       {item.subMenu ? (
         <>

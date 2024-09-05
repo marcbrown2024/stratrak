@@ -299,6 +299,25 @@ export const uploadSignature = async (userId: string, base64String: string) => {
   }
 };
 
+export const userEmailExists = async (email: string) => {
+  try {
+    const usersRef = collection(db, 'users')
+    const q = query(usersRef, where("email", "==", email))
+    const usersSnap = await getDocs(q)
+    
+    response = {
+      success: true,
+      data: !usersSnap.empty
+    }
+  } catch (e) {
+    response = {
+      success: false,
+      data: e
+    }
+  }
+  return response
+}
+
 const convertToFirestoreTimestamp = (dateString: string): Timestamp => {
   // Create a JavaScript Date object from the date string
   const date = new Date(dateString);
@@ -311,12 +330,13 @@ const convertToFirestoreTimestamp = (dateString: string): Timestamp => {
 const convertTimestampToDate = (timestamp: Timestamp | string): string => {
   try {
     // Convert Firestore Timestamp to JavaScript Date object
-    const date = (timestamp as Timestamp).toDate();
+    const date = (timestamp as Timestamp).toDate().toLocaleString();
   
     // Format the date to 'YYYY-MM-DDThh:mm'
-    const formattedDate = moment(date.toISOString().slice(0, 16)).format('YYYY-MM-DD, h:mm A');
+    const formattedDate = moment(date.slice(0, 16)).format('YYYY-MM-DD, h:mm A');
     return formattedDate;
   } catch (e) {
     return timestamp as string
   }
 };
+

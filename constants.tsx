@@ -23,15 +23,17 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: <MdFolderShared size={24} />,
     subMenu: true,
     subMenuItems: [
-      { title: "Active Trials", path: "/trials/active" },
-      { title: "Inactive Trials", path: "/trials/inactive" },
-      { title: "Completed Trials", path: "/trials/completed" },
+    { title: "Active Trials", path: "/trials/active", requireAdmin: false },
+      { title: "Inactive Trials", path: "/trials/inactive", requireAdmin: false },
+      { title: "Completed Trials", path: "/trials/completed", requireAdmin: false },
     ],
+    requireAdmin: false,
   },
   {
     title: "User Management",
-    path: "/userManagement",
+    path: "/admin",
     icon: <MdAdminPanelSettings size={24} />,
+    requireAdmin: true,
   },
   // {
   //   title: "Settings",
@@ -42,20 +44,24 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     title: "Profile",
     path: "/profile",
     usage: "smallScreen",
+    requireAdmin: false,
   },
   {
     title: "Help",
     path: "/help",
     usage: "smallScreen",
+    requireAdmin: false,
   },
   {
     title: "Reset Password",
     path: "/resetPassword",
     usage: "smallScreen",
+    requireAdmin: false,
   },
   {
     title: "Sign Out",
     path: "/login",
     usage: "smallScreen",
+    requireAdmin: false,
   },
 ];

@@ -12,16 +12,19 @@ import CustomTable from "@/components/CustomTable";
 
 // icons
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
+import { useAuth } from "@/components/AuthProvider";
+import { redirect } from "next/navigation";
 
 const Page = () => {
+  const { user } = useAuth()
   const [loading, setLoading] = useState<Boolean>(true);
 
-  // Update the state with the imported data
+
   useEffect(() => {
-    getTrials().then((response) => {
-      setLoading(false);
-    });
-  }, []);
+    if (user) {
+      if (!user.isAdmin) redirect('/')
+    }
+  }, [user])
 
   return (
     <div className="h-fit w-full flex flex-col items-center justify-center bg-slate-50 md:pl-20">
