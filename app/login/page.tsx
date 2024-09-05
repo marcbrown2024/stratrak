@@ -13,10 +13,7 @@ import { AlertType } from "@/enums";
 
 // global store
 import { useAlertStore } from "@/store/AlertStore";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 
 // custom components
@@ -105,9 +102,9 @@ const Page = () => {
 
   useEffect(() => {
     // Check if user is available and has an id
-    if (user && user.id) {
-      // Call updateUserLastActivity with user.id
-      updateUserLastActivity(user.id)
+    if (user && user.userId) {
+      // Call updateUserLastActivity with user.userId
+      updateUserLastActivity(user.userId)
         .then((result) => {
           if (result.success) {
             console.log("User's last activity updated successfully.");
@@ -122,7 +119,7 @@ const Page = () => {
   }, [user]);
 
   return (
-<div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#D8E1F2] overflow-hidden">
+    <div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#D8E1F2] overflow-hidden">
       <div className="h-full w-full md:w-1/2 flex items-center justify-center">
         <h1 className="text-6xl md:text-9xl font-bold text-[#4E81BD]">
           Trialist
@@ -181,16 +178,10 @@ const Page = () => {
             </div>
             <div className="flex items-center justify-between">
               <label className="inline-flex items-center text-sm text-[#4E81BD]">
-                <input
-                  type="checkbox"
-                  className="form-checkbox"
-                />
+                <input type="checkbox" className="form-checkbox" />
                 <span className="ml-2">Remember me</span>
               </label>
-              <a
-                href="#"
-                className="text-sm text-[#015FCC] hover:underline"
-              >
+              <a href="#" className="text-sm text-[#015FCC] hover:underline">
                 Forget Password?
               </a>
             </div>

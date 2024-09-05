@@ -9,7 +9,6 @@ import {
   createUser,
   secondaryAuth,
   userEmailExists,
-  deleteUser,
   updatePrivilege,
 } from "@/firebase";
 

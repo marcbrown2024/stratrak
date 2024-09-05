@@ -123,17 +123,20 @@ export const updateTrialProgress = async (
   }
 };
 
-export const updatePrivilege = async (email: string, isAdmin: boolean): Promise<{ success: boolean }> => {
+export const updatePrivilege = async (
+  email: string,
+  isAdmin: boolean
+): Promise<{ success: boolean }> => {
   try {
     // Reference to the "users" collection
     const usersCollection = collection(db, "users");
-    
+
     // Create a query to find the document with the matching email
     const q = query(usersCollection, where("email", "==", email));
-    
+
     // Execute the query
     const querySnapshot = await getDocs(q);
-    
+
     if (querySnapshot.empty) {
       // No document found with the specified email
       console.error("No matching documents.");
@@ -142,7 +145,7 @@ export const updatePrivilege = async (email: string, isAdmin: boolean): Promise<
 
     // Assume there's only one document per email, get the first document found
     const docToUpdate = querySnapshot.docs[0];
-    
+
     // Update the isAdmin field
     await updateDoc(docToUpdate.ref, { isAdmin });
 
@@ -154,18 +157,31 @@ export const updatePrivilege = async (email: string, isAdmin: boolean): Promise<
 };
 
 export const updateUserLastActivity = async (
-  id: string
+  userId: string
 ): Promise<{ success: boolean }> => {
   try {
-    const userRef = doc(db, "users", id);
-    
-    // Get the current date and time in local time
-    const now = new Date();
-    const localTime = now.toLocaleString(); // Formats date to local time zone and more readable format
+    // Create a query to find the document where userId matches
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("userId", "==", userId));
 
-    await updateDoc(userRef, { lastActivity: localTime });
+    // Get the documents matching the query
+    const querySnapshot = await getDocs(q);
 
-    return { success: true };
+    // Check if a document was found
+    if (!querySnapshot.empty) {
+      const now = new Date();
+      const localTime = now.toLocaleString(); // Formats date to ISO 8601 string in UTC
+
+      // Update the lastActivity field in each matching document
+      querySnapshot.forEach(async (doc) => {
+        await updateDoc(doc.ref, { lastActivity: localTime });
+      });
+
+      return { success: true };
+    } else {
+      console.error(`No user found with userId: ${userId}`);
+      return { success: false };
+    }
   } catch (e: any) {
     console.error(e.message);
     return { success: false };
@@ -358,22 +374,22 @@ export const uploadSignature = async (userId: string, base64String: string) => {
 
 export const userEmailExists = async (email: string) => {
   try {
-    const usersRef = collection(db, 'users')
-    const q = query(usersRef, where("email", "==", email))
-    const usersSnap = await getDocs(q)
-    
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("email", "==", email));
+    const usersSnap = await getDocs(q);
+
     response = {
       success: true,
-      data: !usersSnap.empty
-    }
+      data: !usersSnap.empty,
+    };
   } catch (e) {
     response = {
       success: false,
-      data: e
-    }
+      data: e,
+    };
   }
-  return response
-}
+  return response;
+};
 
 const convertToFirestoreTimestamp = (dateString: string): Timestamp => {
   // Create a JavaScript Date object from the date string
@@ -388,9 +404,11 @@ const convertTimestampToDate = (timestamp: Timestamp | string): string => {
   try {
     // Convert Firestore Timestamp to JavaScript Date object
     const date = (timestamp as Timestamp).toDate().toLocaleString();
-  
+
     // Format the date to 'YYYY-MM-DDThh:mm'
-    const formattedDate = moment(date.slice(0, 16)).format('YYYY-MM-DD, h:mm A');
+    const formattedDate = moment(date.slice(0, 16)).format(
+      "YYYY-MM-DD, h:mm A"
+    );
     return formattedDate;
   } catch (e) {
     return timestamp as string;
@@ -402,7 +420,7 @@ export const getAllUsers = async (orgId: string) => {
 
   try {
     const usersRef = collection(db, "users");
-    const q = query(usersRef, where("orgId", "==", orgId))
+    const q = query(usersRef, where("orgId", "==", orgId));
     const usersSnap = await getDocs(q);
 
     usersSnap.forEach((doc) => {
@@ -416,33 +434,5 @@ export const getAllUsers = async (orgId: string) => {
   } catch (e: any) {
     console.error(e.message);
     return { success: false, data: e };
-  }
-};
-
-export const deleteUser = async (userId: string): Promise<{ success: boolean }> => {
-  try {
-    // Reference to the "users" collection
-    const usersCollection = collection(db, "users");
-    
-    // Create a query to find the document with the matching userId
-    const q = query(usersCollection, where("userId", "==", userId));
-    
-    // Execute the query
-    const querySnapshot = await getDocs(q);
-    
-    if (querySnapshot.empty) {
-      // No document found with the specified email
-      console.error("No matching documents.");
-      return { success: false };
-    }
-
-    // Assume there's only one document per email, delete the first document found
-    const docToDelete = querySnapshot.docs[0];
-    await deleteDoc(docToDelete.ref);
-
-    return { success: true };
-  } catch (e: any) {
-    console.error(e.message);
-    return { success: false };
   }
 };
