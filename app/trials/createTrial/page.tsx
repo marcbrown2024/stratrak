@@ -1,8 +1,8 @@
 "use client";
 
 // react/nextjs components
-import React, { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { redirect, useRouter } from "next/navigation";
 
 // firebase components/functions
 import { createTrial } from "@/firebase";
@@ -41,6 +41,10 @@ const CreateTrials = () => {
     state.closeAlert,
   ]);
   const [savingTrial, setSavingTrial] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!user?.isAdmin) redirect('/')
+  }, [user])
 
   const addRow = () => {
     updateLogs(tableRowsIds.length, defaultTrial);

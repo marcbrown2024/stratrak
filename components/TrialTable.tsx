@@ -37,12 +37,24 @@ type Props = {
 };
 
 const TrialTable = (props: Props) => {
+  const {user, isAuthenticated} = useAuth()
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteTrialRow, setDeleteTrialRow] = useState<boolean>(false);
   const [changeProgress, setChangeProgress] = useState<boolean>(false);
-  const [setAlert] = useAlertStore((state) => [state.setAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filteredRows, setFilteredRows] = useState<TrialDetails[]>([]);
+  const [isAdmin, setIsAdmin] = useState<boolean>()
+
+  useEffect(() => {
+    if (user && isAuthenticated) {
+      setIsAdmin(user.isAdmin)
+    }
+  }, [user, isAuthenticated])
+
+  useEffect(() => {
+    console.log(isAdmin)
+  }, [isAdmin])
 
   useEffect(() => {
     if (props.rows.length > 0) {
@@ -66,6 +78,7 @@ const TrialTable = (props: Props) => {
   };
 
   const handleDeleteTrial = (id: number) => {
+    closeAlert()
     deleteTrial(id.toString()).then((response) => {
       let alert: AlertBody;
       let alertType: AlertType;
@@ -94,6 +107,7 @@ const TrialTable = (props: Props) => {
   };
 
   const handleSetProgress = (id: number, progressStatus: string) => {
+    closeAlert()
     updateTrialProgress(id.toString(), progressStatus).then((response) => {
       let alert: AlertBody;
       let alertType: AlertType;
@@ -148,104 +162,113 @@ const TrialTable = (props: Props) => {
                 </button>
               </Link>
             </Tooltip>
-            <Tooltip title="Delete Trial">
-              <button
-                type="button"
-                onClick={() => {
-                  handleSetDelete(id);
-                  setChangeProgress(false);
-                }}
-                className="transition-transform duration-300 hover:scale-110"
+            {
+              isAdmin &&
+              <>
+                <Tooltip title="Delete Trial">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleSetDelete(id);
+                      setChangeProgress(false);
+                    }}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <MdFolderDelete className="text-xl text-[#cf3030]" />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Change Progress">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleChangeProgress(id);
+                      setDeleteTrialRow(false);
+                    }}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <TbAdjustmentsCheck className="text-xl text-[#3591e7]" />
+                  </button>
+                </Tooltip>
+              </>
+            }
+            {
+            <>
+              {/* ----------------------------------------------------------- */}
+              <div
+                className={`gap-3 ${
+                  isProgressActive && deleteTrialRow ? "flex" : "hidden"
+                }`}
               >
-                <MdFolderDelete className="text-xl text-[#cf3030]" />
-              </button>
-            </Tooltip>
-            <Tooltip title="Change Progress">
-              <button
-                type="button"
-                onClick={() => {
-                  handleChangeProgress(id);
-                  setDeleteTrialRow(false);
-                }}
-                className="transition-transform duration-300 hover:scale-110"
+                <Tooltip title="Delete">
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteTrial(id)}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <MdDelete className="text-xl text-[#7d1f2e]" />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Cancel">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDeleteTrialRow(false);
+                      setActiveRowId(null);
+                    }}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <IoClose className="text-xl" />
+                  </button>
+                </Tooltip>
+              </div>
+              {/* ----------------------------------------------------------- */}
+              <div
+                className={`gap-3 ${
+                  isProgressActive && changeProgress ? "flex" : "hidden"
+                }`}
               >
-                <TbAdjustmentsCheck className="text-xl text-[#3591e7]" />
-              </button>
-            </Tooltip>
-            {/* ----------------------------------------------------------- */}
-            <div
-              className={`gap-3 ${
-                isProgressActive && deleteTrialRow ? "flex" : "hidden"
-              }`}
-            >
-              <Tooltip title="Delete">
-                <button
-                  type="button"
-                  onClick={() => handleDeleteTrial(id)}
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <MdDelete className="text-xl text-[#7d1f2e]" />
-                </button>
-              </Tooltip>
-              <Tooltip title="Cancel">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeleteTrialRow(false);
-                    setActiveRowId(null);
-                  }}
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <IoClose className="text-xl" />
-                </button>
-              </Tooltip>
-            </div>
-            {/* ----------------------------------------------------------- */}
-            <div
-              className={`gap-3 ${
-                isProgressActive && changeProgress ? "flex" : "hidden"
-              }`}
-            >
-              <Tooltip title="Inactive">
-                <button
-                  type="button"
-                  onClick={() => handleSetProgress(id, "Inactive")}
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <FaCircle className="text-xl text-gray-300" />
-                </button>
-              </Tooltip>
-              <Tooltip title="Active">
-                <button
-                  type="button"
-                  onClick={() => handleSetProgress(id, "Active")}
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <FaCircle className="text-xl text-green-400" />
-                </button>
-              </Tooltip>
-              <Tooltip title="Completed">
-                <button
-                  type="button"
-                  onClick={() => handleSetProgress(id, "Completed")}
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <FaCircle className="text-xl text-[#1286ff]" />
-                </button>
-              </Tooltip>
-              <Tooltip title="Cancel">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setChangeProgress(false);
-                    setActiveRowId(null);
-                  }}
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <MdCancel className="text-2xl text-red-600" />
-                </button>
-              </Tooltip>
-            </div>
+                <Tooltip title="Inactive">
+                  <button
+                    type="button"
+                    onClick={() => handleSetProgress(id, "Inactive")}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <FaCircle className="text-xl text-gray-300" />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Active">
+                  <button
+                    type="button"
+                    onClick={() => handleSetProgress(id, "Active")}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <FaCircle className="text-xl text-green-400" />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Completed">
+                  <button
+                    type="button"
+                    onClick={() => handleSetProgress(id, "Completed")}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <FaCircle className="text-xl text-[#1286ff]" />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Cancel">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setChangeProgress(false);
+                      setActiveRowId(null);
+                    }}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <MdCancel className="text-2xl text-red-600" />
+                  </button>
+                </Tooltip>
+              </div>
+            </>
+            }
           </div>
         </div>
       );

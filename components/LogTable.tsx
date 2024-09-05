@@ -31,11 +31,20 @@ type Props = {
 };
 
 const LogTable = (props: Props) => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteLogRow, setDeleteLogRow] = useState<boolean>(false);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
   const [logs, setLogs] = useState<LogDetails[]>([])
+  const [isAdmin, setIsAdmin] = useState<boolean>(false)
+  const [columnsToRender, setColumnsToRender] = useState<GridColDef<LogDetails>[]>([])
+  
+  useEffect(() => {
+    if (user && isAuthenticated) {
+      setIsAdmin(user.isAdmin)
+    }
+  }, [user, isAuthenticated])
+
 
   useEffect(() => {
     if (props.rows) {
@@ -148,6 +157,7 @@ const LogTable = (props: Props) => {
                 <FaFileCircleMinus className="text-xl text-[#cf3030]" />
               </button>
             </Tooltip>
+
             <div
               className={`gap-3 ${
                 isProgressActive && deleteLogRow ? "flex" : "hidden"
@@ -181,18 +191,31 @@ const LogTable = (props: Props) => {
     },
   };
 
+  useEffect(() => {
+    if (isAdmin) {
+      setColumnsToRender([
+        monitorNameColumn,
+        signatureColumn,
+        props.columns[0],
+        ...props.columns.slice(1),
+        actionColumn
+      ])
+    } else {
+      setColumnsToRender([
+        monitorNameColumn,
+        signatureColumn,
+        props.columns[0],
+        ...props.columns.slice(1),
+      ])
+    }
+
+  }, [isAdmin])
   return (
   <div className="w-full max-w-full overflow-x-auto">
     <DataGrid
       className="h-fit w-[80rem] p-6 gap-4"
       rows={props.rows}
-      columns={[
-        monitorNameColumn,
-        signatureColumn,
-        props.columns[0],
-        ...props.columns.slice(1),
-        actionColumn,
-      ]}
+      columns={columnsToRender}
       initialState={{
         pagination: {
           paginationModel: {
