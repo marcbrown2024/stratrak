@@ -1,4 +1,4 @@
-// type for log details 
+// type for log details
 type LogDetails = {
   monitorName: string;
   signature: string;
@@ -8,12 +8,12 @@ type LogDetails = {
 };
 
 interface DBLog extends LogDetails {
-  id: string,
+  id: string;
 }
 
 // trial fetched from database
 interface DBTrial extends TrialDetails {
-  id: string
+  id: string;
 }
 
 // type for trial details
@@ -38,24 +38,24 @@ type SideNavItem = {
 type MenuItemWithSubMenuProps = {
   item: SideNavItem;
   toggleOpen: () => void;
-}
+};
 
 type AlertBody = {
-  title?: string,
-  content: string,
-}
+  title?: string;
+  content: string;
+};
 
 type User = {
-  email: string,
-  isAdmin: boolean,
-  id: string,
-  fName: string,
-  lName: string,
-  orgId: string,
-  signature: string,
-  online: boolean,
-  userId: string,
-}
+  email: string;
+  isAdmin: boolean;
+  id: string;
+  fName: string;
+  lName: string;
+  orgId: string;
+  signature: string;
+  lastActivity: string;
+  userId: string;
+};
 
 // Define the type for help form data
 type HelpFormData = {
@@ -75,4 +75,4 @@ type ProfileFormData = {
   city: string;
   region: string;
   postalCode: string;
-}
+};

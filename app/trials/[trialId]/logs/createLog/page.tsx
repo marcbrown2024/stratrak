@@ -107,7 +107,7 @@ const CreateLog = ({ params }: params) => {
   }, [trialId]);
 
   return (
-    <div className="h-full flex flex-col w-full max-w-screen-lg mx-auto justify-start gap-8 px-4 sm:px-8">
+    <div className="h-full w-full max-w-screen-lg flex flex-col justify-start gap-8 mx-auto px-4 sm:px-8">
       <div className="px-4 sm:px-8 py-2 bg-white mt-10 w-full sm:w-fit rounded-lg flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 border">
         <div className="font-bold text-gray-500">
           <p>Investigator Name:</p>

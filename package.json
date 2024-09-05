@@ -15,6 +15,7 @@
     "@mui/material": "^5.16.7",
     "@mui/x-data-grid": "^7.14.0",
     "@nextui-org/react": "^2.4.6",
+    "date-fns": "^3.6.0",
     "firebase": "^10.13.0",
     "framer-motion": "^11.4.0",
     "moment": "^2.30.1",

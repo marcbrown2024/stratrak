@@ -85,7 +85,7 @@ const LogTable = (props: Props) => {
     renderCell: (params) => {
       const { value } = params;
       return (
-        <div className="h-[40px] w-fit flex items-center text-center">
+        <div className="h-[40px] w-fit flex items-center justify-start text-center">
           {user && user.signature ? (
             <Image
               width={400}
@@ -96,6 +96,7 @@ const LogTable = (props: Props) => {
                 maxWidth: "150px",
                 maxHeight: "80px",
                 objectFit: "contain",
+                margin: "0 -20px"
               }}
             />
           ) : (

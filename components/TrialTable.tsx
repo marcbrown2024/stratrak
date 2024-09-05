@@ -18,6 +18,9 @@ import Tooltip from "@mui/material/Tooltip";
 // enums
 import { AlertType } from "@/enums";
 
+// custom components
+import Loader from "./Loader";
+
 //icons
 import { FaFolderOpen } from "react-icons/fa6";
 import { MdFolderDelete, MdCancel, MdDelete } from "react-icons/md";
@@ -25,7 +28,6 @@ import { TbAdjustmentsCheck } from "react-icons/tb";
 import { FaCircle } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { useAuth } from "./AuthProvider";
-import Loader from "./Loader";
 
 type Props = {
   columns: GridColDef[];
