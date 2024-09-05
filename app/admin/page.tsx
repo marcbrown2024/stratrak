@@ -30,6 +30,7 @@ const Page = () => {
     })
   }
 
+
   useEffect(() => {
     if (user) {
       if (!user.isAdmin) redirect("/");
