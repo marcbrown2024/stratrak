@@ -427,9 +427,6 @@ const convertTimestampToDate = (timestamp: Timestamp | string): string => {
   }
 };
 
-
-};
-
 export const getAllUsers = async () => {
   const users: User[] = [];
 

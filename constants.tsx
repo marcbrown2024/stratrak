@@ -30,7 +30,7 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     requireAdmin: false,
   },
   {
-    title: "User Management",
+    title: "Admin",
     path: "/admin",
     icon: <MdAdminPanelSettings size={24} />,
     requireAdmin: true,

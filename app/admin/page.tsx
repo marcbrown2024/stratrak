@@ -12,7 +12,6 @@ import CustomTable from "@/components/CustomTable";
 
 // icons
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
-import { useAuth } from "@/components/AuthProvider";
 import { redirect } from "next/navigation";
 
 const Page = () => {
