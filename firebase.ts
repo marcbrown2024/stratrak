@@ -170,16 +170,15 @@ export const updateUserLastActivity = async (
     // Check if a document was found
     if (!querySnapshot.empty) {
       const now = new Date();
-      const localTime = now.toLocaleString(); // Formats date to ISO 8601 string in UTC
+      const localTime = now.toLocaleString();
 
-      // Update the lastActivity field in each matching document
+      // Update the lastActivity field in matching document
       querySnapshot.forEach(async (doc) => {
         await updateDoc(doc.ref, { lastActivity: localTime });
       });
 
       return { success: true };
     } else {
-      console.error(`No user found with userId: ${userId}`);
       return { success: false };
     }
   } catch (e: any) {

@@ -105,15 +105,10 @@ const Page = () => {
     if (user && user.userId) {
       // Call updateUserLastActivity with user.userId
       updateUserLastActivity(user.userId)
-        .then((result) => {
-          if (result.success) {
-            console.log("User's last activity updated successfully.");
-          } else {
-            console.error("Failed to update user's last activity.");
-          }
+        .then(() => {
         })
         .catch((error) => {
-          console.error("Error updating user's last activity:", error);
+          console.error(error);
         });
     }
   }, [user]);
