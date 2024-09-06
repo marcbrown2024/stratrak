@@ -37,9 +37,6 @@ const LogTable = (props: Props) => {
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
   const [logs, setLogs] = useState<LogDetails[]>([]);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [columnsToRender, setColumnsToRender] = useState<
-    GridColDef<LogDetails>[]
-  >([]);
 
   useEffect(() => {
     if (user && isAuthenticated) {
@@ -139,53 +136,51 @@ const LogTable = (props: Props) => {
       const isProgressActive = id === activeRowId;
 
       return (
-        isAdmin && (
-          <div className="h-full w-full flex items-center justify-center 2xl:justify-start">
+        <div className="h-full w-full flex items-center justify-center 2xl:justify-start">
+          <div
+            className={`flex gap-3 ${
+              isProgressActive ? "-translate-x-8" : "translate-x-0"
+            } transition duration-300 ease-in-out`}
+          >
+            <Tooltip title="Delete Log">
+              <button
+                type="button"
+                onClick={() => handleSetDelete(id)}
+                className="transition-transform duration-300 hover:scale-110"
+              >
+                <FaFileCircleMinus className="text-xl text-[#cf3030]" />
+              </button>
+            </Tooltip>
+
             <div
-              className={`flex gap-3 ${
-                isProgressActive ? "-translate-x-8" : "translate-x-0"
-              } transition duration-300 ease-in-out`}
+              className={`gap-3 ${
+                isProgressActive && deleteLogRow ? "flex" : "hidden"
+              }`}
             >
-              <Tooltip title="Delete Log">
+              <Tooltip title="Delete">
                 <button
                   type="button"
-                  onClick={() => handleSetDelete(id)}
+                  onClick={() => handleDeleteLog(id)}
                   className="transition-transform duration-300 hover:scale-110"
                 >
-                  <FaFileCircleMinus className="text-xl text-[#cf3030]" />
+                  <MdDelete className="text-xl text-[#7d1f2e]" />
                 </button>
               </Tooltip>
-
-              <div
-                className={`gap-3 ${
-                  isProgressActive && deleteLogRow ? "flex" : "hidden"
-                }`}
-              >
-                <Tooltip title="Delete">
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteLog(id)}
-                    className="transition-transform duration-300 hover:scale-110"
-                  >
-                    <MdDelete className="text-xl text-[#7d1f2e]" />
-                  </button>
-                </Tooltip>
-                <Tooltip title="Cancel">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDeleteLogRow(false);
-                      setActiveRowId(null);
-                    }}
-                    className="transition-transform duration-300 hover:scale-110"
-                  >
-                    <IoClose className="text-xl" />
-                  </button>
-                </Tooltip>
-              </div>
+              <Tooltip title="Cancel">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteLogRow(false);
+                    setActiveRowId(null);
+                  }}
+                  className="transition-transform duration-300 hover:scale-110"
+                >
+                  <IoClose className="text-xl" />
+                </button>
+              </Tooltip>
             </div>
           </div>
-        )
+        </div>
       );
     },
   };
@@ -200,7 +195,7 @@ const LogTable = (props: Props) => {
           signatureColumn,
           props.columns[0],
           ...props.columns.slice(1),
-          actionColumn,
+          ...(isAdmin ? [actionColumn] : []),
         ]}
         initialState={{
           pagination: {

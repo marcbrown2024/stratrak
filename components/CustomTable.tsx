@@ -450,6 +450,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    autoComplete="false"
                     className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
                     required
                   />
@@ -462,6 +463,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
+                      autoComplete="false"
                       className="w-full text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
                       required
                     />
