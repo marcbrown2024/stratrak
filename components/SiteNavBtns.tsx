@@ -22,7 +22,7 @@ const SiteNavBtns = () => {
   };
 
   return pathname !== '/login' && (
-    <div className='absolute w-full flex justify-between space-x-4 top-7 px-8'>
+    <div className='fixed top-20 w-[79%] 2xl:w-10/12 flex justify-between space-x-4 px-8'>
       <button 
       onClick={handleBack}
       className='hover:text-blue-500 border rounded p-2 active:scale-90 duration-200'>

@@ -438,8 +438,7 @@ export const getAllUsers = async (orgId: string) => {
 };
 
 export const updateUserProfile = async (
-  userId: string,
-  formData: ProfileFormData
+  userId: string, profileData: Partial<ProfileFormData>
 ): Promise<{ success: boolean }> => {
   try {
     // Reference to the users collection
@@ -459,10 +458,38 @@ export const updateUserProfile = async (
     const userDoc = querySnapshot.docs[0]; // Get the first document from the results
     const userDocRef = doc(db, "users", userDoc.id); // Get a reference to the document
 
-    await updateDoc(userDocRef, formData);
+    await updateDoc(userDocRef, profileData);
     return { success: true };
   } catch (e: any) {
     console.error(e.message);
     return { success: false };
+  }
+};
+
+export const getOrganizationName = async (
+  orgId: string
+): Promise<string | null> => {
+  try {
+    // Reference the document using the orgId as the document ID
+    const docRef = doc(db, "organizations", orgId);
+
+    // Fetch the document
+    const docSnap = await getDoc(docRef);
+
+    // Check if the document exists
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+
+      // Retrieve the 'name' field from the document
+      const organizationName = data.name as string;
+
+      return organizationName;
+    } else {
+      // Document not found
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting organization name:", error);
+    throw new Error("Error getting organization name");
   }
 };

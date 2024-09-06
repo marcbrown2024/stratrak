@@ -49,6 +49,7 @@ type AlertBody = {
 type User = {
   email: string;
   isAdmin: boolean;
+  profilePhoto: string;
   id: string;
   fName: string;
   lName: string;
@@ -72,10 +73,10 @@ type HelpFormData = {
 
 // Type definitions for profile form data
 type ProfileFormData = {
+  profilePhoto?: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  country: string;
   streetAddress: string;
   city: string;
   state: string;

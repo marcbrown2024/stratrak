@@ -1,12 +1,15 @@
 "use client";
 
 // react/nextjs components
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
 // zustand stores
 import { useModalStore } from "@/store/DropDownModalStore";
+
+// firebase components
+import { getOrganizationName } from "@/firebase";
 
 // Icons
 import { AiOutlineClose } from "react-icons/ai";
@@ -14,20 +17,39 @@ import { MdLogout } from "react-icons/md";
 import { FaUserLock } from "react-icons/fa6";
 import { MdOutlineHelp } from "react-icons/md";
 import { signOut } from "firebase/auth";
-import {auth} from "@/firebase"
+import { auth } from "@/firebase";
 import { useAuth } from "./AuthProvider";
 
 const DropDownModal = () => {
-  const {user} = useAuth()
+  const { user } = useAuth();
+  const [organizationName, setOrganizationName] = useState<string | null>(null);
 
   const { isModalOpen, closeModal } = useModalStore();
   const userPhotoUrl =
     "https://cdn-icons-png.flaticon.com/512/3237/3237472.png";
 
   const handleSignOut = () => {
-    signOut(auth)
-    closeModal()
-  }
+    signOut(auth);
+    closeModal();
+  };
+
+  useEffect(() => {
+    const fetchOrganizationName = async () => {
+      if (user && user.orgId) {
+        try {
+          const name = await getOrganizationName(user.orgId);
+          setOrganizationName(name);
+        } catch (error) {
+          setOrganizationName(null);
+        }
+      } else {
+        setOrganizationName(null);
+      }
+    };
+
+    fetchOrganizationName();
+  }, [user]);
+
   return (
     <div
       className={`Popup fixed top-12 right-2 h-96 w-80 hidden md:flex flex-col items-center  ${
@@ -47,15 +69,28 @@ const DropDownModal = () => {
           </button>
         </div>
         <div className="h-auto w-full flex items-center justify-start gap-6">
-          <Image
-            src={userPhotoUrl}
-            alt=""
-            width={50}
-            height={50}
-            className="h-16 w-16 rounded-full"
-          />
+          {user && user.profilePhoto ? (
+            <Image
+              width={50}
+              height={50}
+              src={user.profilePhoto}
+              alt="Profile Photo"
+              className="h-16 w-16 rounded-full"
+            />
+          ) : (
+            <Image
+              src={userPhotoUrl}
+              alt=""
+              width={50}
+              height={50}
+              className="h-16 w-16 rounded-full"
+            />
+          )}
           <div className="flex flex-col items-start justify-start gap-1">
-            <p className="text-blue-500 font-semibold">{user?.fName + " " + user?.lName}</p>
+            <p className="text-blue-500 font-semibold">
+              {user?.fName + " " + user?.lName}
+            </p>
+            <p className="text-blue-500 font-semibold">{organizationName}</p>
             {/* <p className=" text-blue-500 font-medium text-xs">{user?.orgId}</p> */}
           </div>
         </div>
@@ -95,13 +130,13 @@ const DropDownModal = () => {
         </div>
         <hr className="w-full" />
         <div className="h-auto w-full flex items-center justify-start px-4 py-2 rounded-b-xl">
-          <button 
+          <button
             type="button"
             onClick={handleSignOut}
             className="h-8 w-full flex items-center justify-start gap-4 text-white font-medium mt-2"
-            >
-              <MdLogout className="text-white text-xl" />
-              Sign Out
+          >
+            <MdLogout className="text-white text-xl" />
+            Sign Out
           </button>
         </div>
       </div>

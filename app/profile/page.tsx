@@ -21,11 +21,14 @@ import { AlertType } from "@/enums";
 // libraries
 import { timeZoneToCountry } from "@/lib/countries";
 
+// icons
+import { MdPhotoSizeSelectActual } from "react-icons/md";
+
 const initialFormData: ProfileFormData = {
+  profilePhoto: "",
   firstName: "",
   lastName: "",
   phoneNumber: "",
-  country: "United States",
   streetAddress: "",
   city: "",
   state: "",
@@ -37,11 +40,11 @@ const Page = () => {
   const [formData, setFormData] = useState<ProfileFormData>(initialFormData);
   const [formButton, setFormButton] = useState<boolean>(false);
   const [signatureButton, setSignatureButton] = useState<boolean>(false);
-  const [signature, setSignature] = useState<string | null>(null);
   const [signatureDone, setSignatureDone] = useState<boolean>(false);
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const country = timeZoneToCountry[timeZone] || "Unknown";
   const [loading, setLoading] = useState<Boolean>(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [setAlert, closeAlert] = useAlertStore((state) => [
     state.setAlert,
     state.closeAlert,
@@ -78,16 +81,26 @@ const Page = () => {
     }));
   };
 
-  const isFormDataEmpty = (): boolean => {
-    return Object.entries(formData).every(([key, value]) => {
-      if (key === "photo") {
-        return true;
-      }
-      if (typeof value === "string") {
-        return value === "";
-      }
-      return value === null;
-    });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.target;
+
+    if (files && files[0]) {
+      const file = files[0];
+      setSelectedFile(file); // Store the selected file in the state
+
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+
+        setFormData((prevState) => ({
+          ...prevState,
+          profilePhoto: base64String, // Store the base64 string
+        }));
+      };
+
+      reader.readAsDataURL(file);
+    }
   };
 
   const editProfile = () => {
@@ -102,19 +115,33 @@ const Page = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+  
     if (!user?.userId) {
       setLoading(false);
       return;
     }
-
+  
+    // Create an object with only the changed fields
+    const updatedFields: Partial<ProfileFormData> = {};
+  
+    Object.keys(formData).forEach((key) => {
+      if (formData[key as keyof ProfileFormData] !== "") {
+        updatedFields[key as keyof ProfileFormData] = formData[key as keyof ProfileFormData];
+      }
+    });
+  
+    if (Object.keys(updatedFields).length === 0) {
+      return;
+    }
+  
     try {
-      await updateUserProfile(user.userId, formData);
+      await updateUserProfile(user.userId, updatedFields);
+  
       setAlert(
         { title: "Success", content: "Profile updated successfully." },
         AlertType.Success
       );
-      setFormData(initialFormData);
+      setFormData(initialFormData); // Clear form after submission
     } catch (error: any) {
       setAlert(
         {
@@ -129,6 +156,8 @@ const Page = () => {
       }, 2000);
     }
   };
+  
+
   return (
     <>
       {loading ? (
@@ -181,6 +210,44 @@ const Page = () => {
                     </div>
                   </div>
                 </div>
+                <div className="flex flex-col gap-2">
+                  <label
+                    htmlFor="profile-photo"
+                    className="flex items-center justify-between text-lg font-medium leading-6 text-blue-800"
+                  >
+                    Profile photo
+                    <span className="text-sm">
+                      &nbsp;{selectedFile && selectedFile.name}
+                    </span>
+                  </label>
+                  <div className="flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                    <div className="flex flex-col items-center">
+                      <MdPhotoSizeSelectActual
+                        size={54}
+                        className="text-gray-500"
+                      />
+                      <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                        <label
+                          htmlFor="profile-photo-upload"
+                          className="relative cursor-pointer rounded-md font-semibold text-blue-600 focus-within:outline-none focus-within:ring-2 hover:text-blue-500"
+                        >
+                          <span>Upload a file</span>
+                          <input
+                            id="profile-photo-upload"
+                            name="profilePhoto"
+                            type={formButton ? "file" : "text"}
+                            onChange={handleFileChange}
+                            className="sr-only"
+                          />
+                        </label>
+                        <p>&nbsp;or drag and drop</p>
+                      </div>
+                      <p className="text-xs leading-5 text-gray-600">
+                        PNG, JPG, GIF up to 10MB
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="flex flex-col gap-8 pb-10 border-b border-gray-900/10 ">
                 <div className="w-full flex items-center justify-center gap-12">
@@ -194,11 +261,10 @@ const Page = () => {
                     <div>
                       <input
                         type="text"
-                        name="firstName"
-                        id="firstName"
-                        value={formData.firstName}
+                        name="fName"
+                        id="fName"
                         onChange={handleChange}
-                        placeholder={user?.fName || ""}
+                        placeholder={user?.fName}
                         readOnly={!formButton}
                         className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                           !formButton ? "border-0" : "cursor-text"
@@ -216,11 +282,10 @@ const Page = () => {
                     <div>
                       <input
                         type="text"
-                        name="lastName"
-                        id="lastName"
-                        value={formData.lastName}
+                        name="lName"
+                        id="lName"
                         onChange={handleChange}
-                        placeholder={user?.lName || ""}
+                        placeholder={user?.lName}
                         readOnly={!formButton}
                         className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                           !formButton ? "border-0" : "cursor-text"
@@ -242,7 +307,8 @@ const Page = () => {
                         type="email"
                         name="email"
                         id="email"
-                        placeholder={user?.email || ""}
+                        onChange={handleChange}
+                        placeholder={user?.email}
                         readOnly
                         className="w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 rounded-md border-0 ring-1 ring-inset ring-gray-300 focus-within:outline-none cursor-not-allowed"
                       />
@@ -260,9 +326,8 @@ const Page = () => {
                         type="text"
                         name="phoneNumber"
                         id="phoneNumber"
-                        value={formData.phoneNumber}
                         onChange={handleChange}
-                        placeholder={user?.phoneNumber || ""}
+                        placeholder={user?.phoneNumber}
                         readOnly={!formButton}
                         className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                           !formButton ? "border-0" : "cursor-text"
@@ -283,9 +348,8 @@ const Page = () => {
                       type="text"
                       name="streetAddress"
                       id="streetAddress"
-                      value={formData.streetAddress}
                       onChange={handleChange}
-                      placeholder={user?.streetAddress || ""}
+                      placeholder={user?.streetAddress}
                       readOnly={!formButton}
                       className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                         !formButton ? "border-0" : "cursor-text"
@@ -306,9 +370,8 @@ const Page = () => {
                         type="text"
                         name="city"
                         id="city"
-                        value={formData.city}
                         onChange={handleChange}
-                        placeholder={user?.city || ""}
+                        placeholder={user?.city}
                         readOnly={!formButton}
                         className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                           !formButton ? "border-0" : "cursor-text"
@@ -328,9 +391,8 @@ const Page = () => {
                         type="text"
                         name="state"
                         id="state"
-                        value={formData.state}
                         onChange={handleChange}
-                        placeholder={user?.state || ""}
+                        placeholder={user?.state}
                         readOnly={!formButton}
                         className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                           !formButton ? "border-0" : "cursor-text"
@@ -352,9 +414,8 @@ const Page = () => {
                         type="text"
                         name="postalCode"
                         id="postalCode"
-                        value={formData.postalCode}
                         onChange={handleChange}
-                        placeholder={user?.postalCode || ""}
+                        placeholder={user?.postalCode}
                         readOnly={!formButton}
                         className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                           !formButton ? "border-0" : "cursor-text"
@@ -384,8 +445,7 @@ const Page = () => {
             {formButton && (
               <button
                 type="submit"
-                className="absolute right-0 -bottom-10 disabled:opacity-90 h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-500 rounded-lg hover:bg-blue-800"
-                disabled={isFormDataEmpty()}
+                className="absolute right-0 -bottom-10 h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-800 rounded-lg hover:bg-blue-700"
               >
                 Save Changes
               </button>
@@ -399,7 +459,7 @@ const Page = () => {
             {formButton && (
               <button
                 onClick={cancelEdit}
-                className="h-10 w-36 flex items-center justify-center text-blue-700 font-semibold bg-[#718096]/30 mr-48 rounded-lg hover:bg-[#718096]/50"
+                className="h-10 w-36 flex items-center justify-center text-blue-700 font-semibold bg-[#718096]/30 2xl:mr-48 rounded-lg hover:bg-[#718096]/50"
               >
                 Cancel
               </button>
@@ -408,7 +468,7 @@ const Page = () => {
               <button
                 type="button"
                 onClick={editProfile}
-                className="h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-800 rounded-lg hover:bg-blue-700"
+                className="relative md:left-40 2xl:left-0 h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-800 rounded-lg hover:bg-blue-700"
               >
                 Edit Profile
               </button>

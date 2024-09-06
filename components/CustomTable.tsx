@@ -40,6 +40,7 @@ const initialFormData: FormData = {
   email: "",
   fName: "",
   lName: "",
+  profilePhoto: "",
   id: "",
   isAdmin: false,
   orgId: "",
