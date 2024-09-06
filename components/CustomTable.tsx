@@ -78,7 +78,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
   ]);
 
   const [addUser, setAddUser] = useState<boolean>(false);
-  const [creatingUser, setCreatingUser] = useState<boolean>(false);
   const [createUserButton, setCreateUserButton] = useState<boolean>(false);
   const [deleteUserRow, setDeleteUserRow] = useState<boolean>(false);
   const [changePrivilege, setChangePrivilege] = useState<boolean>(false);
