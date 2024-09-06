@@ -35,22 +35,23 @@ const LogTable = (props: Props) => {
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteLogRow, setDeleteLogRow] = useState<boolean>(false);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
-  const [logs, setLogs] = useState<LogDetails[]>([])
-  const [isAdmin, setIsAdmin] = useState<boolean>(false)
-  const [columnsToRender, setColumnsToRender] = useState<GridColDef<LogDetails>[]>([])
-  
+  const [logs, setLogs] = useState<LogDetails[]>([]);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [columnsToRender, setColumnsToRender] = useState<
+    GridColDef<LogDetails>[]
+  >([]);
+
   useEffect(() => {
     if (user && isAuthenticated) {
-      setIsAdmin(user.isAdmin)
+      setIsAdmin(user.isAdmin);
     }
-  }, [user, isAuthenticated])
-
+  }, [user, isAuthenticated]);
 
   useEffect(() => {
     if (props.rows) {
-      setLogs(props.rows)
+      setLogs(props.rows);
     }
-  }, [props])
+  }, [props]);
 
   const handleSetDelete = (id: number) => {
     setActiveRowId(id);
@@ -68,7 +69,7 @@ const LogTable = (props: Props) => {
           content: "Log was deleted successfully.",
         };
 
-        getLogs(props.trialId).then(response => setLogs(response.data))
+        getLogs(props.trialId).then((response) => setLogs(response.data));
         alertType = AlertType.Success;
       } else {
         alert = {
@@ -88,7 +89,7 @@ const LogTable = (props: Props) => {
     headerName: "Monitor Name",
     flex: 1,
     renderCell: (params) => {
-      const {row} = params
+      const { row } = params;
       if (row.monitorName) {
         return <span>{row.monitorName}</span>;
       } else {
@@ -116,7 +117,7 @@ const LogTable = (props: Props) => {
                 maxWidth: "150px",
                 maxHeight: "80px",
                 objectFit: "contain",
-                margin: "0 -20px"
+                margin: "0 -20px",
               }}
             />
           ) : (
@@ -138,93 +139,82 @@ const LogTable = (props: Props) => {
       const isProgressActive = id === activeRowId;
 
       return (
-        <div className="h-full w-full flex items-center justify-center 2xl:justify-start">
-          <div
-            className={`flex gap-3 ${
-              isProgressActive ? "-translate-x-8" : "translate-x-0"
-            } transition duration-300 ease-in-out`}
-          >
-            <Tooltip title="Delete Log">
-              <button
-                type="button"
-                onClick={() => handleSetDelete(id)}
-                className="transition-transform duration-300 hover:scale-110"
-              >
-                <FaFileCircleMinus className="text-xl text-[#cf3030]" />
-              </button>
-            </Tooltip>
-
+        isAdmin && (
+          <div className="h-full w-full flex items-center justify-center 2xl:justify-start">
             <div
-              className={`gap-3 ${
-                isProgressActive && deleteLogRow ? "flex" : "hidden"
-              }`}
+              className={`flex gap-3 ${
+                isProgressActive ? "-translate-x-8" : "translate-x-0"
+              } transition duration-300 ease-in-out`}
             >
-              <Tooltip title="Delete">
+              <Tooltip title="Delete Log">
                 <button
                   type="button"
-                  onClick={() => handleDeleteLog(id)}
+                  onClick={() => handleSetDelete(id)}
                   className="transition-transform duration-300 hover:scale-110"
                 >
-                  <MdDelete className="text-xl text-[#7d1f2e]" />
+                  <FaFileCircleMinus className="text-xl text-[#cf3030]" />
                 </button>
               </Tooltip>
-              <Tooltip title="Cancel">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeleteLogRow(false);
-                    setActiveRowId(null);
-                  }}
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <IoClose className="text-xl" />
-                </button>
-              </Tooltip>
+
+              <div
+                className={`gap-3 ${
+                  isProgressActive && deleteLogRow ? "flex" : "hidden"
+                }`}
+              >
+                <Tooltip title="Delete">
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteLog(id)}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <MdDelete className="text-xl text-[#7d1f2e]" />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Cancel">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDeleteLogRow(false);
+                      setActiveRowId(null);
+                    }}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <IoClose className="text-xl" />
+                  </button>
+                </Tooltip>
+              </div>
             </div>
           </div>
-        </div>
+        )
       );
     },
   };
 
-  useEffect(() => {
-    if (isAdmin) {
-      setColumnsToRender([
-        monitorNameColumn,
-        signatureColumn,
-        props.columns[0],
-        ...props.columns.slice(1),
-        actionColumn
-      ])
-    } else {
-      setColumnsToRender([
-        monitorNameColumn,
-        signatureColumn,
-        props.columns[0],
-        ...props.columns.slice(1),
-      ])
-    }
-
-  }, [isAdmin])
   return (
-  <div className="w-full flex items-center">
-    <DataGrid
-      className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4"
-      rows={props.rows}
-      columns={columnsToRender}
-      initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: 8,
+    <div className="w-full flex items-center">
+      <DataGrid
+        className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4"
+        rows={logs}
+        columns={[
+          monitorNameColumn,
+          signatureColumn,
+          props.columns[0],
+          ...props.columns.slice(1),
+          actionColumn,
+        ]}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 8,
+            },
           },
-        },
-      }}
-      slots={{ toolbar: CustomToolbar }}
-      pageSizeOptions={[8]}
-      disableMultipleRowSelection
-      disableColumnMenu
-    />
-  </div>
+        }}
+        slots={{ toolbar: CustomToolbar }}
+        pageSizeOptions={[8]}
+        disableMultipleRowSelection
+        disableColumnMenu
+      />
+    </div>
   );
 };
 

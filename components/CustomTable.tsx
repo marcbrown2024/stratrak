@@ -239,7 +239,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
         AlertType.Error
       );
     }
-  }, [userCreationError, setAlert]);
+  }, [userCreationError]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
