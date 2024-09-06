@@ -18,7 +18,7 @@ import { useAuth } from "./AuthProvider";
 const Header = () => {
   const {user} = useAuth()
   const scrolled = UseScroll(5);
-  const pathname = usePathname();
+  const currentPathname = usePathname();
   const selectedLayout = useSelectedLayoutSegment();
   const { toggleModal, closeModal } = useModalStore();
 
@@ -30,7 +30,7 @@ const Header = () => {
   };
 
   // Find the current item's title based on the current path
-  const words = pathname.split("/").filter(Boolean).pop() ?? "";
+  const words = currentPathname.split("/").filter(Boolean).pop() ?? "";
 
   const currentPath = splitCamelCase(words);
 
@@ -47,7 +47,8 @@ const Header = () => {
     };
   }, [closeModal]);
 
-  if (pathname === "/login") {
+  if (currentPathname === "/login" ||
+    currentPathname === "/login/forgetPassword") {
     return null;
   }
 
@@ -69,7 +70,7 @@ const Header = () => {
     >
       <div className="h-14 flex items-center justify-between px-4">
         <span className="hidden md:flex text-xl font-bold tracking-wide">
-          {pathname == "/" ? "Home" : currentPath}
+          {currentPathname == "/" ? "Home" : currentPath}
         </span>
         <div className="flex items-center space-x-4">
           <Link

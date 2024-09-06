@@ -82,6 +82,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
   const [deleteUserRow, setDeleteUserRow] = useState<boolean>(false);
   const [changePrivilege, setChangePrivilege] = useState<boolean>(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleFilterChange = (newFilter: "Users" | "Admins" | "All Users") => {
     setFilter(newFilter);
@@ -127,8 +128,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
 
       const data = await response.json();
 
-      // console.log(data);
-
       let alert: AlertBody;
       let alertType: AlertType;
 
@@ -148,7 +147,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
       }
       setAlert(alert, alertType);
     } catch (error) {
-      console.error("Error deleting user:", error);
       setAlert(
         {
           title: "Error!",
@@ -260,14 +258,10 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
     };
 
     await createUser(userDetails);
-    setCreateUserButton(false);
   };
 
-  const {
-    executeAuth: executeUserCreation,
-    loading: userCreationLoading,
-    error: userCreationError,
-  } = useFirebaseAuth(registerUser);
+  const { executeAuth: executeUserCreation, error: userCreationError } =
+    useFirebaseAuth(registerUser);
 
   const handleAddUserSubmit = async (e: FormEvent) => {
     closeAlert();
@@ -297,7 +291,9 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
           AlertType.Success
         );
         setFormData(initialFormData);
-        refreshUsers();
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
       }
     }
   };
@@ -337,7 +333,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
   const emailInUse = async (email: string): Promise<boolean | null> => {
     try {
       const response = await userEmailExists(email);
-      console.log("response: ", response);
 
       if (response.success) {
         return response.data;
@@ -345,7 +340,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
 
       return null; // Return null if the response was unsuccessful
     } catch (error) {
-      console.error("Error checking email:", error);
       return null; // Return null if there's an error
     }
   };
@@ -367,6 +361,19 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
     } else if (direction === "previous" && startIndex > 0) {
       setCurrentPage((prevPage) => prevPage - 1);
     }
+  };
+
+  const isFormDataEmpty = (): boolean => {
+    return Object.entries(formData).every(([key, value]) => {
+      if (key === "isAdmin") {
+        // Ignore the isAdmin field
+        return true;
+      }
+      if (typeof value === "string") {
+        return value === "";
+      }
+      return value === null;
+    });
   };
 
   return (
@@ -410,101 +417,104 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
           }`}
         >
           <form onSubmit={handleAddUserSubmit} className="h-full w-full flex">
-            {userCreationLoading ? (
-              <Loader />
-            ) : (
-              <div className="h-full w-full flex flex-col items-start justify-center gap-1">
-                <div className="w-full flex items-center justify-center py-2">
-                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
-                    <label className="] font-medium">First Name:</label>
-                    <input
-                      type="text"
-                      name="fName"
-                      value={formData.fName}
-                      onChange={handleChange}
-                      className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
-                      required
-                    />
-                  </div>
-                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
-                    <label className="] font-medium">Last Name:</label>
-                    <input
-                      type="text"
-                      name="lName"
-                      value={formData.lName}
-                      onChange={handleChange}
-                      className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
-                      required
-                    />
-                  </div>
+            <div className="h-full w-full flex flex-col items-start justify-center gap-1">
+              <div className="w-full flex items-center justify-center py-2">
+                <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                  <label className="] font-medium">First Name:</label>
+                  <input
+                    type="text"
+                    name="fName"
+                    value={formData.fName}
+                    onChange={handleChange}
+                    className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
+                    required
+                  />
                 </div>
-                <div className="w-full flex items-center justify-center py-2">
-                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
-                    <label className="] font-medium">Email:</label>
+                <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                  <label className="] font-medium">Last Name:</label>
+                  <input
+                    type="text"
+                    name="lName"
+                    value={formData.lName}
+                    onChange={handleChange}
+                    className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="w-full flex items-center justify-center py-2">
+                <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                  <label className="] font-medium">Email:</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
+                    required
+                  />
+                </div>
+                <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                  <label className="font-medium">Password:</label>
+                  <div className="relative w-4/5">
                     <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
-                      required
-                    />
-                  </div>
-                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
-                    <label className="font-medium">Password:</label>
-                    <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="w-4/5 text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
+                      className="w-full text-gray-900 sm:text-sm sm:leading-6 bg-slate-50 pl-3 py-1.5 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
                       required
                     />
-                    <div></div>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                    >
+                      {showPassword ? "Hide" : "Show"}
+                    </button>
                   </div>
                 </div>
-                <div className="w-full flex items-end justify-center py-2">
-                  <div className="w-1/2 flex flex-col items-start justify-start gap-3">
-                    <label className="font-medium">Admin</label>
-                    <select
-                      name="isAdmin"
-                      value={formData.isAdmin ? "admin" : "user"}
-                      onChange={handleChange}
-                      className="w-[80%] text-sm text-gray-900 bg-slate-50 px-2 py-2 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
+              </div>
+              <div className="w-full flex items-end justify-center py-2">
+                <div className="w-1/2 flex flex-col items-start justify-start gap-3">
+                  <label className="font-medium">Admin</label>
+                  <select
+                    name="isAdmin"
+                    value={formData.isAdmin ? "admin" : "user"}
+                    onChange={handleChange}
+                    className="w-[80%] text-sm text-gray-900 bg-slate-50 px-2 py-2 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-slate-600"
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div className="w-1/2 flex items-center justify-start">
+                  <div className="h-full w-[80%] flex items-center justify-end gap-6">
+                    <div
+                      className={`flex justify-end gap-6 ${
+                        createUserButton
+                          ? "opacity-100 translate-x-0"
+                          : "opacity-0 translate-x-32"
+                      } transition-all duration-500 ease-in-out`}
                     >
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </div>
-                  <div className="w-1/2 flex items-center justify-start">
-                    <div className="h-full w-[80%] flex items-center justify-end gap-6">
-                      <div
-                        className={`flex justify-end gap-6 ${
-                          createUserButton
-                            ? "opacity-100 translate-x-0"
-                            : "opacity-0 translate-x-32"
-                        } transition-all duration-500 ease-in-out`}
+                      <button
+                        type="button"
+                        onClick={() => setCreateUserButton(false)}
+                        className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#cf3a27] px-5 py-3 rounded-md hover:scale-105"
                       >
-                        <button
-                          type="button"
-                          onClick={() => setCreateUserButton(false)}
-                          className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#cf3a27] px-5 py-3 rounded-md hover:scale-105"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] px-5 py-3 rounded-md hover:scale-105"
-                        >
-                          Submit
-                        </button>
-                      </div>
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] px-5 py-3 rounded-md hover:scale-105"
+                      >
+                        Submit
+                      </button>
                     </div>
                   </div>
                 </div>
-                {/* Add other input fields similarly */}
               </div>
-            )}
+            </div>
           </form>
           <div
             className={`absolute bottom-2 md:right-20 2xl:right-28 ${
@@ -515,6 +525,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
           >
             <button
               type="button"
+              disabled={isFormDataEmpty()}
               onClick={() => setCreateUserButton(true)}
               className="h-10 w-fit flex items-center justify-center text-white font-medium bg-[#1286ff] px-5 py-3 rounded-md hover:scale-105"
             >

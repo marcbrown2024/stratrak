@@ -15,7 +15,6 @@ const useFirebaseAuth = (authFunction: FirebaseAuthFunction) => {
       const result = await authFunction(...args);
       return { result, success: true }; // Return success status and result
     } catch (e: unknown) {
-      console.log("error: ", e)
       if (e instanceof FirebaseError) {
         switch (e.code) {
           case AuthErrorCodes.EMAIL_EXISTS:

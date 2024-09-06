@@ -203,8 +203,6 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
         clearDrawing();
         setSignatureButton(false);
         updateSignature(true)
-      } else {
-        console.error("User ID is not available.");
       }
     }
   };

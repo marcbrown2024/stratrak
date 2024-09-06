@@ -4,7 +4,8 @@
 import React, { useState, useEffect } from "react";
 
 // firestore functions
-import { getTrials } from "@/firebase";
+import { useAuth } from "@/components/AuthProvider";
+import { getTrials, updateUserLastActivity } from "@/firebase";
 
 //components
 import TrialTable from "@/components/TrialTable";
@@ -12,7 +13,6 @@ import Loader from "@/components/Loader";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
-import { useAuth } from "@/components/AuthProvider";
 
 const columns: GridColDef[] = [
   {
@@ -60,13 +60,22 @@ const TrialsPage = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (user && user.userId) {
+      updateUserLastActivity(user.userId)
+        .then(() => {})
+        .catch((error) => {
+        });
+    }
+  }, [user]);
+
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-8">
         {loading ? (
           <Loader />
         ) : (
-            <TrialTable columns={columns} rows={trials} orgId={user?.orgId} />
+          <TrialTable columns={columns} rows={trials} orgId={user?.orgId} />
         )}
       </div>
     </div>

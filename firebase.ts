@@ -103,7 +103,6 @@ export const deleteTrial = async (trialId: string) => {
     await deleteDoc(trialRef);
     response = { success: true };
   } catch (e: any) {
-    console.error(e.message);
     response = { success: false };
   }
   return response;
@@ -118,7 +117,6 @@ export const updateTrialProgress = async (
     await updateDoc(trialRef, { progress });
     return { success: true };
   } catch (e: any) {
-    console.error(e.message);
     return { success: false };
   }
 };
@@ -139,7 +137,6 @@ export const updatePrivilege = async (
 
     if (querySnapshot.empty) {
       // No document found with the specified email
-      console.error("No matching documents.");
       return { success: false };
     }
 
@@ -151,7 +148,6 @@ export const updatePrivilege = async (
 
     return { success: true };
   } catch (e: any) {
-    console.error(e.message);
     return { success: false };
   }
 };
@@ -182,7 +178,6 @@ export const updateUserLastActivity = async (
       return { success: false };
     }
   } catch (e: any) {
-    console.error(e.message);
     return { success: false };
   }
 };
@@ -206,7 +201,6 @@ export const getLogs = async (trialId: string) => {
     });
     response = { success: true, data: logs };
   } catch (e: any) {
-    console.log(e);
     response = { success: false, data: e };
   }
   return response;
@@ -241,7 +235,6 @@ export const deleteLog = async (logId: string) => {
     await deleteDoc(logRef);
     response = { success: true };
   } catch (e: any) {
-    console.error(e.message);
     response = { success: false };
   }
   return response;
@@ -366,7 +359,6 @@ export const uploadSignature = async (userId: string, base64String: string) => {
     return { success: true };
   } catch (e) {
     const error = e as Error;
-    console.error(error.message);
     return { success: false, data: e };
   }
 };
@@ -431,7 +423,6 @@ export const getAllUsers = async (orgId: string) => {
 
     return { success: true, data: users };
   } catch (e: any) {
-    console.error(e.message);
     return { success: false, data: e };
   }
 };
@@ -449,7 +440,6 @@ export const updateUserProfile = async (
 
     // Check if any documents matched the query
     if (querySnapshot.empty) {
-      console.error("User not found");
       return { success: false };
     }
 
@@ -460,7 +450,6 @@ export const updateUserProfile = async (
     await updateDoc(userDocRef, profileData);
     return { success: true };
   } catch (e: any) {
-    console.error(e.message);
     return { success: false };
   }
 };
@@ -488,7 +477,6 @@ export const getOrganizationName = async (
       return null;
     }
   } catch (error) {
-    console.error("Error getting organization name:", error);
     throw new Error("Error getting organization name");
   }
 };

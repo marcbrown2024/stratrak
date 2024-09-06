@@ -53,14 +53,15 @@ const variants = {
 };
 
 const HeaderMobile = () => {
-  const pathname = usePathname();
+  const currentPathname = usePathname();
   const containerRef = useRef(null);
   const { height } = UseDimensions(containerRef);
   const [isOpen, toggleOpen] = useCycle(false, true);
   const userPhotoUrl =
     "https://cdn-icons-png.flaticon.com/512/3237/3237472.png";
 
-  if (pathname === "/login") {
+  if (currentPathname === "/login" ||
+    currentPathname === "/login/forgetPassword") {
     return null;
   }
 
@@ -111,7 +112,7 @@ const HeaderMobile = () => {
                     href={item.path}
                     onClick={() => toggleOpen()}
                     className={`flex w-full text-3xl text-blue-500 ${
-                      item.path === pathname ? "font-bold" : ""
+                      item.path === currentPathname ? "font-bold" : ""
                     }`}
                   >
                     {item.title}

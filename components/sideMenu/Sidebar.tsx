@@ -6,16 +6,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { SIDENAV_ITEMS } from "@/constants";
-import logo from '@/public/logo-blue-bg-removed.png'
+import logo from '@/public/images/logo-blue-bg-removed.png'
 
 // custom components
 import MenuItem from "./MenuItem";
 import Image from "next/image";
 
 const Sidebar = () => {
-  const pathname = usePathname();
+  const currentPathname = usePathname();
 
-  if (pathname === "/login") {
+  if (currentPathname === "/login" ||
+    currentPathname === "/login/forgetPassword") {
     return null;
   }
   return (

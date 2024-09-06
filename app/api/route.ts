@@ -13,10 +13,8 @@ export async function POST(request: Request) {
     }
 
     const response = await deleteUser(userId);
-    console.log(response)
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Error deleting user:', error);
     return NextResponse.json(
       { success: false, message: 'Internal Server Error' },
       { status: 500 }

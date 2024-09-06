@@ -3,20 +3,23 @@
 // react/nextjs components
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { redirect, useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 
 // firebase components
-import { auth, updateUserLastActivity } from "@/firebase";
+import { auth } from "@/firebase";
 import { useAuth } from "@/components/AuthProvider";
-
-// enums
-import { AlertType } from "@/enums";
+import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 
 // global store
 import { useAlertStore } from "@/store/AlertStore";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 
-// custom components
+// enums
+import { AlertType } from "@/enums";
+
+//assets
+import logo from "@/public/images/logo-blue-bg-removed.png";
 
 interface FormData {
   email: string;
@@ -32,7 +35,6 @@ const Page = () => {
   const { user, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const [setAlert, closeAlert] = useAlertStore((state) => [
@@ -81,10 +83,12 @@ const Page = () => {
         { title: "Welcome!", content: "User logged in successfully." },
         AlertType.Success
       );
-      setFormData(initialFormData);
 
       // Redirect to the home page
       router.push("/");
+      setTimeout(() => {
+        setFormData(initialFormData);
+      }, 1000);
     }
   };
 
@@ -100,34 +104,27 @@ const Page = () => {
     }
   }, [userLoginError, setAlert]);
 
-  useEffect(() => {
-    // Check if user is available and has an id
-    if (user && user.userId) {
-      // Call updateUserLastActivity with user.userId
-      updateUserLastActivity(user.userId)
-        .then(() => {
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
-  }, [user]);
-
   return (
-    <div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#D8E1F2] overflow-hidden">
-      <div className="h-full w-full md:w-1/2 flex items-center justify-center">
-        <h1 className="text-6xl md:text-9xl font-bold text-[#4E81BD]">
-          Trialist
-        </h1>
+    <div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#24478a] overflow-hidden">
+      <div className="h-[60rem] w-[50rem] px-10 py-20">
+        <Image
+          src={logo}
+          alt="site logo"
+          priority
+          layout="responsive"
+          width={100}
+          height={100}
+          objectFit="contain"
+        />
       </div>
       <div className="h-full w-full md:w-1/2 flex items-center justify-center">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md space-y-6 bg-white p-8 border border-gray-300 rounded-xl shadow-lg"
+          className="w-full max-w-md space-y-8 bg-white px-8 py-12 border border-gray-300 rounded-xl shadow-lg"
         >
           {error && <p className="text-red-500 mb-4">{error}</p>}
           <h2 className="text-3xl font-medium text-[#015FCC]">Sign In</h2>
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div>
               <label
                 htmlFor="email"
@@ -172,13 +169,9 @@ const Page = () => {
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <label className="inline-flex items-center text-sm text-[#4E81BD]">
-                <input type="checkbox" className="form-checkbox" />
-                <span className="ml-2">Remember me</span>
-              </label>
-              <a href="#" className="text-sm text-[#015FCC] hover:underline">
+              <Link href="/login/forgetPassword" className="text-sm text-[#015FCC] hover:underline">
                 Forget Password?
-              </a>
+              </Link>
             </div>
             <button
               type="submit"

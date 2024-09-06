@@ -3,7 +3,6 @@
 // react/nextjs components
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 
 //components
 import LogTable from "@/components/LogTable";

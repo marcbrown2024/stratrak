@@ -5,14 +5,13 @@ import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 const MarginWidthWrapper = ({ children }: { children: ReactNode }) => {
-  const pathname = usePathname();
+  const currentPathname = usePathname();
 
-  return pathname === "/login" ? (
+  return currentPathname === "/login" ||
+    currentPathname === "/login/forgetPassword" ? (
     <>{children}</>
   ) : (
-    <div className="flex flex-col md:ml-72">
-      {children}
-    </div>
+    <div className="flex flex-col md:ml-72">{children}</div>
   );
 };
 

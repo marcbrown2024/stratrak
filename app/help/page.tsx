@@ -79,7 +79,6 @@ const Page = () => {
           alertType = AlertType.Success;
 
           setAlert(alert, alertType);
-          console.log(result.text);
         },
         (error) => {
           alert = {
@@ -89,7 +88,6 @@ const Page = () => {
           alertType = AlertType.Error;
           closeAlert();
           setAlert(alert, alertType);
-          console.log(error.text);
         }
       )
       .finally(() => {

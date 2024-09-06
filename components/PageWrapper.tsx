@@ -11,7 +11,7 @@ import DropDownModal from "./DropDownModal";
 const PageWrapper = ({ children }: { children: ReactNode }) => {
   const currentPathname = usePathname();
 
-  if (currentPathname === "/login") {
+  if (currentPathname === "/login" || currentPathname === "/login/forgetPassword") {
     return children;
   }
 

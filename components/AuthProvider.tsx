@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, getUserFromDb } from "@/firebase";
 
@@ -23,6 +23,7 @@ interface AuthProviderProps {
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, loading] = useAuthState(auth);
   const [userFromDb, setUserFromDb] = useState<User>();
+  const currentPathname = usePathname();
 
   // fetch user from db and set that as the user
   useEffect(() => {
@@ -36,10 +37,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && currentPathname !== '/login/forgetPassword') {
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, currentPathname]);
 
   const isAuthenticated = !loading && !!user;
 

@@ -52,7 +52,6 @@ export const deleteUser = async (
   userId: string
 ): Promise<{ success: boolean }> => {
   if (!userId) {
-    console.error("userId is required to delete a user.");
     return { success: false };
   }
 
@@ -62,9 +61,7 @@ export const deleteUser = async (
     const db = admin.firestore(adminApp); // Use admin.firestore(adminApp)
 
     // Delete user from Firebase Authentication
-    const userRecord = await auth.deleteUser(userId);
-
-    console.log(userRecord)
+    await auth.deleteUser(userId);
 
     // Delete user document from Firestore
     const usersCollection = db.collection("users");
@@ -72,7 +69,6 @@ export const deleteUser = async (
     const querySnapshot = await q.get();
 
     if (querySnapshot.empty) {
-      console.error("No matching documents.");
       return { success: false };
     }
 
@@ -81,7 +77,6 @@ export const deleteUser = async (
 
     return { success: true };
   } catch (e: any) {
-    console.error(e.message);
     return { success: false };
   }
 };

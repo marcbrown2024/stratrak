@@ -26,6 +26,7 @@ const Page = () => {
   const refreshUsers = () => {
     fetchUsers()
   }
+  
   const fetchUsers = () => {
     getAllUsers(user?.orgId).then(response => {
       if (response.success) {
@@ -42,8 +43,6 @@ const Page = () => {
         setAdminCount(adminsCount);
         setTotalCount(allUsers.length);
         setLoading(false);
-      } else {
-        console.error("Failed to fetch users:", response.data);
       }
     })
   };
