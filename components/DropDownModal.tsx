@@ -52,7 +52,7 @@ const DropDownModal = () => {
 
   return (
     <div
-      className={`Popup fixed top-12 right-2 h-96 w-80 hidden md:flex flex-col items-center  ${
+      className={`Popup fixed top-12 right-2 2xl:h-[26rem] 2xl:w-[22rem] hidden md:flex flex-col items-center  ${
         isModalOpen ? "visible opacity-100" : "invisible opacity-0"
       } bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-100 ease-in-out`}
     >
@@ -86,12 +86,12 @@ const DropDownModal = () => {
               className="h-16 w-16 rounded-full"
             />
           )}
-          <div className="flex flex-col items-start justify-start gap-1">
-            <p className="text-blue-500 font-semibold">
+          <div className="flex flex-col items-start justify-start gap-1 text-sm 2xl:text-[14px] font-semibold">
+            <p className="text-blue-500">
               {user?.fName + " " + user?.lName}
             </p>
-            <p className="text-blue-500 font-semibold">{organizationName}</p>
-            {/* <p className=" text-blue-500 font-medium text-xs">{user?.orgId}</p> */}
+            <p className="text-blue-500">{user?.email}</p>
+            <p className="text-blue-500">{organizationName}</p>
           </div>
         </div>
         <Link
