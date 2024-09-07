@@ -39,12 +39,12 @@ const TableRow = ({ rowId }: params) => {
             type="text"
             defaultValue={`${user?.fName || ""} ${user?.lName || ""}`}
             id={`name-${rowId}`}
-            className="text-gray-900 text-sm border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 px-2"
+            className="text-gray-900 text-sm bg-white border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 px-2"
           />
         </form>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-        <div className="h-[40px] w-fit flex items-center text-center border bg-white">
+        <div className="h-[40px] w-fit flex items-center text-center bg-white">
           {user && user.signature ? (
             <Image
               width={400}
@@ -58,7 +58,7 @@ const TableRow = ({ rowId }: params) => {
               }}
             />
           ) : (
-            <div>No signature available</div>
+            <div className="px-2">No signature available</div>
           )}
         </div>
       </td>
@@ -68,7 +68,7 @@ const TableRow = ({ rowId }: params) => {
             defaultValue={logs[rowId]["typeOfVisit"]}
             onChange={(e) => updateLog(rowId, "typeOfVisit", e.target.value)}
             id={`visit-${rowId}`}
-            className="hover:cursor-pointer text-gray-900 text-sm border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 px-2"
+            className="hover:cursor-pointer text-gray-900 text-sm bg-white border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 px-2"
           >
             <option>Remote</option>
             <option>Onsite</option>
@@ -82,7 +82,7 @@ const TableRow = ({ rowId }: params) => {
             defaultValue={logs[rowId]["purposeOfVisit"]}
             onChange={(e) => updateLog(rowId, "purposeOfVisit", e.target.value)}
             id={`purpose-${rowId}`}
-            className="hover:cursor-pointer text-gray-900 text-sm border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 px-2"
+            className="hover:cursor-pointer text-gray-900 text-sm bg-white border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 px-2"
           >
             <option>SIV</option>
             <option>IMV</option>

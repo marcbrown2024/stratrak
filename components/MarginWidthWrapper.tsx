@@ -4,6 +4,9 @@
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
+// custom components
+import Loader from "@/components/Loader";
+
 const MarginWidthWrapper = ({ children }: { children: ReactNode }) => {
   const currentPathname = usePathname();
 
@@ -11,7 +14,9 @@ const MarginWidthWrapper = ({ children }: { children: ReactNode }) => {
     currentPathname === "/login/forgetPassword" ? (
     <>{children}</>
   ) : (
-    <div className="flex flex-col md:ml-72">{children}</div>
+    <div className="flex flex-col md:ml-72">
+      {children} <Loader />
+    </div>
   );
 };
 

@@ -107,7 +107,7 @@ const CreateTrials = () => {
   };
 
   return (
-    <div className="h-full flex flex-col w-full lg:w-5/6 mx-auto justify-start gap-6">
+    <div className="h-full w-full max-w-screen-xl flex flex-col mx-auto justify-start gap-6">
       <div className="w-full flex justify-end pr-4 lg:pr-6">
         <button
           onClick={resetTrials}

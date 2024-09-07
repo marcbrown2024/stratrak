@@ -5,6 +5,9 @@ import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 
+// firebase components/functions
+import { AuthProvider } from "@/components/AuthProvider";
+
 // custom components
 import Header from "@/components/Header";
 import HeaderMobile from "@/components/HeaderMobile";
@@ -12,7 +15,6 @@ import Sidebar from "@/components/sideMenu/Sidebar";
 import PageWrapper from "@/components/PageWrapper";
 import MarginWidthWrapper from "@/components/MarginWidthWrapper";
 import Alert from "@/components/Alert";
-import { AuthProvider } from "@/components/AuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 

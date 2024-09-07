@@ -205,7 +205,7 @@ const Page = () => {
                           style={{ maxWidth: "50%", height: "auto" }}
                         />
                       ) : (
-                        <div>No signature available</div>
+                        <div className="p-2">No signature available</div>
                       )}
                     </div>
                   </div>

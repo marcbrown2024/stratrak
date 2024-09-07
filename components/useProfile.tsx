@@ -3,8 +3,6 @@
 // react components
 import React, { useState } from "react";
 
-// global states
-
 // components
 
 const UserProfile = () => {
