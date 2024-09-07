@@ -42,10 +42,6 @@ const CreateTrials = () => {
   ]);
   const [savingTrial, setSavingTrial] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!user?.isAdmin) redirect('/')
-  }, [user])
-
   const addRow = () => {
     updateLogs(tableRowsIds.length, defaultTrial);
     setTableRowsIds((rowArr) => [...rowArr, rowArr.length]);
@@ -81,7 +77,7 @@ const CreateTrials = () => {
           alertType = AlertType.Success;
           setTimeout(() => {
             router.push("/trials");
-          }, 3000);
+          }, 1000);
         } else {
           alert = {
             title: "Something went wrong",
@@ -105,6 +101,10 @@ const CreateTrials = () => {
       .forEach((form) => form.reset());
     setTableRowsIds([0]);
   };
+
+  useEffect(() => {
+    if (!user?.isAdmin) redirect('/')
+  }, [user])
 
   return (
     <div className="h-full w-full max-w-screen-xl flex flex-col mx-auto justify-start gap-6">
@@ -175,7 +175,7 @@ const CreateTrials = () => {
         <button
           disabled={savingTrial}
           onClick={saveTrial}
-          className="px-4 py-2 w-fit bg-blue-500 text-white rounded-full hover:opacity-90"
+          className="px-4 py-3 w-full max-w-[12rem] bg-blue-500 text-white rounded-full hover:opacity-90 disabled:hover:opacity-100 text-sm sm:text-base"
         >
           {savingTrial
             ? "Saving..."

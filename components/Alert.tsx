@@ -38,7 +38,7 @@ const Alert = () => {
             stiffness: 100,
             damping: 10,
           }}
-          className={`z-[1000000] p-2 absolute bottom-20 -right-50 flex w-96 h-fit bg-white rounded shadow-xl border-t-2
+          className={`z-[1000000] p-2 fixed bottom-20 -right-50 flex w-96 h-fit bg-white rounded shadow-xl border-t-2
             ${
               alertType === AlertType.Success
                 ? "border-emerald-500 text-emerald-500"
