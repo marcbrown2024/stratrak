@@ -74,8 +74,8 @@ type HelpFormData = {
 // Type definitions for profile form data
 type ProfileFormData = {
   profilePhoto?: string;
-  firstName: string;
-  lastName: string;
+  fName: string;
+  lName: string;
   phoneNumber: string;
   streetAddress: string;
   city: string;

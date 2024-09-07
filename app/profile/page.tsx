@@ -26,8 +26,8 @@ import { MdPhotoSizeSelectActual } from "react-icons/md";
 
 const initialFormData: ProfileFormData = {
   profilePhoto: "",
-  firstName: "",
-  lastName: "",
+  fName: "",
+  lName: "",
   phoneNumber: "",
   streetAddress: "",
   city: "",
