@@ -4,14 +4,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 
-//components
-import LogTable from "@/components/LogTable";
+// firestore functions
+import { getLogs } from "@/firebase";
+
+// global store
+import LoadingStore from "@/store/LoadingStore";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
 
-// firestore functions
-import { getLogs } from "@/firebase";
+//components
+import LogTable from "@/components/LogTable";
 import Loader from "@/components/Loader";
 
 const columns: GridColDef[] = [
@@ -40,11 +43,12 @@ const columns: GridColDef[] = [
 
 const LogsPage = () => {
   const { trialId } = useParams();
+  const { setLoading } = LoadingStore();
   const [logs, setLogs] = useState<LogDetails[]>([]);
-  const [loading, setLoading] = useState<Boolean>(true);
 
   // Update the state with the imported data
   useEffect(() => {
+    setLoading(true);
     getLogs(trialId as string).then((response) => {
       setLogs(response.data);
       setLoading(false);
@@ -54,11 +58,7 @@ const LogsPage = () => {
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-8">
-        {loading ? (
-          <Loader />
-        ) : (
-          <LogTable columns={columns} rows={logs} trialId={trialId as string} />
-        )}
+        <LogTable columns={columns} rows={logs} trialId={trialId as string} />
       </div>
     </div>
   );
