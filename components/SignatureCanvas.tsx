@@ -2,6 +2,16 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
+// firebase components
+import { uploadSignature } from "@/firebase";
+import { useAuth } from "./AuthProvider";
+
+// global stores
+import { useAlertStore } from "@/store/AlertStore";
+
+// enums
+import { AlertType } from "@/enums";
+
 // icons
 import { IoCloseCircle } from "react-icons/io5";
 import { FaSave } from "react-icons/fa";
@@ -19,15 +29,16 @@ type Style = {
 type SignatureCanvasProps = {
   signatureButton: boolean;
   setSignatureButton: React.Dispatch<React.SetStateAction<boolean>>;
-  setSignature: React.Dispatch<React.SetStateAction<string>>;
-  setSignatureChanged: React.Dispatch<React.SetStateAction<boolean>>;
+  updateSignature: (done: boolean) => void
 };
 const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   signatureButton,
   setSignatureButton,
-  setSignature,
-  setSignatureChanged,
+  updateSignature
 }) => {
+  const { user } = useAuth();
+  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
   const [drawing, setDrawing] = useState<boolean>(false);
@@ -163,14 +174,36 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     }
   };
 
-  const saveSignature = () => {
+  const saveSignature = async () => {
+    closeAlert()
     if (canvasRef.current) {
       const canvas = canvasRef.current;
       const base64String = canvas.toDataURL("image/png"); // Get the base64 string of the image
-      setSignature(base64String);
-      clearDrawing();
-      setSignatureButton(false);
-      setSignatureChanged(true)
+      const userId = user?.id;
+      let alert: AlertBody;
+      let alertType: AlertType;
+
+      if (userId) {
+        const result = await uploadSignature(userId, base64String);
+
+        if (result.success) {
+          alert = {
+            title: "Success!",
+            content: "Signature saved successfully.",
+          };
+          alertType = AlertType.Success;
+        } else {
+          alert = {
+            title: "Something went wrong",
+            content: "Failed to save signature, please try again",
+          };
+          alertType = AlertType.Error;
+        }
+        setAlert(alert, alertType);
+        clearDrawing();
+        setSignatureButton(false);
+        updateSignature(true)
+      }
     }
   };
 
@@ -178,7 +211,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     <div
       className={`absolute h-full w-full ${
         signatureButton ? "flex" : "hidden"
-      } flex-col items-center justify-start bg-slate-50/95`}
+      } flex-col items-center justify-start bg-slate-50/50`}
     >
       <div className="relative h-fit w-fit">
         <canvas
