@@ -73,7 +73,7 @@ type HelpFormData = {
 
 // Type definitions for profile form data
 type ProfileFormData = {
-  profilePhoto?: string;
+  profilePhoto: string;
   fName: string;
   lName: string;
   phoneNumber: string;

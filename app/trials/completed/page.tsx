@@ -6,9 +6,11 @@ import React, { useState, useEffect } from "react";
 // firestore functions
 import { getTrials } from "@/firebase";
 
+// global store
+import LoadingStore from "@/store/LoadingStore";
+
 //components
 import TrialTable from "@/components/TrialTable";
-import Loader from "@/components/Loader";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
@@ -45,31 +47,34 @@ const columns: GridColDef[] = [
   },
 ];
 
-const TrialsPage = () => {
-  const {user} = useAuth()
+const CompletedTrialsPage = () => {
+  const { user } = useAuth();
+  const { setLoading } = LoadingStore();
   const [trials, setTrials] = useState<TrialDetails[]>([]);
-  const [loading, setLoading] = useState<Boolean>(true);
 
   // Update the state with the imported data
   useEffect(() => {
-    getTrials(user?.orgId)
-    .then(response => {
-      setTrials(response.data)
-      setLoading(false)
-    })
+    setLoading(true);
+    if (user) {
+      getTrials(user?.orgId).then((response) => {
+        setTrials(response.data);
+        setLoading(false);
+      });
+    }
   }, [user?.orgId]);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-8">
-        {loading ? (
-          <Loader />
-        ) : (
-            <TrialTable columns={columns} rows={trials} filter="Completed" orgId={user?.orgId} />
-        )}
+        <TrialTable
+          columns={columns}
+          rows={trials}
+          filter="Completed"
+          orgId={user?.orgId}
+        />
       </div>
     </div>
   );
 };
 
-export default TrialsPage;
+export default CompletedTrialsPage;

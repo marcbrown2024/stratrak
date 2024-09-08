@@ -22,19 +22,11 @@ import { AlertType } from "@/enums";
 // libraries
 import { timeZoneToCountry } from "@/lib/countries";
 
+// constant
+import { blankImage } from "@/constants";
+
 // icons
 import { MdPhotoSizeSelectActual } from "react-icons/md";
-
-const initialFormData: ProfileFormData = {
-  profilePhoto: "",
-  fName: "",
-  lName: "",
-  phoneNumber: "",
-  streetAddress: "",
-  city: "",
-  state: "",
-  postalCode: "",
-};
 
 const Page = () => {
   const { user } = useAuth();
@@ -48,25 +40,27 @@ const Page = () => {
     state: user?.state,
     postalCode: user?.postalCode,
   };
-  const { loading, setLoading } = LoadingStore();
+
+  const { setLoading } = LoadingStore();
   const [formData, setFormData] = useState<ProfileFormData>(initialFormData);
-  const [formButton, setFormButton] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isInputClicked, setIsInputClicked] = useState<string | null>(null);
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const country = timeZoneToCountry[timeZone] || "Unknown";
   const [inputKey, setInputKey] = useState<number>(0);
   const [selectedFile, setSelectedFile] = useState<string>("");
-  const [setAlert, closeAlert] = useAlertStore((state) => [
+  const [signatureButton, setSignatureButton] = useState<boolean>(false);
+  const [signature, setSignature] = useState<string>("");
+
+  const [setAlert] = useAlertStore((state) => [
     state.setAlert,
     state.closeAlert,
   ]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    setFormData((prevState) => ({
-      ...prevState,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
     }));
   };
@@ -102,95 +96,109 @@ const Page = () => {
     setInputKey((prevKey) => prevKey + 1);
   };
 
-  const editProfile = () => {
-    setFormButton(true);
-    setFormData(initialFormData);
-  };
-
-  const cancelEdit = () => {
-    setFormData(initialFormData);
-    setFormButton(false);
-  };
-
-  const handleSubmit = async (formData: ProfileFormData) => {
-    if (!user?.userId) {
-      setLoading(false);
-      return;
-    }
-
-    const updatedFields: Partial<ProfileFormData> = {};
-
-    Object.keys(formData).forEach((key) => {
-      const fieldKey = key as keyof ProfileFormData;
-      // Check if the field has changed from the initial user data
-      if (formData[fieldKey] !== user[fieldKey]) {
-        updatedFields[fieldKey] = formData[fieldKey];
-      }
-    });
-
-    console.log(JSON.stringify(updatedFields));
-
-    const updateStatus = await updateUserProfile(user.userId, updatedFields);
-
-    if (updateStatus.success) {
-      setAlert(
-        { title: "Success", content: "Profile updated successfully." },
-        AlertType.Success
-      );
-      setTimeout(() => {
-        location.reload();
-      }, 2000);
-    } else {
-      setAlert(
-        {
-          title: "Error",
-          content: "Failed to update profile. Please try again.",
-        },
-        AlertType.Error
-      );
+  const RemoveSignature = async () => {
+    setSignature(blankImage);
+    if (user?.id) {
+      await uploadSignature(user?.id, blankImage);
     }
   };
 
-  const hasChanges = () => {
-    const changed =
-      JSON.stringify(formData) !== JSON.stringify(initialFormData);
-    console.log(JSON.stringify(formData));
-    console.log(JSON.stringify(initialFormData));
+  const informUser = async () => {
+    setAlert(
+      {
+        title: "Notice",
+        content: "To update your information, please click 'Edit Profile'.",
+      },
+      AlertType.Info
+    );
+  };
 
-    closeAlert();
-    if (!changed) {
-      console.log("No changes detected, showing info alert.");
-      setAlert(
-        { title: "Info", content: "No changes detected." },
-        AlertType.Info
-      );
-    } else {
-      console.log("Changes detected, submitting form.");
-      handleSubmit(formData); // Form submission on change detection
+  const handleInputClick = (inputName: string) => {
+    if (isEditing) {
+      setIsInputClicked(inputName);
+    } else if (!isEditing) {
+      informUser();
+    }
+  };
+
+  const cancelEdit = async () => {
+    setIsEditing(false);
+    setFormData(initialFormData);
+    handleRemoveFile();
+    setSignature(user.signature);
+    if (user?.id) {
+      await uploadSignature(user?.id, user.signature);
     }
   };
 
   useEffect(() => {
     setLoading(true);
     if (user) {
+      setFormData(initialFormData);
+      setSignature(user.signature);
       setLoading(false);
-      closeAlert();
     }
   }, [user]);
 
-  useEffect(() => {
-    if (!loading && user) {
-      setTimeout(() => {
+  const handleSubmitForm = async () => {
+    if (!user?.userId) {
+      setLoading(false);
+      return;
+    }
+    const updatedFields: Partial<ProfileFormData> = {};
+
+    let fieldsChanged = false; // Changed to a mutable variable
+
+    Object.keys(formData).forEach((key) => {
+      const fieldKey = key as keyof ProfileFormData;
+      // Check if the field has changed from the initial user data
+      if (formData[fieldKey] !== initialFormData[fieldKey]) {
+        updatedFields[fieldKey] = formData[fieldKey];
+        fieldsChanged = true; // Set to true if any field has changed
+      }
+    });
+
+    if (!fieldsChanged && signature == user.signature) {
+      setAlert(
+        {
+          title: "Notice",
+          content: "No changes to update.",
+        },
+        AlertType.Info
+      );
+      return;
+    }
+
+    try {
+      const updateStatus = await updateUserProfile(user.userId, formData);
+      if (updateStatus.success) {
+        setAlert(
+          { title: "Success", content: "Profile updated successfully." },
+          AlertType.Success
+        );
+        setTimeout(() => {
+          location.reload();
+        }, 3000);
+      } else {
         setAlert(
           {
-            title: "Notice",
-            content: "To update your information, please click 'Edit Profile'.",
+            title: "Error",
+            content: "Failed to update profile. Please try again.",
           },
-          AlertType.Info
+          AlertType.Error
         );
-      }, 2000);
+      }
+    } catch (e) {
+      console.log(e);
+      setAlert(
+        {
+          title: "Error",
+          content: "An unexpected error occurred. Please try again.",
+        },
+        AlertType.Error
+      );
     }
-  }, [loading, user]);
+  };
 
   return (
     <div className="relative h-fit w-full flex flex-col items-center justify-center">
@@ -210,38 +218,39 @@ const Page = () => {
                   <div className="w-full flex items-center justify-between">
                     <button
                       type="button"
-                      disabled={!formButton}
-                      // onClick={() => {
-                      //   setSignatureButton(true);
-                      // }}
+                      onClick={
+                        isEditing
+                          ? () => setSignatureButton(true)
+                          : () => informUser()
+                      }
                       className="text-xs px-2 py-1 border bg-slate-200 rounded-lg hover:scale-105"
                     >
-                      Change
+                      {signature != blankImage ? "Change" : "Set up"}
                     </button>
-                    {/* {!signature && (
+                    {signature != blankImage && isEditing && (
                       <button
                         type="button"
-                        disabled={!formButton}
-                        onClick={handleRemoveSignature}
+                        disabled={!isEditing}
+                        onClick={RemoveSignature}
                         className="text-xs text-white px-2 py-1 bg-red-600 border rounded-lg hover:scale-105"
                       >
                         Remove
                       </button>
-                    )} */}
+                    )}
                   </div>
                 </label>
                 <div className="border rounded-lg">
-                  {/* {signature !== "" ? (
+                  {signature != blankImage ? (
                     <Image
                       width={600}
                       height={600}
-                      src={signature || user?.signature}
+                      src={signature || blankImage}
                       alt="User Signature"
                       style={{ maxWidth: "50%", height: "auto" }}
                     />
                   ) : (
                     <div className="p-2">No signature available</div>
-                  )} */}
+                  )}
                 </div>
               </div>
             </div>
@@ -256,14 +265,14 @@ const Page = () => {
                     &nbsp;{selectedFile && "- " + selectedFile}
                   </span>
                 </div>
-                {(selectedFile || user?.profilePhoto !== "") && (
+                {(selectedFile || (formData.profilePhoto && isEditing)) && (
                   <button
                     type="button"
-                    disabled={!formButton}
+                    disabled={!isEditing}
                     onClick={handleRemoveFile}
                     className="text-xs text-white px-2 py-1 bg-red-600 border rounded-lg hover:scale-105"
                   >
-                    Remove
+                    {user?.profilePhoto ? "Remove Profile Photo" : "Remove"}
                   </button>
                 )}
               </label>
@@ -278,11 +287,22 @@ const Page = () => {
                       htmlFor="profilePhoto"
                       className="relative cursor-pointer rounded-md font-semibold text-blue-600 focus-within:outline-none focus-within:ring-2 hover:text-blue-500"
                     >
-                      <span>Upload a file</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!isEditing) {
+                            informUser();
+                          }
+                          document.getElementById("profilePhoto")?.click();
+                        }}
+                        className={`${!isEditing && "cursor-default"}`}
+                      >
+                        Upload a file
+                      </button>
                       <input
                         id="profilePhoto"
                         name="profilePhoto"
-                        type={formButton ? "file" : "text"}
+                        type={isEditing ? "file" : "text"}
                         onChange={handleFileChange}
                         className="sr-only"
                         key={inputKey} // Key that changes when the file is removed
@@ -297,49 +317,55 @@ const Page = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-8 pb-10 border-b border-gray-900/10 ">
+          <div className="flex flex-col gap-8 pb-8 border-b border-gray-900/10 ">
             <div className="w-full flex items-center justify-center gap-12">
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="fName"
                   className="text-lg font-medium leading-6 text-blue-800"
                 >
-                  First name
+                  First Name
                 </label>
-                <div>
-                  <input
-                    type="text"
-                    name="fName"
-                    id="fName"
-                    onChange={handleChange}
-                    value={user?.fName}
-                    readOnly={!formButton}
-                    className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
-                      !formButton ? "border-0" : "cursor-text"
-                    }`}
-                  />
-                </div>
+                <input
+                  type="text"
+                  id="fName"
+                  name="fName"
+                  onClick={() => handleInputClick("fName")}
+                  value={
+                    isInputClicked === "fName"
+                      ? formData.fName
+                      : user?.fName || ""
+                  }
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                    !isEditing ? "border-0 text-gray-400" : "cursor-text"
+                  }`}
+                />
               </div>
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="lName"
                   className="text-lg font-medium leading-6 text-blue-800"
                 >
-                  Last name
+                  Last Name
                 </label>
-                <div>
-                  <input
-                    type="text"
-                    name="lName"
-                    id="lName"
-                    onChange={handleChange}
-                    value={user?.lName}
-                    readOnly={!formButton}
-                    className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
-                      !formButton ? "border-0" : "cursor-text"
-                    }`}
-                  />
-                </div>
+                <input
+                  type="text"
+                  id="lName"
+                  name="lName"
+                  onClick={() => handleInputClick("lName")}
+                  value={
+                    isInputClicked === "lName"
+                      ? formData.lName
+                      : user?.lName || ""
+                  }
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                    !isEditing ? "border-0 text-gray-400" : "cursor-text"
+                  }`}
+                />
               </div>
             </div>
             <div className="w-full flex items-center justify-center gap-12">
@@ -355,10 +381,9 @@ const Page = () => {
                     type="email"
                     name="email"
                     id="email"
-                    onChange={handleChange}
-                    value={user?.email}
+                    value={user?.email || ""}
                     readOnly
-                    className="w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 rounded-md border-0 ring-1 ring-inset ring-gray-300 focus-within:outline-none cursor-not-allowed"
+                    className="w-full sm:text-sm lg:text-base text-gray-400 sm:leading-6 bg-transparent p-2 rounded-md border-0 ring-1 ring-inset ring-gray-300 focus-within:outline-none cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -369,41 +394,47 @@ const Page = () => {
                 >
                   Phone Number
                 </label>
-                <div>
-                  <input
-                    type="text"
-                    name="phoneNumber"
-                    id="phoneNumber"
-                    onChange={handleChange}
-                    value={user?.phoneNumber}
-                    readOnly={!formButton}
-                    className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
-                      !formButton ? "border-0" : "cursor-text"
-                    }`}
-                  />
-                </div>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  onClick={() => handleInputClick("phoneNumber")}
+                  value={
+                    isInputClicked === "phoneNumber"
+                      ? formData.phoneNumber
+                      : user?.phoneNumber || ""
+                  }
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                    !isEditing ? "border-0 text-gray-400" : "cursor-text"
+                  }`}
+                />
               </div>
             </div>
             <div className="w-full flex flex-col gap-2">
               <label
                 htmlFor="streetAddress"
-                className="block text-lg font-medium leading-6 text-blue-800"
+                className="text-lg font-medium leading-6 text-blue-800"
               >
-                Street address
+                Street Address
               </label>
-              <div>
-                <input
-                  type="text"
-                  name="streetAddress"
-                  id="streetAddress"
-                  onChange={handleChange}
-                  value={user?.streetAddress}
-                  readOnly={!formButton}
-                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
-                    !formButton ? "border-0" : "cursor-text"
-                  }`}
-                />
-              </div>
+              <input
+                type="text"
+                id="streetAddress"
+                name="streetAddress"
+                onClick={() => handleInputClick("streetAddress")}
+                value={
+                  isInputClicked === "streetAddress"
+                    ? formData.streetAddress
+                    : user?.streetAddress || ""
+                }
+                onChange={handleChange}
+                readOnly={!isEditing}
+                className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                  !isEditing ? "border-0 text-gray-400" : "cursor-text"
+                }`}
+              />
             </div>
             <div className="w-full flex items-center justify-center gap-12">
               <div className="w-1/2 flex flex-col gap-2">
@@ -413,40 +444,44 @@ const Page = () => {
                 >
                   City
                 </label>
-                <div>
-                  <input
-                    type="text"
-                    name="city"
-                    id="city"
-                    onChange={handleChange}
-                    value={user?.city}
-                    readOnly={!formButton}
-                    className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
-                      !formButton ? "border-0" : "cursor-text"
-                    }`}
-                  />
-                </div>
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  onClick={() => handleInputClick("city")}
+                  value={
+                    isInputClicked === "city" ? formData.city : user?.city || ""
+                  }
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                    !isEditing ? "border-0 text-gray-400" : "cursor-text"
+                  }`}
+                />
               </div>
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="state"
                   className="text-lg font-medium leading-6 text-blue-800"
                 >
-                  State/Province
+                  State
                 </label>
-                <div>
-                  <input
-                    type="text"
-                    name="state"
-                    id="state"
-                    onChange={handleChange}
-                    value={user?.state}
-                    readOnly={!formButton}
-                    className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
-                      !formButton ? "border-0" : "cursor-text"
-                    }`}
-                  />
-                </div>
+                <input
+                  type="text"
+                  id="state"
+                  name="state"
+                  onClick={() => handleInputClick("state")}
+                  value={
+                    isInputClicked === "state"
+                      ? formData.state
+                      : user?.state || ""
+                  }
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                    !isEditing ? "border-0 text-gray-400" : "cursor-text"
+                  }`}
+                />
               </div>
             </div>
             <div className="w-full flex items-center justify-center gap-12">
@@ -455,21 +490,24 @@ const Page = () => {
                   htmlFor="postalCode"
                   className="text-lg font-medium leading-6 text-blue-800"
                 >
-                  Postal code
+                  Postal Code
                 </label>
-                <div>
-                  <input
-                    type="text"
-                    name="postalCode"
-                    id="postalCode"
-                    onChange={handleChange}
-                    value={user?.postalCode}
-                    readOnly={!formButton}
-                    className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
-                      !formButton ? "border-0" : "cursor-text"
-                    }`}
-                  />
-                </div>
+                <input
+                  type="text"
+                  id="postalCode"
+                  name="postalCode"
+                  onClick={() => handleInputClick("postalCode")}
+                  value={
+                    isInputClicked === "postalCode"
+                      ? formData.postalCode
+                      : user?.postalCode || ""
+                  }
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                    !isEditing ? "border-0 text-gray-400" : "cursor-text"
+                  }`}
+                />
               </div>
               <div className="w-1/2 flex flex-col gap-2">
                 <label
@@ -484,48 +522,47 @@ const Page = () => {
                   id="country"
                   value={country}
                   readOnly
-                  className="w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 rounded-md border-0 ring-1 ring-inset ring-gray-300 focus-within:outline-none cursor-not-allowed"
+                  className="w-full sm:text-sm lg:text-base text-gray-400 sm:leading-6 bg-transparent p-2 rounded-md border-0 ring-1 ring-inset ring-gray-300 focus-within:outline-none cursor-not-allowed"
                 />
               </div>
             </div>
           </div>
         </div>
       </form>
-      <div className="w-4/5 2xl:w-1/2 flex items-center justify-end pb-6">
-        {formButton && (
-          <div className="flex items-center justify-end gap-8">
+      <div className="w-4/5 2xl:w-1/2 flex items-center justify-end pb-8">
+        {isEditing && (
+          <div className="h-full w-full flex items-center justify-end gap-8">
             <button
               type="button"
-              // onClick={handleSubmit}
-              onClick={hasChanges}
+              onClick={handleSubmitForm}
               className="h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-800 rounded-lg hover:bg-blue-700 hover:scale-x-95"
             >
               Save Changes
             </button>
             <button
+              type="button"
               onClick={cancelEdit}
-              className="h-10 w-36 flex items-center justify-center text-blue-700 font-semibold bg-[#718096]/30 rounded-lg hover:bg-[#718096]/50 hover:scale-x-95"
+              className="h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-[#a33020] rounded-lg hover:bg-[#8d372b] hover:scale-x-95"
             >
               Cancel
             </button>
           </div>
         )}
-        {!formButton && (
+        {!isEditing && (
           <button
             type="button"
-            onClick={editProfile}
+            onClick={() => setIsEditing(true)}
             className="h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-800 rounded-lg hover:bg-blue-700 hover:scale-x-95"
           >
             Edit Profile
           </button>
         )}
       </div>
-      {/* <SignatureCanvas
-        signatureButton={signatureButton}
+      <SignatureCanvas
         setSignatureButton={setSignatureButton}
+        signatureButton={signatureButton}
         setSignature={setSignature}
-        setSignatureChanged={setSignatureChanged}
-      /> */}
+      />
     </div>
   );
 };

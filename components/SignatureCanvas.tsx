@@ -2,6 +2,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
+// firebase components
+import { uploadSignature } from "@/firebase";
+import { useAuth } from "./AuthProvider";
+
 // icons
 import { IoCloseCircle } from "react-icons/io5";
 import { FaSave } from "react-icons/fa";
@@ -17,17 +21,18 @@ type Style = {
 };
 
 type SignatureCanvasProps = {
-  signatureButton: boolean;
   setSignatureButton: React.Dispatch<React.SetStateAction<boolean>>;
+  signatureButton: boolean;
   setSignature: React.Dispatch<React.SetStateAction<string>>;
-  setSignatureChanged: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
 const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
-  signatureButton,
   setSignatureButton,
+  signatureButton,
   setSignature,
-  setSignatureChanged,
 }) => {
+  const { user } = useAuth();
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
   const [drawing, setDrawing] = useState<boolean>(false);
@@ -163,14 +168,18 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     }
   };
 
-  const saveSignature = () => {
+  const saveSignature = async () => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
       const base64String = canvas.toDataURL("image/png"); // Get the base64 string of the image
-      setSignature(base64String);
-      clearDrawing();
-      setSignatureButton(false);
-      setSignatureChanged(true)
+      const userId = user?.id;
+
+      if (userId) {
+        setSignature(base64String);
+        await uploadSignature(userId, base64String);
+        clearDrawing();
+        setSignatureButton(false);
+      }
     }
   };
 
@@ -178,7 +187,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     <div
       className={`absolute h-full w-full ${
         signatureButton ? "flex" : "hidden"
-      } flex-col items-center justify-start bg-slate-50/95`}
+      } flex-col items-center justify-start bg-slate-50`}
     >
       <div className="relative h-fit w-fit">
         <canvas
