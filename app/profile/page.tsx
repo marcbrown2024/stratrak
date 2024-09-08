@@ -129,6 +129,7 @@ const Page = () => {
     if (user?.id) {
       await uploadSignature(user?.id, user.signature);
     }
+    location.reload();
   };
 
   useEffect(() => {
@@ -331,11 +332,7 @@ const Page = () => {
                   id="fName"
                   name="fName"
                   onClick={() => handleInputClick("fName")}
-                  value={
-                    isInputClicked === "fName"
-                      ? formData.fName
-                      : user?.fName || ""
-                  }
+                  value={formData.fName}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -355,11 +352,7 @@ const Page = () => {
                   id="lName"
                   name="lName"
                   onClick={() => handleInputClick("lName")}
-                  value={
-                    isInputClicked === "lName"
-                      ? formData.lName
-                      : user?.lName || ""
-                  }
+                  value={formData.lName}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -399,11 +392,7 @@ const Page = () => {
                   id="phoneNumber"
                   name="phoneNumber"
                   onClick={() => handleInputClick("phoneNumber")}
-                  value={
-                    isInputClicked === "phoneNumber"
-                      ? formData.phoneNumber
-                      : user?.phoneNumber || ""
-                  }
+                  value={formData.phoneNumber}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -424,11 +413,7 @@ const Page = () => {
                 id="streetAddress"
                 name="streetAddress"
                 onClick={() => handleInputClick("streetAddress")}
-                value={
-                  isInputClicked === "streetAddress"
-                    ? formData.streetAddress
-                    : user?.streetAddress || ""
-                }
+                value={formData.streetAddress}
                 onChange={handleChange}
                 readOnly={!isEditing}
                 className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -449,9 +434,7 @@ const Page = () => {
                   id="city"
                   name="city"
                   onClick={() => handleInputClick("city")}
-                  value={
-                    isInputClicked === "city" ? formData.city : user?.city || ""
-                  }
+                  value={formData.city}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -471,11 +454,7 @@ const Page = () => {
                   id="state"
                   name="state"
                   onClick={() => handleInputClick("state")}
-                  value={
-                    isInputClicked === "state"
-                      ? formData.state
-                      : user?.state || ""
-                  }
+                  value={formData.state}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -497,11 +476,7 @@ const Page = () => {
                   id="postalCode"
                   name="postalCode"
                   onClick={() => handleInputClick("postalCode")}
-                  value={
-                    isInputClicked === "postalCode"
-                      ? formData.postalCode
-                      : user?.postalCode || ""
-                  }
+                  value={formData.postalCode}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
