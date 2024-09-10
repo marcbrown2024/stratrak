@@ -290,8 +290,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
           { title: "Success!", content: "User created successfully." },
           AlertType.Success
         );
-        setFormData(initialFormData);
-        setAddUser(!addUser);
+        setTimeout(() => location.reload(), 2000);
       }
     }
   };

@@ -44,7 +44,6 @@ const Page = () => {
   const { setLoading } = LoadingStore();
   const [formData, setFormData] = useState<ProfileFormData>(initialFormData);
   const [isEditing, setIsEditing] = useState(false);
-  const [isInputClicked, setIsInputClicked] = useState<string | null>(null);
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const country = timeZoneToCountry[timeZone] || "Unknown";
   const [inputKey, setInputKey] = useState<number>(0);
@@ -113,10 +112,8 @@ const Page = () => {
     );
   };
 
-  const handleInputClick = (inputName: string) => {
-    if (isEditing) {
-      setIsInputClicked(inputName);
-    } else if (!isEditing) {
+  const handleInputClick = () => {
+    if (!isEditing) {
       informUser();
     }
   };
@@ -176,9 +173,7 @@ const Page = () => {
           { title: "Success", content: "Profile updated successfully." },
           AlertType.Success
         );
-        setTimeout(() => {
-          location.reload();
-        }, 3000);
+        setIsEditing(false);
       } else {
         setAlert(
           {
@@ -189,7 +184,6 @@ const Page = () => {
         );
       }
     } catch (e) {
-      console.log(e);
       setAlert(
         {
           title: "Error",
@@ -210,10 +204,7 @@ const Page = () => {
             </h1>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-6">
-                <label
-                  htmlFor="signature"
-                  className="flex items-center gap-4 text-lg font-medium leading-6 text-blue-800"
-                >
+                <div className="flex items-center gap-4 text-lg font-medium leading-6 text-blue-800">
                   Signature
                   <div className="w-full flex items-center justify-between">
                     <button
@@ -238,7 +229,7 @@ const Page = () => {
                       </button>
                     )}
                   </div>
-                </label>
+                </div>
                 <div className="border rounded-lg">
                   {signature !== blankImage && signature !== "" ? (
                     <Image
@@ -255,17 +246,14 @@ const Page = () => {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <label
-                htmlFor="profile-photo"
-                className="flex items-center justify-between text-lg font-medium leading-6 text-blue-800"
-              >
+              <div className="flex items-center justify-between text-lg font-medium leading-6 text-blue-800">
                 <div className="flex items-center justify-center">
                   Profile photo
                   <span className="text-sm">
                     &nbsp;{selectedFile && "- " + selectedFile}
                   </span>
                 </div>
-                {(selectedFile || (formData.profilePhoto && isEditing)) && (
+                {formData.profilePhoto != "" && isEditing && (
                   <button
                     type="button"
                     disabled={!isEditing}
@@ -275,7 +263,7 @@ const Page = () => {
                     {user?.profilePhoto ? "Remove Profile Photo" : "Remove"}
                   </button>
                 )}
-              </label>
+              </div>
               <div className="flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                 <div className="flex flex-col items-center">
                   <MdPhotoSizeSelectActual
@@ -330,8 +318,9 @@ const Page = () => {
                   type="text"
                   id="fName"
                   name="fName"
-                  onClick={() => handleInputClick("fName")}
-                  value={formData.fName}
+                  autoComplete="false"
+                  onClick={handleInputClick}
+                  value={formData.fName || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -350,8 +339,9 @@ const Page = () => {
                   type="text"
                   id="lName"
                   name="lName"
-                  onClick={() => handleInputClick("lName")}
-                  value={formData.lName}
+                  autoComplete="false"
+                  onClick={handleInputClick}
+                  value={formData.lName || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -373,6 +363,7 @@ const Page = () => {
                     type="email"
                     name="email"
                     id="email"
+                    autoComplete="false"
                     value={user?.email || ""}
                     readOnly
                     className="w-full sm:text-sm lg:text-base text-gray-400 sm:leading-6 bg-transparent p-2 rounded-md border-0 ring-1 ring-inset ring-gray-300 focus-within:outline-none cursor-not-allowed"
@@ -390,8 +381,9 @@ const Page = () => {
                   type="tel"
                   id="phoneNumber"
                   name="phoneNumber"
-                  onClick={() => handleInputClick("phoneNumber")}
-                  value={formData.phoneNumber}
+                  autoComplete="false"
+                  onClick={handleInputClick}
+                  value={formData.phoneNumber || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -411,8 +403,9 @@ const Page = () => {
                 type="text"
                 id="streetAddress"
                 name="streetAddress"
-                onClick={() => handleInputClick("streetAddress")}
-                value={formData.streetAddress}
+                autoComplete="false"
+                onClick={handleInputClick}
+                value={formData.streetAddress || ""}
                 onChange={handleChange}
                 readOnly={!isEditing}
                 className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -432,8 +425,9 @@ const Page = () => {
                   type="text"
                   id="city"
                   name="city"
-                  onClick={() => handleInputClick("city")}
-                  value={formData.city}
+                  autoComplete="false"
+                  onClick={handleInputClick}
+                  value={formData.city || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -452,8 +446,9 @@ const Page = () => {
                   type="text"
                   id="state"
                   name="state"
-                  onClick={() => handleInputClick("state")}
-                  value={formData.state}
+                  autoComplete="false"
+                  onClick={handleInputClick}
+                  value={formData.state || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -474,8 +469,9 @@ const Page = () => {
                   type="text"
                   id="postalCode"
                   name="postalCode"
-                  onClick={() => handleInputClick("postalCode")}
-                  value={formData.postalCode}
+                  autoComplete="false"
+                  onClick={handleInputClick}
+                  value={formData.postalCode || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
                   className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
@@ -494,7 +490,8 @@ const Page = () => {
                   type="text"
                   name="country"
                   id="country"
-                  value={country}
+                  autoComplete="false"
+                  value={country || ""}
                   readOnly
                   className="w-full sm:text-sm lg:text-base text-gray-400 sm:leading-6 bg-transparent p-2 rounded-md border-0 ring-1 ring-inset ring-gray-300 focus-within:outline-none cursor-not-allowed"
                 />
