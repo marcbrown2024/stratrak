@@ -291,9 +291,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
           AlertType.Success
         );
         setFormData(initialFormData);
-        setTimeout(() => {
-          location.reload();
-        }, 1500);
+        setAddUser(!addUser);
       }
     }
   };
@@ -624,7 +622,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                           : "translate-x-10 -z-10"
                       } transition-transform duration-700 ease-in-out`}
                     >
-                      <Tooltip title="Inactive">
+                      <Tooltip title="Save">
                         <button
                           onClick={() =>
                             handleUpdatePrivilege(item.email, !item.isAdmin)

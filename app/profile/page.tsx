@@ -129,7 +129,6 @@ const Page = () => {
     if (user?.id) {
       await uploadSignature(user?.id, user.signature);
     }
-    location.reload();
   };
 
   useEffect(() => {
@@ -241,7 +240,7 @@ const Page = () => {
                   </div>
                 </label>
                 <div className="border rounded-lg">
-                  {signature != blankImage ? (
+                  {signature !== blankImage && signature !== "" ? (
                     <Image
                       width={600}
                       height={600}
