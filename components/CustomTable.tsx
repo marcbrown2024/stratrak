@@ -14,7 +14,6 @@ import {
 
 import { useAlertStore } from "@/store/AlertStore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useAuth } from "./AuthProvider";
 import useFirebaseAuth from "@/hooks/UseFirebaseAuth";
 import { FirebaseError } from "firebase/app";
 
@@ -31,6 +30,7 @@ import { RiExchangeFill } from "react-icons/ri";
 import { IoCheckmarkDoneSharp, IoClose } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
 import { validateInput, validationRules } from "@/lib/defaults";
+import useUser from "@/hooks/UseUser";
 
 type FormData = User & {
   password: string;
@@ -65,7 +65,7 @@ type CustomTableProps = {
 const ITEMS_PER_PAGE = 4;
 
 const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
-  const { user } = useAuth();
+  const {user} = useUser()
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filter, setFilter] = useState<"Users" | "Admins" | "All Users">(
@@ -254,7 +254,7 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
     const userDetails = {
       ...userData,
       userId: firebaseUser.user.uid,
-      orgId: user?.orgId,
+      orgId: user?.orgId ?? "",
     };
 
     await createUser(userDetails);

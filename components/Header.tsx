@@ -13,10 +13,10 @@ import UseScroll from "@/hooks/UseScroll";
 
 // zustand stores
 import { useModalStore } from "@/store/DropDownModalStore";
-import { useAuth } from "./AuthProvider";
+import useUser from "@/hooks/UseUser";
 
 const Header = () => {
-  const { user } = useAuth();
+  const {user} = useUser()
   const scrolled = UseScroll(5);
   const currentPathname = usePathname();
   const selectedLayout = useSelectedLayoutSegment();
@@ -61,7 +61,7 @@ const Header = () => {
     return null;
   }
 
-  const getInitials = (user?: User): string => {
+  const getInitials = (user?: User | null): string => {
     if (!user) return "";
 
     // Get the first letter of first name and last name

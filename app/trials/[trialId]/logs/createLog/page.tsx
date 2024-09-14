@@ -17,13 +17,13 @@ import CreateLogTableRow from "@/components/CreateLogTableRow";
 import Loader from "@/components/Loader";
 
 // libraries
-import { defaultLog } from "@/lib/defaults";
+import { defaultLog, getCurrentDateTime } from "@/lib/defaults";
 
 // enums
 import { AlertType } from "@/enums";
 
 // icons
-import { useAuth } from "@/components/AuthProvider";
+import useUser from "@/hooks/UseUser";
 
 type params = {
   params: {
@@ -32,7 +32,7 @@ type params = {
 };
 
 const CreateLog = ({ params }: params) => {
-  const { user } = useAuth();
+  const {user} = useUser()
   const router = useRouter();
   const { setLoading } = LoadingStore();
   const [savingLog, setSavingLog] = useState<boolean>(false);
@@ -60,7 +60,7 @@ const CreateLog = ({ params }: params) => {
 
     if (user?.signature) {
       setSavingLog(true);
-      createLog(logs[0], trialId).then((response) => {
+      createLog({...logs[0], dateOfVisit: getCurrentDateTime()}, trialId).then((response) => {
         if (response.success) {
           alert = {
             title: "Success!",
