@@ -1,11 +1,10 @@
 "use client";
 
 // react/nextjs components
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // firestore functions
-import { useAuth } from "@/components/AuthProvider";
-import { getTrials, updateUserLastActivity } from "@/firebase";
+import { getTrials, getUserFromDb, updateUserLastActivity } from "@/firebase";
 
 // global store
 import LoadingStore from "@/store/LoadingStore";
@@ -16,6 +15,7 @@ import { GridColDef } from "@mui/x-data-grid";
 //components
 import TrialTable from "@/components/TrialTable";
 import Loader from "@/components/Loader";
+import useUser from "@/hooks/UseUser";
 
 const columns: GridColDef[] = [
   {
@@ -49,9 +49,20 @@ const columns: GridColDef[] = [
 ];
 
 const TrialsPage = () => {
-  const { user } = useAuth();
+  const {user} = useUser()
+  const [updatedUser, setUpdatedUser] = useState<User>();
   const { setLoading } = LoadingStore();
   const [trials, setTrials] = useState<TrialDetails[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      getUserFromDb(user?.id).then(response => {
+        const user = response?.data ?? null
+        setUpdatedUser(user)
+      })
+    }
+  }, [user])
+
 
   // Update the state with the imported data
   useEffect(() => {
@@ -74,7 +85,7 @@ const TrialsPage = () => {
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-8">
-          <TrialTable columns={columns} rows={trials} orgId={user?.orgId} />
+          <TrialTable columns={columns} rows={trials} orgId={updatedUser?.orgId??""} />
       </div>
     </div>
   );

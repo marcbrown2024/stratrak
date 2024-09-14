@@ -27,7 +27,7 @@ import { MdFolderDelete, MdCancel, MdDelete } from "react-icons/md";
 import { TbAdjustmentsCheck } from "react-icons/tb";
 import { FaCircle } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { useAuth } from "./AuthProvider";
+import useUser from "@/hooks/UseUser";
 
 type Props = {
   columns: GridColDef[];
@@ -37,7 +37,7 @@ type Props = {
 };
 
 const TrialTable = (props: Props) => {
-  const {user, isAuthenticated} = useAuth()
+  const {user} = useUser()
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteTrialRow, setDeleteTrialRow] = useState<boolean>(false);
   const [changeProgress, setChangeProgress] = useState<boolean>(false);
@@ -47,10 +47,10 @@ const TrialTable = (props: Props) => {
   const [isAdmin, setIsAdmin] = useState<boolean>()
 
   useEffect(() => {
-    if (user && isAuthenticated) {
+    if (user) {
       setIsAdmin(user.isAdmin)
     }
-  }, [user, isAuthenticated])
+  }, [user])
 
   useEffect(() => {
     if (props.rows.length > 0) {

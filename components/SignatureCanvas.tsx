@@ -4,11 +4,11 @@ import Image from "next/image";
 
 // firebase components
 import { uploadSignature } from "@/firebase";
-import { useAuth } from "./AuthProvider";
 
 // icons
 import { IoCloseCircle } from "react-icons/io5";
 import { FaSave } from "react-icons/fa";
+import useUser from "@/hooks/UseUser";
 
 type DrawingAction = {
   path: { x: number; y: number }[];
@@ -31,7 +31,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
   signatureButton,
   setSignature,
 }) => {
-  const { user } = useAuth();
+  const {user} = useUser()
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);

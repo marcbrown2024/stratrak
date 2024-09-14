@@ -394,15 +394,13 @@ const convertToFirestoreTimestamp = (dateString: string): Timestamp => {
 const convertTimestampToDate = (timestamp: Timestamp | string): string => {
   try {
     // Convert Firestore Timestamp to JavaScript Date object
-    const date = (timestamp as Timestamp).toDate().toLocaleString();
+    const date = (timestamp as Timestamp).toDate();
 
-    // Format the date to 'YYYY-MM-DDThh:mm'
-    const formattedDate = moment(date.slice(0, 16)).format(
-      "YYYY-MM-DD, h:mm A"
-    );
+    // Format the date directly with moment, no need to slice
+    const formattedDate = moment(date).format("YYYY-MM-DD, h:mm A");
     return formattedDate;
   } catch (e) {
-    return timestamp as string;
+    return timestamp as string; // If it's not a Timestamp, return it as a string
   }
 };
 

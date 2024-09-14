@@ -7,7 +7,7 @@ import { auth, getUserFromDb } from "@/firebase";
 
 // Define the context type
 interface AuthContextType {
-  user: User; // Replace `any` with the appropriate user type
+  user: User;
   loading: boolean;
   isAuthenticated: boolean;
 }

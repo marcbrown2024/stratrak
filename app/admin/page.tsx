@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 
 // firebase components/functions
 import { getAllUsers } from "@/firebase";
-import { useAuth } from "@/components/AuthProvider";
 
 // global components
 import LoadingStore from "@/store/LoadingStore";
@@ -16,9 +15,10 @@ import CustomTable from "@/components/CustomTable";
 // icons
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
 import { redirect } from "next/navigation";
+import useUser from "@/hooks/UseUser";
 
 const Page = () => {
-  const { user } = useAuth();
+  const {user} = useUser()
   const { setLoading } = LoadingStore();
   const [users, setUsers] = useState<User[]>([]);
   const [userCount, setUserCount] = useState<number>(0);
@@ -31,7 +31,7 @@ const Page = () => {
 
   const fetchUsers = () => {
     setLoading(true);
-    getAllUsers(user?.orgId).then((response) => {
+    getAllUsers(user?.orgId??"").then((response) => {
       if (response.success) {
         const allUsers = response.data;
         const usersCount = allUsers.filter(

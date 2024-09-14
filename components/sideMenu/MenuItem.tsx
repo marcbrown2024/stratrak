@@ -7,10 +7,10 @@ import Link from "next/link";
 
 // icons
 import { FaChevronDown } from "react-icons/fa";
-import { useAuth } from "../AuthProvider";
+import useUser from "@/hooks/UseUser";
 
 const MenuItem = ({ item }: { item: SideNavItem }) => {
-  const {user, isAuthenticated} = useAuth()
+  const {user} = useUser()
 
   const pathname = usePathname();
   const [subMenuOpen, setSubMenuOpen] = useState(false);

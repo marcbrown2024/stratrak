@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-
-// firebase components/functions
-import { useAuth } from "@/components/AuthProvider";
 
 // global store
 import { useLogStore } from "@/store/CreateLogStore";
+import useUser from "@/hooks/UseUser";
+import { getCurrentDateTime } from "@/lib/defaults";
 
 type params = {
   rowId: number;
 };
 
 const TableRow = ({ rowId }: params) => {
-  const { user } = useAuth();
+  const {user} = useUser()
+  const [time, setTime] = useState<string>();
 
   const [logs, updateLog] = useLogStore((state) => [
     state.logs,
@@ -23,12 +23,22 @@ const TableRow = ({ rowId }: params) => {
 
   useEffect(() => {
     if (user) {
-      updateLog(rowId, "monitorName", `${user?.fName || ""} ${user?.lName || ""}`)
+      updateLog(rowId, "monitorName", `${user?.fName} ${user?.lName}`)
       if (user.signature) {
         updateLog(rowId, "signature", user.signature)
       }
     }
   }, [user, rowId, updateLog])
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTime(getCurrentDateTime());
+    }, 1000);
+  
+    return () => clearInterval(intervalId);
+  }, []);
+  
+
 
   return (
     <>
@@ -37,7 +47,7 @@ const TableRow = ({ rowId }: params) => {
           <input
             disabled
             type="text"
-            defaultValue={`${user?.fName || ""} ${user?.lName || ""}`}
+            value={`${user?.fName ?? ""} ${user?.lName ?? ""}`}
             id={`name-${rowId}`}
             className="text-gray-900 text-sm bg-white border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 px-2"
           />
@@ -45,7 +55,7 @@ const TableRow = ({ rowId }: params) => {
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
         <div className="h-[40px] w-fit flex items-center text-center bg-white">
-          {user && user.signature ? (
+          {user && user?.signature ? (
             <Image
               width={400}
               height={400}
@@ -94,9 +104,9 @@ const TableRow = ({ rowId }: params) => {
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
         <form>
           <input
+            disabled
             className="text-gray-900 text-sm border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 px-2"
-            defaultValue={logs[rowId]["dateOfVisit"] as keyof LogDetails}
-            onChange={(e) => updateLog(rowId, "dateOfVisit", e.target.value)}
+            value={time ?? ""}
             aria-label="Date"
             type="datetime-local"
           />
