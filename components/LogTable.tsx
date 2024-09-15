@@ -32,7 +32,7 @@ type Props = {
 };
 
 const LogTable = (props: Props) => {
-  const {user} = useUser()
+  const { user } = useUser();
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteLogRow, setDeleteLogRow] = useState<boolean>(false);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
@@ -107,19 +107,17 @@ const LogTable = (props: Props) => {
       return (
         <button
           onClick={() => setSelectedRow(row, true)}
-          className="h-[40px] w-fit flex items-center text-center"
+          className="h-[50px] w-fit flex items-center text-center"
         >
           {row.signature ? (
             <Image
-              width={400}
-              height={400}
+              width={200}
+              height={200}
               src={row.signature}
               alt="User Signature"
               style={{
-                maxWidth: "150px",
-                maxHeight: "80px",
-                objectFit: "contain",
-                margin: "0 -20px",
+                width: "auto",
+                height: "auto",
               }}
             />
           ) : (
@@ -129,30 +127,6 @@ const LogTable = (props: Props) => {
       );
     },
   };
-
-  // const DigitalSignatureColumn: GridColDef = {
-  //   field: "digitalSignature",
-  //   headerClassName: "text-blue-500 uppercase bg-blue-50",
-  //   headerName: "Digital Signature",
-  //   flex: 1,
-  //   renderCell: (params) => {
-  //     const { row } = params;
-  //     return (
-  //       <div className="h-[40px] w-fit flex items-center text-center">
-  //         {row.signature ? (
-  //           <div className="h-full w-full text-xs text-left border">
-  //             <p>Digitally signed</p>
-  //             <p> by {row.monitorName}</p>
-  //             <p>Date: {formatDate(row.dateOfVisit)}</p>
-  //             <p>{formatTime(row.dateOfVisit)}</p>
-  //           </div>
-  //         ) : (
-  //           <span>No digital signature available</span>
-  //         )}
-  //       </div>
-  //     );
-  //   },
-  // };
 
   const actionColumn: GridColDef = {
     field: "action",
@@ -216,13 +190,12 @@ const LogTable = (props: Props) => {
 
   return (
     <div className="w-full flex items-center">
-      <DataGrid
+      <DataGrid<LogDetails>
         className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4"
         rows={logs}
         columns={[
           monitorNameColumn,
           signatureColumn,
-          // DigitalSignatureColumn,
           props.columns[0],
           ...props.columns.slice(1),
           ...(isAdmin ? [actionColumn] : []),

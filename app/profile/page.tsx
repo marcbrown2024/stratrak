@@ -219,7 +219,7 @@ const Page = () => {
                 <button
                   type="button"
                   onClick={handleEditStatus}
-                  className="text-white text-sm px-2 py-1 border bg-blue-800 rounded-xl hover:scale-105"
+                  className="text-white text-sm px-2 py-1 border bg-blue-700 rounded-xl hover:scale-105"
                 >
                   Edit Profile
                 </button>

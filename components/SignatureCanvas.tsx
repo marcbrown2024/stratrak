@@ -262,6 +262,10 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
             src={signatureData}
             alt="Signature"
             className="border-2 border-gray-400"
+            style={{
+              width: "auto",
+              height: "auto",
+            }}
           />
           {/* You can use this hidden input to send the signature data to a server */}
           <input

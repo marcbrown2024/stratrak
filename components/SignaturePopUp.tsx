@@ -24,20 +24,19 @@ const SignaturePopUp = () => {
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    const hours = String(date.getUTCHours()).padStart(2, "0");
-    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-    const seconds = String(date.getUTCSeconds()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+    
+    // Calculate the timezone offset in minutes and convert it to hours and minutes
     const timezoneOffset = -date.getTimezoneOffset();
-    const offsetHours = String(
-      Math.floor(Math.abs(timezoneOffset) / 60)
-    ).padStart(2, "0");
-    const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(
-      2,
-      "0"
-    );
-    return `${hours}:${minutes}:${seconds} ${
-      timezoneOffset >= 0 ? "+" : "-"
-    }${offsetHours}${offsetMinutes}`;
+    const offsetHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, "0");
+    const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, "0");
+  
+    // Format the timezone offset to match the format ±hh:mm
+    const offsetSign = timezoneOffset >= 0 ? "+" : "-";
+    
+    return `${hours}:${minutes}:${seconds} ${offsetSign}${offsetHours}:${offsetMinutes}`;
   };
 
   return (
@@ -59,12 +58,16 @@ const SignaturePopUp = () => {
               height={300}
               src={selectedRow?.signature}
               alt="User Signature"
+              style={{
+                maxWidth: "auto",
+                maxHeight: "auto",
+              }}
             />
           </div>
         </div>
       </div>
       <div className="flex flex-col items-center justify-start gap-3">
-        <div className="text-2xl text-blue-600 font-medium mr-10">
+        <div className="w-full text-2xl text-blue-600 font-medium">
           Digital Signature
         </div>
         <div className="flex items-center justify-center gap-4">

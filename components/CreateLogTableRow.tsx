@@ -57,14 +57,13 @@ const TableRow = ({ rowId }: params) => {
         <div className="h-[40px] w-fit flex items-center text-center bg-white">
           {user && user?.signature ? (
             <Image
-              width={400}
-              height={400}
+              width={300}
+              height={300}
               src={user.signature}
               alt="User Signature"
               style={{
-                maxWidth: "150px",
-                maxHeight: "80px",
-                objectFit: "contain",
+                maxWidth: "auto",
+                maxHeight: "auto",
               }}
             />
           ) : (

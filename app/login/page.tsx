@@ -114,7 +114,6 @@ const Page = () => {
           layout="responsive"
           width={100}
           height={100}
-          objectFit="contain"
         />
       </div>
       <div className="h-full w-full md:w-1/2 flex items-center justify-center">
