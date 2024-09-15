@@ -36,7 +36,7 @@ type Props = {
   orgId: string;
 };
 
-const TrialTable = (props: Props) => {
+const MonitoringLogTable = (props: Props) => {
   const {user, isAuthenticated} = useAuth()
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteTrialRow, setDeleteTrialRow] = useState<boolean>(false);
@@ -82,7 +82,7 @@ const TrialTable = (props: Props) => {
       if (response.success) {
         alert = {
           title: "Success!",
-          content: "Trial was deleted successfully.",
+          content: "Monitoring log was deleted successfully.",
         };
         alertType = AlertType.Success;
         getTrials(props.orgId).then((response) => {
@@ -93,7 +93,7 @@ const TrialTable = (props: Props) => {
       } else {
         alert = {
           title: "Error!",
-          content: "Could not delete trial. Please try again",
+          content: "Could not delete monitoring log. Please try again",
         };
         alertType = AlertType.Error;
       }
@@ -111,7 +111,7 @@ const TrialTable = (props: Props) => {
       if (response.success) {
         alert = {
           title: "Success!",
-          content: "Trial Progress was updated successfully.",
+          content: "Monitoring log progress was updated successfully.",
         };
         alertType = AlertType.Success;
         getTrials(props.orgId).then((response) => {
@@ -122,7 +122,7 @@ const TrialTable = (props: Props) => {
       } else {
         alert = {
           title: "Error!",
-          content: "Could not update trial's progress. Please try again",
+          content: "Could not update monitoring log's progress. Please try again",
         };
         alertType = AlertType.Error;
       }
@@ -149,7 +149,7 @@ const TrialTable = (props: Props) => {
             } transition duration-300 ease-in-out`}
           >
             <Tooltip title="Go to logs">
-              <Link href={`/trials/${id}/logs`} className="flex">
+              <Link href={`/monitoringLogs/${id}/logs`} className="flex">
                 <button
                   type="button"
                   className="transition-transform duration-300 hover:scale-110"
@@ -161,7 +161,7 @@ const TrialTable = (props: Props) => {
             {
               isAdmin &&
               <>
-                <Tooltip title="Delete Trial">
+                <Tooltip title="Delete monitoring log">
                   <button
                     type="button"
                     onClick={() => {
@@ -294,4 +294,4 @@ const TrialTable = (props: Props) => {
   );
 };
 
-export default TrialTable;
+export default MonitoringLogTable;

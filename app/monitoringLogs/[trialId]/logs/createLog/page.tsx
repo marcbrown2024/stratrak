@@ -71,7 +71,7 @@ const CreateLog = ({ params }: params) => {
           };
           alertType = AlertType.Success;
           setTimeout(() => {
-            router.push(`/trials/${trialId}/logs`);
+            router.push(`/monitoringLogs/${trialId}/logs`);
           }, 1000);
         } else {
           alert = {

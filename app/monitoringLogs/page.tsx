@@ -14,8 +14,7 @@ import LoadingStore from "@/store/LoadingStore";
 import { GridColDef } from "@mui/x-data-grid";
 
 //components
-import TrialTable from "@/components/TrialTable";
-import Loader from "@/components/Loader";
+import MonitoringLogTable from "@/components/MonitoringLogTable";
 
 const columns: GridColDef[] = [
   {
@@ -48,7 +47,7 @@ const columns: GridColDef[] = [
   },
 ];
 
-const TrialsPage = () => {
+const MonitoringLogsPage = () => {
   const { user } = useAuth();
   const { setLoading } = LoadingStore();
   const [trials, setTrials] = useState<TrialDetails[]>([]);
@@ -74,10 +73,10 @@ const TrialsPage = () => {
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-8">
-          <TrialTable columns={columns} rows={trials} orgId={user?.orgId} />
+          <MonitoringLogTable columns={columns} rows={trials} orgId={user?.orgId} />
       </div>
     </div>
   );
 };
 
-export default TrialsPage;
+export default MonitoringLogsPage;

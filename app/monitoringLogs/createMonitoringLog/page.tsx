@@ -24,7 +24,7 @@ import { AlertType } from "@/enums";
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa";
 import { useAuth } from "@/components/AuthProvider";
 
-const CreateTrials = () => {
+const CreateMonitoringLogs = () => {
   const { user } = useAuth();
   const router = useRouter();
   const [trials, removeLog, updateLogs, clearLogs] = useTrialStore((state) => [
@@ -70,19 +70,19 @@ const CreateTrials = () => {
           alert = {
             title: "Success!",
             content:
-              "Trial" +
+              "Monitoring Log" +
               (Object.keys(trials).length > 1 ? "s were" : " was") +
               "  saved successfully.",
           };
           alertType = AlertType.Success;
           setTimeout(() => {
-            router.push("/trials");
+            router.push("/monitoringLogs");
           }, 1000);
         } else {
           alert = {
             title: "Something went wrong",
             content:
-              "Could not save trial" +
+              "Could not save Monitoring Log" +
               (Object.keys(trials).length > 1 ? "s" : ""),
           };
           alertType = AlertType.Error;
@@ -179,11 +179,11 @@ const CreateTrials = () => {
         >
           {savingTrial
             ? "Saving..."
-            : `Save Trial${tableRowsIds.length > 1 ? "s" : ""}`}
+            : `Save Monitoring Log${tableRowsIds.length > 1 ? "s" : ""}`}
         </button>
       </div>
     </div>
   );
 };
 
-export default CreateTrials;
+export default CreateMonitoringLogs;

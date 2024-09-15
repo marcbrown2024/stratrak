@@ -9,13 +9,14 @@ import { getLogs } from "@/firebase";
 
 // global store
 import LoadingStore from "@/store/LoadingStore";
+import useSignatureStore from "@/store/SignatureStore";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
 
 //components
 import LogTable from "@/components/LogTable";
-import Loader from "@/components/Loader";
+import SignaturePopUp from "@/components/SignaturePopUp";
 
 const columns: GridColDef[] = [
   {
@@ -46,6 +47,11 @@ const LogsPage = () => {
   const { setLoading } = LoadingStore();
   const [logs, setLogs] = useState<LogDetails[]>([]);
 
+  const { visible } = useSignatureStore((state) => ({
+    selectedRow: state.selectedRow,
+    visible: state.visible,
+  }));
+
   // Update the state with the imported data
   useEffect(() => {
     setLoading(true);
@@ -56,10 +62,15 @@ const LogsPage = () => {
   }, [trialId]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-start">
+    <div className="relative h-full w-full flex flex-col items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-8">
         <LogTable columns={columns} rows={logs} trialId={trialId as string} />
       </div>
+      {visible && (
+        <div className="fixed h-full w-full flex items-center justify-center bg-slate-50 opacity-95">
+          <SignaturePopUp />
+        </div>
+      )}
     </div>
   );
 };

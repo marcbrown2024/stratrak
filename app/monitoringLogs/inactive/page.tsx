@@ -47,9 +47,10 @@ const columns: GridColDef[] = [
   },
 ];
 
-const CompletedTrialsPage = () => {
+const InActiveMonitoringLogsPage = () => {
   const { user } = useAuth();
   const { setLoading } = LoadingStore();
+
   const [trials, setTrials] = useState<TrialDetails[]>([]);
 
   // Update the state with the imported data
@@ -69,7 +70,7 @@ const CompletedTrialsPage = () => {
         <TrialTable
           columns={columns}
           rows={trials}
-          filter="Completed"
+          filter="Inactive"
           orgId={user?.orgId}
         />
       </div>
@@ -77,4 +78,4 @@ const CompletedTrialsPage = () => {
   );
 };
 
-export default CompletedTrialsPage;
+export default InActiveMonitoringLogsPage;

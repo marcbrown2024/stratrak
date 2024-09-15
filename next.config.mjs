@@ -14,7 +14,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/trials', // Replace with your desired path
+        destination: '/monitoringLogs',
         permanent: true, // Use true for a permanent redirect or false for a temporary redirect
       },
     ];

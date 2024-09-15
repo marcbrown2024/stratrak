@@ -19,8 +19,19 @@ const CustomToolbar = () => {
   const { trialId } = useParams();
   const currentPathname = usePathname();
 
-  const isAdminAndTrialPath = user?.isAdmin && currentPathname === "/trials";
-  const isLogPath = currentPathname === `/trials/${trialId}/logs`;
+  const isAdminAndTrialPath =
+    user?.isAdmin && currentPathname === "/monitoringLogs";
+  const isLogPath = currentPathname === `/monitoringLogs/${trialId}/logs`;
+
+  const exportFields =
+    currentPathname === "/monitoringLogs"
+      ? ["investigatorName", "protocol", "siteVisit"]
+      : currentPathname === `/monitoringLogs/${trialId}/logs` && [
+          "monitorName",
+          "digitalSignature",
+          "typeOfVisit",
+          "purposeOfVisit",
+        ];
 
   return (
     <div className="flex justify-between items-center gap-8">
@@ -31,20 +42,23 @@ const CustomToolbar = () => {
         <GridToolbarColumnsButton />
         <GridToolbarDensitySelector />
         <GridToolbarFilterButton />
-        <GridToolbarExport />
+        <GridToolbarExport
+          printOptions={{ fields: exportFields }}
+          csvOptions={{ fields: exportFields }}
+        />
       </div>
       {isAdminAndTrialPath ? (
-        <Link href="/trials/createTrial">
+        <Link href="/monitoringLogs/createMonitoringLog">
           <Button
             variant="contained"
             style={{ backgroundColor: "#007bff", color: "#fff" }}
           >
-            Add Trial
+            Add Monitoring Log
           </Button>
         </Link>
       ) : (
         isLogPath && (
-          <Link href={`/trials/${trialId}/logs/createLog`}>
+          <Link href={`/monitoringLogs/${trialId}/logs/createLog`}>
             <Button
               variant="contained"
               style={{ backgroundColor: "#007bff", color: "#fff" }}

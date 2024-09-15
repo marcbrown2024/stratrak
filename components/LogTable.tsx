@@ -10,6 +10,7 @@ import { useAuth } from "@/components/AuthProvider";
 
 // global stores
 import { useAlertStore } from "@/store/AlertStore";
+import useSignatureStore from "@/store/SignatureStore";
 
 // mui components
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -102,8 +103,12 @@ const LogTable = (props: Props) => {
     flex: 1,
     renderCell: (params) => {
       const { row } = params;
+      const setSelectedRow = useSignatureStore((state) => state.setSelectedRow);
       return (
-        <div className="h-[40px] w-fit flex items-center text-center">
+        <button
+          onClick={() => setSelectedRow(row, true)}
+          className="h-[40px] w-fit flex items-center text-center"
+        >
           {row.signature ? (
             <Image
               width={400}
@@ -118,12 +123,36 @@ const LogTable = (props: Props) => {
               }}
             />
           ) : (
-            <div>No signature available</div>
+            <span>No signature available</span>
           )}
-        </div>
+        </button>
       );
     },
   };
+
+  // const DigitalSignatureColumn: GridColDef = {
+  //   field: "digitalSignature",
+  //   headerClassName: "text-blue-500 uppercase bg-blue-50",
+  //   headerName: "Digital Signature",
+  //   flex: 1,
+  //   renderCell: (params) => {
+  //     const { row } = params;
+  //     return (
+  //       <div className="h-[40px] w-fit flex items-center text-center">
+  //         {row.signature ? (
+  //           <div className="h-full w-full text-xs text-left border">
+  //             <p>Digitally signed</p>
+  //             <p> by {row.monitorName}</p>
+  //             <p>Date: {formatDate(row.dateOfVisit)}</p>
+  //             <p>{formatTime(row.dateOfVisit)}</p>
+  //           </div>
+  //         ) : (
+  //           <span>No digital signature available</span>
+  //         )}
+  //       </div>
+  //     );
+  //   },
+  // };
 
   const actionColumn: GridColDef = {
     field: "action",
@@ -193,6 +222,7 @@ const LogTable = (props: Props) => {
         columns={[
           monitorNameColumn,
           signatureColumn,
+          // DigitalSignatureColumn,
           props.columns[0],
           ...props.columns.slice(1),
           ...(isAdmin ? [actionColumn] : []),

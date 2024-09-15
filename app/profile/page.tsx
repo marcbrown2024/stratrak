@@ -128,6 +128,17 @@ const Page = () => {
     }
   };
 
+  const handleEditStatus = async () => {
+    setIsEditing(true);
+    setTimeout(() => {
+      // Scroll to the bottom of the page when the component mounts
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth", // Use smooth scrolling
+      });
+    }, 1000);
+  };
+
   useEffect(() => {
     setLoading(true);
     if (user) {
@@ -199,25 +210,38 @@ const Page = () => {
       <form className="relative w-4/5 2xl:w-1/2 space-y-6 pb-8">
         <div className="space-y-12">
           <div className="flex flex-col gap-8 pb-8 border-b border-gray-900/10 ">
-            <h1 className="text:xl md:text-3xl font-semibold leading-7 text-blue-800">
-              Profile
-            </h1>
+            <div className="flex items-center justify-between gap-8">
+              <h1 className="text:xl md:text-3xl font-semibold leading-7 text-blue-800">
+                Profile
+              </h1>
+              {!isEditing && (
+                <button
+                  type="button"
+                  onClick={handleEditStatus}
+                  className="text-white text-sm px-2 py-1 border bg-blue-800 rounded-xl hover:scale-105"
+                >
+                  Edit Profile
+                </button>
+              )}
+            </div>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-6">
                 <div className="flex items-center gap-4 text-lg font-medium leading-6 text-blue-800">
                   Signature
                   <div className="w-full flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={
-                        isEditing
-                          ? () => setSignatureButton(true)
-                          : () => informUser()
-                      }
-                      className="text-xs px-2 py-1 border bg-slate-200 rounded-lg hover:scale-105"
-                    >
-                      {signature != blankImage ? "Change" : "Set up"}
-                    </button>
+                    {isEditing && (
+                      <button
+                        type="button"
+                        onClick={
+                          isEditing
+                            ? () => setSignatureButton(true)
+                            : () => informUser()
+                        }
+                        className="text-xs px-2 py-1 border bg-slate-200 rounded-lg hover:scale-105"
+                      >
+                        {signature != blankImage ? "Change" : "Set up"}
+                      </button>
+                    )}
                     {signature != blankImage && isEditing && (
                       <button
                         type="button"
@@ -518,15 +542,6 @@ const Page = () => {
               Cancel
             </button>
           </div>
-        )}
-        {!isEditing && (
-          <button
-            type="button"
-            onClick={() => setIsEditing(true)}
-            className="h-10 w-36 flex items-center justify-center text-[#fff] font-semibold bg-blue-800 rounded-lg hover:bg-blue-700 hover:scale-x-95"
-          >
-            Edit Profile
-          </button>
         )}
       </div>
       <SignatureCanvas
