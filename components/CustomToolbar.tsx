@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 
 // firebase components
-import { getLogs } from "@/firebase";
+import { getLogs, getTrials } from "@/firebase";
 
 // mui components
 import {
@@ -27,12 +27,16 @@ const CustomToolbar = () => {
   const { trialId } = useParams();
   const currentPathname = usePathname();
   const [logs, setLogs] = useState<LogDetails[]>([]);
+  const [monitoringlogs, setMonitoringlogs] = useState<TrialDetails[]>([]);
 
   useEffect(() => {
+    getTrials(user?.orgId as string).then((response) => {
+      setMonitoringlogs(response.data);
+    });
     getLogs(trialId as string).then((response) => {
       setLogs(response.data);
     });
-  }, [trialId]);
+  }, [trialId, user?.orgId]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -76,18 +80,29 @@ const CustomToolbar = () => {
   const handleExport = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
-      "Monitor Name,Signature,Type of Visit,Purpose of Visit,Date of Visit\n" +
+      "Investigator Name,Protocol,Site Visit,Monitor Name,Signature,Type of Visit,Purpose of Visit,Date of Visit\n" +
       logs
-        .map(
-          (log) =>
-            `"${log.monitorName}","Digitally signed by ${
-              log.monitorName
-            }, Date: ${formatDate(log.dateOfVisit)}, Time: ${formatTime(
-              log.dateOfVisit
-            )}","${log.typeOfVisit}","${log.purposeOfVisit}","${
-              log.dateOfVisit
-            }"`
-        )
+        .map((log) => {
+          // Find the specific monitoring log that matches the log's trialId
+          const monitoringLog = monitoringlogs.find(
+            (monLog) => monLog.id === log.trialId
+          );
+
+          // If no matching monitoring log is found, return an empty row
+          if (!monitoringLog) {
+            return "";
+          }
+
+          return `"${monitoringLog.investigatorName}","${
+            monitoringLog.protocol
+          }","${monitoringLog.siteVisit}","${
+            log.monitorName
+          }","Digitally signed by ${log.monitorName}, Date: ${formatDate(
+            log.dateOfVisit
+          )}, Time: ${formatTime(log.dateOfVisit)}","${log.typeOfVisit}","${
+            log.purposeOfVisit
+          }","${log.dateOfVisit}"`;
+        })
         .join("\n");
 
     const encodedUri = encodeURI(csvContent);

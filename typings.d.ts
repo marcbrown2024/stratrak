@@ -1,5 +1,6 @@
 // type for log details
 type LogDetails = {
+  trialId?: string;
   monitorName: string;
   signature: string;
   typeOfVisit: "Remote" | "Onsite" | "Waiver Call";
@@ -18,6 +19,7 @@ interface DBTrial extends TrialDetails {
 
 // type for trial details
 type TrialDetails = {
+  id?: string;
   investigatorName: string;
   protocol: string;
   siteVisit: string;

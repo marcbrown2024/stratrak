@@ -116,8 +116,8 @@ const LogTable = (props: Props) => {
               src={row.signature}
               alt="User Signature"
               style={{
-                width: "auto",
-                height: "auto",
+                width: "150px",
+                height: "60px",
               }}
             />
           ) : (
