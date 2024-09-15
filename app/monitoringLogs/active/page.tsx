@@ -10,7 +10,7 @@ import { getTrials } from "@/firebase";
 import LoadingStore from "@/store/LoadingStore";
 
 //components
-import TrialTable from "@/components/TrialTable";
+import MonitoringLogTable from "@/components/MonitoringLogTable";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
@@ -67,7 +67,7 @@ const ActiveMonitoringLogsPage = () => {
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-8">
-        <TrialTable
+        <MonitoringLogTable
           columns={columns}
           rows={trials}
           filter="Active"

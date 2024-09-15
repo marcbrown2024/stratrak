@@ -55,13 +55,12 @@ const MonitoringLogsPage = () => {
 
   useEffect(() => {
     if (user) {
-      getUserFromDb(user?.id).then(response => {
-        const user = response?.data ?? null
-        setUpdatedUser(user)
-      })
+      getUserFromDb(user?.id).then((response) => {
+        const user = response?.data ?? null;
+        setUpdatedUser(user);
+      });
     }
-  }, [user])
-
+  }, [user]);
 
   // Update the state with the imported data
   useEffect(() => {
@@ -76,16 +75,18 @@ const MonitoringLogsPage = () => {
     if (user && user.userId) {
       updateUserLastActivity(user.userId)
         .then(() => {})
-        .catch((error) => {
-        });
+        .catch((error) => {});
     }
   }, [user]);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
       <div className="flex flex-col items-center justify-center gap-8">
-          <MonitoringLogTable columns={columns} rows={trials} orgId={user?.orgId} />
-
+        <MonitoringLogTable
+          columns={columns}
+          rows={trials}
+          orgId={user?.orgId ?? ""}
+        />
       </div>
     </div>
   );

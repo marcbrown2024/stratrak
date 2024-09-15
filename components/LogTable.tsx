@@ -38,6 +38,7 @@ const LogTable = (props: Props) => {
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
   const [logs, setLogs] = useState<LogDetails[]>([]);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const setSelectedRow = useSignatureStore((state) => state.setSelectedRow);
 
   useEffect(() => {
     if (user) {
@@ -81,7 +82,7 @@ const LogTable = (props: Props) => {
     setActiveRowId(null);
   };
 
-  const monitorNameColumn: GridColDef = {
+  const MonitorNameColumn: GridColDef = {
     field: "monitorName",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     headerName: "Monitor Name",
@@ -96,14 +97,13 @@ const LogTable = (props: Props) => {
     },
   };
 
-  const signatureColumn: GridColDef = {
+  const SignatureColumn: GridColDef = {
     field: "signature",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     headerName: "Signature",
     flex: 1,
     renderCell: (params) => {
       const { row } = params;
-      const setSelectedRow = useSignatureStore((state) => state.setSelectedRow);
       return (
         <button
           onClick={() => setSelectedRow(row, true)}
@@ -128,7 +128,7 @@ const LogTable = (props: Props) => {
     },
   };
 
-  const actionColumn: GridColDef = {
+  const ActionColumn: GridColDef = {
     field: "action",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     headerName: "Action",
@@ -194,11 +194,11 @@ const LogTable = (props: Props) => {
         className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4"
         rows={logs}
         columns={[
-          monitorNameColumn,
-          signatureColumn,
+          MonitorNameColumn,
+          SignatureColumn,
           props.columns[0],
           ...props.columns.slice(1),
-          ...(isAdmin ? [actionColumn] : []),
+          ...(isAdmin ? [ActionColumn] : []),
         ]}
         initialState={{
           pagination: {
