@@ -1,8 +1,8 @@
 "use client";
 
 // react/nextjs components
-import { ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { ReactNode, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 // custom components
 import SiteNavBtns from "./SiteNavBtns";

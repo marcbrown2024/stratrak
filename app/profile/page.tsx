@@ -9,7 +9,6 @@ import SignatureCanvas from "@/components/SignatureCanvas";
 import Loader from "@/components/Loader";
 
 // firebase components
-import { useAuth } from "@/components/AuthProvider";
 import { updateUserProfile, uploadSignature } from "@/firebase";
 
 // global components
@@ -27,18 +26,19 @@ import { blankImage } from "@/constants";
 
 // icons
 import { MdPhotoSizeSelectActual } from "react-icons/md";
+import useUser from "@/hooks/UseUser";
 
 const Page = () => {
-  const { user } = useAuth();
+  const {user} = useUser()
   const initialFormData: ProfileFormData = {
-    profilePhoto: user?.profilePhoto,
-    fName: user?.fName,
-    lName: user?.lName,
-    phoneNumber: user?.phoneNumber,
-    streetAddress: user?.streetAddress,
-    city: user?.city,
-    state: user?.state,
-    postalCode: user?.postalCode,
+    profilePhoto: user?.profilePhoto ?? "",
+    fName: user?.fName ?? "",
+    lName: user?.lName ?? "",
+    phoneNumber: user?.phoneNumber ?? "",
+    streetAddress: user?.streetAddress ?? "",
+    city: user?.city ?? "",
+    state: user?.state ?? "",
+    postalCode: user?.postalCode ?? "",
   };
 
   const { setLoading } = LoadingStore();
@@ -55,6 +55,7 @@ const Page = () => {
     state.setAlert,
     state.closeAlert,
   ]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -122,7 +123,7 @@ const Page = () => {
     setIsEditing(false);
     setFormData(initialFormData);
     handleRemoveFile();
-    setSignature(user.signature);
+    setSignature(user?.signature ?? "");
     if (user?.id) {
       await uploadSignature(user?.id, user.signature);
     }

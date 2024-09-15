@@ -14,7 +14,7 @@ export const defaultTrial: TrialDetails = {
 };
 
 // Function to format the current date and time in 'YYYY-MM-DDThh:mm' format
-function getCurrentDateTime() {
+export function getCurrentDateTime() {
   const now = new Date();
 
   // Pad single-digit numbers with leading zeros

@@ -12,10 +12,10 @@ import {
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
-import { useAuth } from "./AuthProvider";
+import useUser from "@/hooks/UseUser";
 
 const CustomToolbar = () => {
-  const { user } = useAuth();
+  const {user} = useUser()
   const { trialId } = useParams();
   const currentPathname = usePathname();
 

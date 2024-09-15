@@ -3,9 +3,6 @@
 // react/nextjs components
 import React, { useEffect, useState } from "react";
 
-// firebase components
-import { useAuth } from "@/components/AuthProvider";
-
 // email components
 import emailjs from "@emailjs/browser";
 
@@ -17,6 +14,7 @@ import Loader from "@/components/Loader";
 
 // enums
 import { AlertType } from "@/enums";
+import useUser from "@/hooks/UseUser";
 
 // Initialize the state with an empty object of type HelpFormData
 const initialFormData: HelpFormData = {
@@ -25,7 +23,7 @@ const initialFormData: HelpFormData = {
 };
 
 const Page = () => {
-  const { user } = useAuth();
+  const {user} = useUser()
 
   const [formData, setFormData] = useState<HelpFormData>(initialFormData);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);

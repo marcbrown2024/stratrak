@@ -15,7 +15,7 @@ import TrialTable from "@/components/TrialTable";
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
 
-import { useAuth } from "@/components/AuthProvider";
+import useUser from "@/hooks/UseUser";
 
 const columns: GridColDef[] = [
   {
@@ -49,7 +49,7 @@ const columns: GridColDef[] = [
 ];
 
 const ActiveMonitoringLogsPage = () => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const { setLoading } = LoadingStore();
   const [trials, setTrials] = useState<TrialDetails[]>([]);
 
@@ -71,7 +71,7 @@ const ActiveMonitoringLogsPage = () => {
           columns={columns}
           rows={trials}
           filter="Active"
-          orgId={user?.orgId}
+          orgId={user?.orgId ?? ""}
         />
       </div>
     </div>

@@ -18,10 +18,10 @@ import { FaUserLock } from "react-icons/fa6";
 import { MdOutlineHelp } from "react-icons/md";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase";
-import { useAuth } from "./AuthProvider";
+import useUser from "@/hooks/UseUser";
 
 const DropDownModal = () => {
-  const { user } = useAuth();
+  const {user} = useUser()
   const [organizationName, setOrganizationName] = useState<string | null>(null);
 
   const { isModalOpen, closeModal } = useModalStore();

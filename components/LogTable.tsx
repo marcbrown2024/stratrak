@@ -6,7 +6,6 @@ import Image from "next/image";
 
 // firebase components/functions
 import { deleteLog, getLogs } from "@/firebase";
-import { useAuth } from "@/components/AuthProvider";
 
 // global stores
 import { useAlertStore } from "@/store/AlertStore";
@@ -24,6 +23,7 @@ import { AlertType } from "@/enums";
 import { MdDelete } from "react-icons/md";
 import { FaFileCircleMinus } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
+import useUser from "@/hooks/UseUser";
 
 type Props = {
   columns: GridColDef[];
@@ -32,7 +32,7 @@ type Props = {
 };
 
 const LogTable = (props: Props) => {
-  const { user, isAuthenticated } = useAuth();
+  const {user} = useUser()
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteLogRow, setDeleteLogRow] = useState<boolean>(false);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
@@ -40,10 +40,10 @@ const LogTable = (props: Props) => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   useEffect(() => {
-    if (user && isAuthenticated) {
+    if (user) {
       setIsAdmin(user.isAdmin);
     }
-  }, [user, isAuthenticated]);
+  }, [user]);
 
   useEffect(() => {
     if (props.rows) {
