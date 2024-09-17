@@ -185,7 +185,7 @@ const Page = () => {
           { title: "Success", content: "Profile updated successfully." },
           AlertType.Success
         );
-        setIsEditing(false);
+        location.reload();
       } else {
         setAlert(
           {
@@ -212,14 +212,14 @@ const Page = () => {
         <div className="space-y-12">
           <div className="flex flex-col gap-8 pb-8 border-b border-gray-900/10 ">
             <div className="flex items-center justify-between gap-8">
-              <h1 className="text:xl md:text-3xl font-semibold leading-7 text-blue-800">
+              <h1 className="text:xl md:text-3xl font-semibold leading-7 text-gray-600">
                 Profile
               </h1>
               {!isEditing && (
                 <button
                   type="button"
                   onClick={handleEditStatus}
-                  className="text-white text-sm px-2 py-1 border bg-blue-700 rounded-xl hover:scale-105"
+                  className="text-white text-sm px-2 py-1 border bg-blue-600 rounded-xl hover:scale-105"
                 >
                   Edit Profile
                 </button>
@@ -227,7 +227,7 @@ const Page = () => {
             </div>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-6">
-                <div className="flex items-center gap-4 text-lg font-medium leading-6 text-blue-800">
+                <div className="flex items-center gap-4 text-lg font-medium leading-6 text-gray-600">
                   Signature
                   <div className="w-full flex items-center justify-between">
                     {isEditing && (
@@ -271,7 +271,7 @@ const Page = () => {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-lg font-medium leading-6 text-blue-800">
+              <div className="flex items-center justify-between text-lg font-medium leading-6 text-gray-600">
                 <div className="flex items-center justify-center">
                   Profile photo
                   <span className="text-sm">
@@ -335,7 +335,7 @@ const Page = () => {
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="fName"
-                  className="text-lg font-medium leading-6 text-blue-800"
+                  className="text-lg font-medium leading-6 text-gray-600"
                 >
                   First Name
                 </label>
@@ -348,7 +348,7 @@ const Page = () => {
                   value={formData.fName || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
-                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-gray-600 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                     !isEditing ? "border-0 text-gray-400" : "cursor-text"
                   }`}
                 />
@@ -356,7 +356,7 @@ const Page = () => {
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="lName"
-                  className="text-lg font-medium leading-6 text-blue-800"
+                  className="text-lg font-medium leading-6 text-gray-600"
                 >
                   Last Name
                 </label>
@@ -369,7 +369,7 @@ const Page = () => {
                   value={formData.lName || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
-                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-gray-600 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                     !isEditing ? "border-0 text-gray-400" : "cursor-text"
                   }`}
                 />
@@ -379,7 +379,7 @@ const Page = () => {
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="email"
-                  className="text-lg font-medium leading-6 text-blue-800"
+                  className="text-lg font-medium leading-6 text-gray-600"
                 >
                   Email address
                 </label>
@@ -398,7 +398,7 @@ const Page = () => {
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="phoneNumber"
-                  className="text-lg font-medium leading-6 text-blue-800"
+                  className="text-lg font-medium leading-6 text-gray-600"
                 >
                   Phone Number
                 </label>
@@ -411,7 +411,7 @@ const Page = () => {
                   value={formData.phoneNumber || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
-                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-gray-600 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                     !isEditing ? "border-0 text-gray-400" : "cursor-text"
                   }`}
                 />
@@ -420,7 +420,7 @@ const Page = () => {
             <div className="w-full flex flex-col gap-2">
               <label
                 htmlFor="streetAddress"
-                className="text-lg font-medium leading-6 text-blue-800"
+                className="text-lg font-medium leading-6 text-gray-600"
               >
                 Street Address
               </label>
@@ -433,7 +433,7 @@ const Page = () => {
                 value={formData.streetAddress || ""}
                 onChange={handleChange}
                 readOnly={!isEditing}
-                className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-gray-600 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                   !isEditing ? "border-0 text-gray-400" : "cursor-text"
                 }`}
               />
@@ -442,7 +442,7 @@ const Page = () => {
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="city"
-                  className="text-lg font-medium leading-6 text-blue-800"
+                  className="text-lg font-medium leading-6 text-gray-600"
                 >
                   City
                 </label>
@@ -455,7 +455,7 @@ const Page = () => {
                   value={formData.city || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
-                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-gray-600 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                     !isEditing ? "border-0 text-gray-400" : "cursor-text"
                   }`}
                 />
@@ -463,7 +463,7 @@ const Page = () => {
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="state"
-                  className="text-lg font-medium leading-6 text-blue-800"
+                  className="text-lg font-medium leading-6 text-gray-600"
                 >
                   State
                 </label>
@@ -476,7 +476,7 @@ const Page = () => {
                   value={formData.state || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
-                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-gray-600 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                     !isEditing ? "border-0 text-gray-400" : "cursor-text"
                   }`}
                 />
@@ -486,7 +486,7 @@ const Page = () => {
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="postalCode"
-                  className="text-lg font-medium leading-6 text-blue-800"
+                  className="text-lg font-medium leading-6 text-gray-600"
                 >
                   Postal Code
                 </label>
@@ -499,7 +499,7 @@ const Page = () => {
                   value={formData.postalCode || ""}
                   onChange={handleChange}
                   readOnly={!isEditing}
-                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-blue-800 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
+                  className={`w-full sm:text-sm lg:text-base sm:leading-6 bg-transparent p-2 border border-transparent rounded-md text-gray-600 ring-1 ring-inset ring-gray-300 outline-0 focus:border-gray-800 active:border-gray-800 ${
                     !isEditing ? "border-0 text-gray-400" : "cursor-text"
                   }`}
                 />
@@ -507,7 +507,7 @@ const Page = () => {
               <div className="w-1/2 flex flex-col gap-2">
                 <label
                   htmlFor="country"
-                  className="text-lg font-medium leading-6 text-blue-800"
+                  className="text-lg font-medium leading-6 text-gray-600"
                 >
                   Country
                 </label>

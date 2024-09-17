@@ -21,13 +21,9 @@ import { auth } from "@/firebase";
 import useUser from "@/hooks/UseUser";
 
 const DropDownModal = () => {
-  const {user} = useUser()
+  const { user } = useUser();
   const [organizationName, setOrganizationName] = useState<string | null>(null);
-
   const { isModalOpen, closeModal } = useModalStore();
-  const userPhotoUrl =
-    "https://cdn-icons-png.flaticon.com/512/3237/3237472.png";
-
   const handleSignOut = () => {
     signOut(auth);
     closeModal();
@@ -56,48 +52,40 @@ const DropDownModal = () => {
         isModalOpen ? "visible opacity-100" : "invisible opacity-0"
       } bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-100 ease-in-out`}
     >
-      <div className="h-1/2 w-full flex flex-col items-center justify-center gap-4 p-4">
+      <div className="h-1/2 w-full flex flex-col items-center justify-center gap-4 text-gray-700 p-4">
         <div className="h-auto w-full flex items-center justify-between">
-          <span className="text-lg text-blue-500 font-bold tracking-wider">
+          <span className="text-lg  font-bold tracking-wider">
             User Acount
           </span>
           <button
             onClick={closeModal}
             className="flex items-center justify-center"
           >
-            <AiOutlineClose className="text-xl text-blue-500 cursor-pointer" />
+            <AiOutlineClose className="text-xl  cursor-pointer" />
           </button>
         </div>
         <div className="h-auto w-full flex items-center justify-start gap-6">
-          {user && user.profilePhoto ? (
-            <Image
-              width={50}
-              height={50}
-              src={user.profilePhoto}
-              alt="Profile Photo"
-              className="h-16 w-16 rounded-full"
-            />
-          ) : (
-            <Image
-              src={userPhotoUrl}
-              alt=""
-              width={50}
-              height={50}
-              className="h-16 w-16 rounded-full"
-            />
-          )}
+          <Image
+            width={50}
+            height={50}
+            src={
+              user?.profilePhoto
+                ? user?.profilePhoto
+                : "/images/profile_user_avatar.png"
+            }
+            alt="Profile Photo"
+            className="h-16 w-16 rounded-full border"
+          />
           <div className="flex flex-col items-start justify-start gap-1 text-sm 2xl:text-[14px] font-semibold">
-            <p className="text-blue-500">
-              {user?.fName + " " + user?.lName}
-            </p>
-            <p className="text-blue-500">{user?.email}</p>
-            <p className="text-blue-500">{organizationName}</p>
+            <p className="">{user?.fName + " " + user?.lName}</p>
+            <p className="">{user?.email}</p>
+            <p className="">{organizationName}</p>
           </div>
         </div>
         <Link
           onClick={closeModal}
           href={"/profile"}
-          className={`w-full flex items-center justify-center text-blue-500 font-semibold p-1 rounded-2xl border border-blue-500`}
+          className="w-full flex items-center justify-center font-semibold p-1 rounded-2xl border border-gray-500"
         >
           View Profile
         </Link>

@@ -203,12 +203,12 @@ const LogTable = (props: Props) => {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 8,
+              pageSize: 10,
             },
           },
         }}
         slots={{ toolbar: CustomToolbar }}
-        pageSizeOptions={[8]}
+        pageSizeOptions={[10]}
         disableMultipleRowSelection
         disableColumnMenu
       />

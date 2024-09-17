@@ -1,8 +1,11 @@
 'use client'
 
-import React, { useEffect } from 'react'
-import { HiArrowUturnLeft, HiArrowUturnRight } from "react-icons/hi2";
+// react/nextjs components
+import React from 'react'
 import { usePathname, useRouter } from 'next/navigation';
+
+// icons
+import { HiArrowSmallLeft, HiArrowSmallRight } from "react-icons/hi2";
 
 const SiteNavBtns = () => {
   const pathname = usePathname()
@@ -22,17 +25,17 @@ const SiteNavBtns = () => {
   };
 
   return pathname !== '/login' && (
-    <div className='fixed top-20 w-[79%] 2xl:w-10/12 flex justify-between space-x-4 px-8'>
+    <div className='fixed top-20 w-9/12 2xl:w-[80%] flex justify-between space-x-4 pl-12 pr-8'>
       <button 
       onClick={handleBack}
-      className='hover:text-blue-500 border rounded p-2 active:scale-90 duration-200'>
-        <HiArrowUturnLeft className='text-xl' />
+      className='hover:text-gray-500 border rounded p-2 active:scale-90 duration-200'>
+        <HiArrowSmallLeft size={24} />
       </button>
       
       <button 
       onClick={handleForward}
-      className='hover:text-blue-500 border rounded p-2 active:scale-90 duration-200'>
-        <HiArrowUturnRight className='text-xl' />
+      className='hover:text-gray-500 border rounded p-2 active:scale-90 duration-200'>
+        <HiArrowSmallRight size={24} />
       </button>
     </div>
   )

@@ -37,20 +37,23 @@ type Props = {
 };
 
 const MonitoringLogTable = (props: Props) => {
-  const {user} = useUser()
+  const { user } = useUser();
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteTrialRow, setDeleteTrialRow] = useState<boolean>(false);
   const [changeProgress, setChangeProgress] = useState<boolean>(false);
-  const [setAlert, closeAlert] = useAlertStore((state) => [state.setAlert, state.closeAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [
+    state.setAlert,
+    state.closeAlert,
+  ]);
   const [loading, setLoading] = useState<boolean>(true);
   const [filteredRows, setFilteredRows] = useState<TrialDetails[]>([]);
-  const [isAdmin, setIsAdmin] = useState<boolean>()
+  const [isAdmin, setIsAdmin] = useState<boolean>();
 
   useEffect(() => {
     if (user) {
-      setIsAdmin(user.isAdmin)
+      setIsAdmin(user.isAdmin);
     }
-  }, [user])
+  }, [user]);
 
   useEffect(() => {
     if (props.rows.length > 0) {
@@ -74,7 +77,7 @@ const MonitoringLogTable = (props: Props) => {
   };
 
   const handleDeleteTrial = (id: number) => {
-    closeAlert()
+    closeAlert();
     deleteTrial(id.toString()).then((response) => {
       let alert: AlertBody;
       let alertType: AlertType;
@@ -103,7 +106,7 @@ const MonitoringLogTable = (props: Props) => {
   };
 
   const handleSetProgress = (id: number, progressStatus: string) => {
-    closeAlert()
+    closeAlert();
     updateTrialProgress(id.toString(), progressStatus).then((response) => {
       let alert: AlertBody;
       let alertType: AlertType;
@@ -122,7 +125,8 @@ const MonitoringLogTable = (props: Props) => {
       } else {
         alert = {
           title: "Error!",
-          content: "Could not update monitoring log's progress. Please try again",
+          content:
+            "Could not update monitoring log's progress. Please try again",
         };
         alertType = AlertType.Error;
       }
@@ -148,18 +152,22 @@ const MonitoringLogTable = (props: Props) => {
               isProgressActive ? "-translate-x-24" : "translate-x-0"
             } transition duration-300 ease-in-out`}
           >
-            <Tooltip title="Go to logs">
-              <Link href={`/monitoringLogs/${id}/logs`} className="flex">
-                <button
-                  type="button"
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <FaFolderOpen className="text-lg text-[#ec8e36]" />
-                </button>
-              </Link>
-            </Tooltip>
-            {
-              isAdmin &&
+            {!isAdmin &&
+            (props.filter === "Inactive" || props.filter === "Completed") ? (
+              <span>No actions available</span>
+            ) : (
+              <Tooltip title="Go to logs">
+                <Link href={`/monitoringLogs/${id}/logs`} className="flex">
+                  <button
+                    type="button"
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <FaFolderOpen className="text-lg text-[#ec8e36]" />
+                  </button>
+                </Link>
+              </Tooltip>
+            )}
+            {isAdmin && (
               <>
                 <Tooltip title="Delete monitoring log">
                   <button
@@ -186,84 +194,84 @@ const MonitoringLogTable = (props: Props) => {
                   </button>
                 </Tooltip>
               </>
-            }
+            )}
             {
-            <>
-              {/* ----------------------------------------------------------- */}
-              <div
-                className={`gap-3 ${
-                  isProgressActive && deleteTrialRow ? "flex" : "hidden"
-                }`}
-              >
-                <Tooltip title="Delete">
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteTrial(id)}
-                    className="transition-transform duration-300 hover:scale-110"
-                  >
-                    <MdDelete className="text-xl text-[#7d1f2e]" />
-                  </button>
-                </Tooltip>
-                <Tooltip title="Cancel">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDeleteTrialRow(false);
-                      setActiveRowId(null);
-                    }}
-                    className="transition-transform duration-300 hover:scale-110"
-                  >
-                    <IoClose className="text-xl" />
-                  </button>
-                </Tooltip>
-              </div>
-              {/* ----------------------------------------------------------- */}
-              <div
-                className={`gap-3 ${
-                  isProgressActive && changeProgress ? "flex" : "hidden"
-                }`}
-              >
-                <Tooltip title="Inactive">
-                  <button
-                    type="button"
-                    onClick={() => handleSetProgress(id, "Inactive")}
-                    className="transition-transform duration-300 hover:scale-110"
-                  >
-                    <FaCircle className="text-xl text-gray-300" />
-                  </button>
-                </Tooltip>
-                <Tooltip title="Active">
-                  <button
-                    type="button"
-                    onClick={() => handleSetProgress(id, "Active")}
-                    className="transition-transform duration-300 hover:scale-110"
-                  >
-                    <FaCircle className="text-xl text-green-400" />
-                  </button>
-                </Tooltip>
-                <Tooltip title="Completed">
-                  <button
-                    type="button"
-                    onClick={() => handleSetProgress(id, "Completed")}
-                    className="transition-transform duration-300 hover:scale-110"
-                  >
-                    <FaCircle className="text-xl text-[#1286ff]" />
-                  </button>
-                </Tooltip>
-                <Tooltip title="Cancel">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setChangeProgress(false);
-                      setActiveRowId(null);
-                    }}
-                    className="transition-transform duration-300 hover:scale-110"
-                  >
-                    <MdCancel className="text-2xl text-red-600" />
-                  </button>
-                </Tooltip>
-              </div>
-            </>
+              <>
+                {/* ----------------------------------------------------------- */}
+                <div
+                  className={`gap-3 ${
+                    isProgressActive && deleteTrialRow ? "flex" : "hidden"
+                  }`}
+                >
+                  <Tooltip title="Delete">
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTrial(id)}
+                      className="transition-transform duration-300 hover:scale-110"
+                    >
+                      <MdDelete className="text-xl text-[#7d1f2e]" />
+                    </button>
+                  </Tooltip>
+                  <Tooltip title="Cancel">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeleteTrialRow(false);
+                        setActiveRowId(null);
+                      }}
+                      className="transition-transform duration-300 hover:scale-110"
+                    >
+                      <IoClose className="text-xl" />
+                    </button>
+                  </Tooltip>
+                </div>
+                {/* ----------------------------------------------------------- */}
+                <div
+                  className={`gap-3 ${
+                    isProgressActive && changeProgress ? "flex" : "hidden"
+                  }`}
+                >
+                  <Tooltip title="Inactive">
+                    <button
+                      type="button"
+                      onClick={() => handleSetProgress(id, "Inactive")}
+                      className="transition-transform duration-300 hover:scale-110"
+                    >
+                      <FaCircle className="text-xl text-gray-300" />
+                    </button>
+                  </Tooltip>
+                  <Tooltip title="Active">
+                    <button
+                      type="button"
+                      onClick={() => handleSetProgress(id, "Active")}
+                      className="transition-transform duration-300 hover:scale-110"
+                    >
+                      <FaCircle className="text-xl text-green-400" />
+                    </button>
+                  </Tooltip>
+                  <Tooltip title="Completed">
+                    <button
+                      type="button"
+                      onClick={() => handleSetProgress(id, "Completed")}
+                      className="transition-transform duration-300 hover:scale-110"
+                    >
+                      <FaCircle className="text-xl text-[#1286ff]" />
+                    </button>
+                  </Tooltip>
+                  <Tooltip title="Cancel">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setChangeProgress(false);
+                        setActiveRowId(null);
+                      }}
+                      className="transition-transform duration-300 hover:scale-110"
+                    >
+                      <MdCancel className="text-2xl text-red-600" />
+                    </button>
+                  </Tooltip>
+                </div>
+              </>
             }
           </div>
         </div>
@@ -280,12 +288,12 @@ const MonitoringLogTable = (props: Props) => {
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 15,
+              pageSize: 10,
             },
           },
         }}
         slots={{ toolbar: CustomToolbar }}
-        pageSizeOptions={[15]}
+        pageSizeOptions={[10]}
         disableMultipleRowSelection
         disableColumnMenu
         autoHeight

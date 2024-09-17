@@ -105,7 +105,7 @@ const Page = () => {
   }, [userLoginError, setAlert]);
 
   return (
-    <div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#015FCC] overflow-hidden">
+    <div className="h-screen w-full flex flex-col md:flex-row items-center justify-center bg-[#154e8f63] overflow-hidden">
       <div className="h-[60rem] w-[50rem] px-10 py-20">
         <Image
           src={logo}

@@ -18,7 +18,7 @@ import { redirect } from "next/navigation";
 import useUser from "@/hooks/UseUser";
 
 const Page = () => {
-  const {user} = useUser()
+  const { user } = useUser();
   const { setLoading } = LoadingStore();
   const [users, setUsers] = useState<User[]>([]);
   const [userCount, setUserCount] = useState<number>(0);
@@ -31,7 +31,7 @@ const Page = () => {
 
   const fetchUsers = () => {
     setLoading(true);
-    getAllUsers(user?.orgId??"").then((response) => {
+    getAllUsers(user?.orgId ?? "").then((response) => {
       if (response.success) {
         const allUsers = response.data;
         const usersCount = allUsers.filter(
@@ -58,32 +58,43 @@ const Page = () => {
   }, [user]);
 
   return (
-    <div className="h-fit w-full flex flex-col items-center justify-center bg-slate-50 md:pl-20 z-10">
+    <div className="h-fit w-full flex flex-col items-start justify-center bg-slate-50 pl-10 2xl:pl-20 z-10">
       {/* Info Cards */}
-      <div className="h-fit w-full flex flex-col md:flex-row gap-4 md:gap-8 bg-slate-50 p-4">
-        <div className="h-48 sm:w-[15rem] xl:w-[16.5rem] 2xl:w-[23.3rem] flex flex-col items-start justify-between bg-[#1286ff] p-6 rounded-xl hover:bg-[#1285dd] transition-colors duration-200">
-          <FaUser size={40} color="white" />
-          <div className="w-full flex items-center justify-between text-lg text-white font-semibold tracking-widest">
-            <span>
-              {userCount}/{totalCount}
-            </span>
+      <div className="h-fit w-11/12 flex flex-col md:flex-row gap-4 md:gap-8 bg-slate-50 p-4">
+        <div className="relative h-fit w-[18.5rem] 2xl:w-1/3 flex flex-col rounded-lg bg-gray-200 text-gray-700 shadow-md">
+          <div className="absolute h-14 w-14 flex items-center justify-center text-white bg-gray-700 mx-4 -mt-4 rounded-xl shadow-gray-600/50 shadow-md  overflow-hidden">
+            <FaUser size={28} color="white" />
+          </div>
+          <div className="flex flex-col text-xl text-right font-semibold tracking-wide p-4">
             <span>Users</span>
+            {userCount} / {totalCount}
+          </div>
+          <div className="text-sm text-gray-500 font-medium p-4 border-t border-blue-gray-50">
+            <span>Total number of regular users</span>
           </div>
         </div>
-        <div className="h-48 sm:w-[15rem] xl:w-[16.5rem] 2xl:w-[23.3rem] flex flex-col items-start justify-between bg-[#1286ff] p-6 rounded-xl hover:bg-[#1285dd] transition-colors duration-200">
-          <FaUserShield size={48} color="white" />
-          <div className="w-full flex items-center justify-between text-lg text-white font-semibold tracking-widest">
-            <span>
-              {adminCount}/{totalCount}
-            </span>
+        <div className="relative h-fit w-[18.5rem] 2xl:w-1/3 flex flex-col rounded-lg bg-gray-200 text-gray-700 shadow-md">
+          <div className="absolute h-14 w-14 flex items-center justify-center text-white bg-gray-700 mx-4 -mt-4 rounded-xl shadow-gray-600/50 shadow-md  overflow-hidden">
+            <FaUserShield size={36} color="white" />
+          </div>
+          <div className="flex flex-col text-xl text-right font-semibold tracking-wide p-4">
             <span>Admins</span>
+            {adminCount} / {totalCount}
+          </div>
+          <div className="text-sm text-gray-500 font-medium p-4 border-t border-blue-gray-50">
+          <span>Total number of admin users</span>
           </div>
         </div>
-        <div className="h-48 sm:w-[15rem] xl:w-[16.5rem] 2xl:w-[23.3rem] flex flex-col items-start justify-between bg-[#1286ff] p-6 rounded-xl hover:bg-[#1285dd] transition-colors duration-200">
-          <FaUsers size={48} color="white" />
-          <div className="w-full flex items-center justify-between text-lg text-white font-semibold tracking-widest">
-            <span>{totalCount}</span>
+        <div className="relative h-fit w-[18.5rem] 2xl:w-1/3 flex flex-col rounded-lg bg-gray-200 text-gray-700 shadow-md">
+          <div className="absolute h-14 w-14 flex items-center justify-center text-white bg-gray-700 mx-4 -mt-4 rounded-xl shadow-gray-600/50 shadow-md  overflow-hidden">
+            <FaUsers size={34} color="white" />
+          </div>
+          <div className="flex flex-col text-xl text-right font-semibold tracking-wide p-4">
             <span>All Users</span>
+            <span>{totalCount}</span>
+          </div>
+          <div className="text-sm text-gray-500 font-medium p-4 border-t border-blue-gray-50">
+            Total users (regular + admins)
           </div>
         </div>
       </div>

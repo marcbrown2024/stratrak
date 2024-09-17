@@ -14,7 +14,7 @@ const MarginWidthWrapper = ({ children }: { children: ReactNode }) => {
     currentPathname === "/login/forgetPassword" ? (
     <>{children}</>
   ) : (
-    <div className="flex flex-col md:ml-72">
+    <div className="flex flex-col md:ml-80">
       {children} <Loader />
     </div>
   );
