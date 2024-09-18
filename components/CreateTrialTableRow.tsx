@@ -1,7 +1,10 @@
 "use client";
 
+// react/nextjs components
+import React from "react";
+
+// global stores
 import { useTrialStore } from "@/store/CreateTrialStore";
-import React, { useEffect, useRef, useState } from "react";
 
 type params = {
   rowId: number;
@@ -20,7 +23,9 @@ const TableRow = ({ rowId }: params) => {
           <input
             type="text"
             defaultValue={logs[rowId]["investigatorName"]}
-            onChange={(e) => updateLog(rowId, "investigatorName", e.target.value)}
+            onChange={(e) =>
+              updateLog(rowId, "investigatorName", e.target.value)
+            }
             id={`investigatorName-${rowId}`}
             className="text-gray-900 text-sm border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 block w-full p-2.5 px-2"
             placeholder="Enter name..."

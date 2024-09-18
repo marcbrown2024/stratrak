@@ -33,7 +33,6 @@ const CreateMonitoringLogs = () => {
     state.updateTrials,
     state.clearTrials,
   ]);
-
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0]);
   const createTrialTableRef = useRef<HTMLTableElement>(null);
   const [setAlert, closeAlert] = useAlertStore((state) => [
@@ -103,8 +102,8 @@ const CreateMonitoringLogs = () => {
   };
 
   useEffect(() => {
-    if (!user?.isAdmin) redirect('/')
-  }, [user])
+    if (!user?.isAdmin) redirect("/");
+  }, [user]);
 
   return (
     <div className="h-full w-full max-w-screen-xl flex flex-col mx-auto justify-start gap-6">
@@ -175,7 +174,7 @@ const CreateMonitoringLogs = () => {
         <button
           disabled={savingTrial}
           onClick={saveTrial}
-          className="px-4 py-3 w-full max-w-[12rem] bg-blue-500 text-white rounded-full hover:opacity-90 disabled:hover:opacity-100 text-sm sm:text-base"
+          className="px-4 py-3 w-full max-w-fit bg-blue-500 text-white rounded-full hover:opacity-90 disabled:hover:opacity-100 text-sm sm:text-base"
         >
           {savingTrial
             ? "Saving..."

@@ -30,7 +30,11 @@ import { TiUserDelete } from "react-icons/ti";
 import { RiExchangeFill } from "react-icons/ri";
 import { IoCheckmarkDoneSharp, IoClose } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
+
+// libraries
 import { validateInput, validationRules } from "@/lib/defaults";
+
+// custom hooks
 import useUser from "@/hooks/UseUser";
 
 type FormData = User & {
@@ -88,9 +92,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
 
   // Handle delete button click
   const handleDeleteClick = (userId: string) => {
-    console.log("userId", userId);
-    console.log("user?.id", user?.id);
-
     if (deleteRowId === userId) {
       setDeleteRowId(null);
     } else {
