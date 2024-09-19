@@ -142,7 +142,7 @@ const LogTable = (props: Props) => {
         <div className="h-full w-full flex items-center justify-center 2xl:justify-start">
           <div
             className={`flex gap-3 ${
-              isProgressActive ? "-translate-x-8" : "translate-x-0"
+              isProgressActive ? "-translate-x-10" : "translate-x-0"
             } transition duration-300 ease-in-out`}
           >
             <Tooltip title="Delete Log">
@@ -151,7 +151,7 @@ const LogTable = (props: Props) => {
                 onClick={() => handleSetDelete(id)}
                 className="transition-transform duration-300 hover:scale-110"
               >
-                <FaFileCircleMinus className="text-xl text-[#cf3030]" />
+                <FaFileCircleMinus className="text-2xl text-[#cf3030]" />
               </button>
             </Tooltip>
 
@@ -166,7 +166,7 @@ const LogTable = (props: Props) => {
                   onClick={() => handleDeleteLog(id)}
                   className="transition-transform duration-300 hover:scale-110"
                 >
-                  <MdDelete className="text-xl text-[#7d1f2e]" />
+                  <MdDelete className="text-2xl text-[#7d1f2e]" />
                 </button>
               </Tooltip>
               <Tooltip title="Cancel">
@@ -178,7 +178,7 @@ const LogTable = (props: Props) => {
                   }}
                   className="transition-transform duration-300 hover:scale-110"
                 >
-                  <IoClose className="text-xl" />
+                  <IoClose className="text-2xl" />
                 </button>
               </Tooltip>
             </div>

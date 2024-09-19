@@ -57,14 +57,38 @@ const CreateMonitoringLogs = () => {
     });
   };
 
+  const isFormFieldsEmpty = () => {
+    // Convert the HTMLCollectionOf<HTMLFormElement> to an array
+    return Array.from(createTrialTableRef.current!.querySelectorAll("form")).some((form: HTMLFormElement) => {
+      // Get all input elements within the form
+      const inputs = form.querySelectorAll("input");
+  
+      // Check if any input is empty
+      return Array.from(inputs).some((input) => input.value.trim() === "");
+    });
+  };
+
   const saveTrial = () => {
     setSavingTrial(true);
     closeAlert();
+    let alert: AlertBody;
+    let alertType: AlertType;
+
+    const noEmptyFields = isFormFieldsEmpty();
+
+    if (noEmptyFields) {
+      alert = {
+        title: "Notice!",
+        content: "Please fill out all fields in the Monitoring Log form.",
+      };
+      alertType = AlertType.Info;
+      setSavingTrial(false);
+      setAlert(alert, alertType);
+      return;
+    }
+
     for (let rowId in trials) {
       createTrial(trials[rowId], user?.orgId).then((response) => {
-        let alert: AlertBody;
-        let alertType: AlertType;
-
         if (response.success) {
           alert = {
             title: "Success!",
@@ -74,9 +98,7 @@ const CreateMonitoringLogs = () => {
               "  saved successfully.",
           };
           alertType = AlertType.Success;
-          setTimeout(() => {
-            router.push("/monitoringLogs");
-          }, 1000);
+          router.push("/monitoringLogs");
         } else {
           alert = {
             title: "Something went wrong",

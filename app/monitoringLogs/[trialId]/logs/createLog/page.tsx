@@ -70,9 +70,7 @@ const CreateLog = ({ params }: params) => {
               "  saved successfully.",
           };
           alertType = AlertType.Success;
-          setTimeout(() => {
             router.push(`/monitoringLogs/${trialId}/logs`);
-          }, 1000);
         } else {
           alert = {
             title: "Something went wrong",

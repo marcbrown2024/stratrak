@@ -578,135 +578,126 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
             </div>
           </form>
         </div>
-        <div className="w-full 2xl:w-11/12 overflow-x-auto 2xl:overflow-hidden shadow-lg rounded-lg">
-          <div className="min-w-[1200px]">
-            {/* Adjust min-w value based on your column widths */}
-            <div className="h-14 text-sm flex text-left font-semibold tracking-wide uppercase bg-gray-200">
-              <div className="h-full w-3/12 flex items-center justify-start px-4">
-                Member
-              </div>
-              <div className="h-full w-1/12 flex items-center justify-start px-4">
-                Admin
-              </div>
-              <div className="h-full w-3/12 flex items-center justify-start px-4">
-                Email
-              </div>
-              <div className="h-full w-60 flex items-center justify-start px-4">
-                Last Activity
-              </div>
-              <div className="h-full w-52 flex items-center justify-start px-2">
-                Action
-              </div>
-              <div className="h-full w-52 flex items-center justify-start">
-                Change Role
-              </div>
+        <div className="w-11/12 overflow-hidden shadow-lg rounded-lg">
+          <div className="h-14 w-full text-sm flex text-left font-semibold tracking-wide uppercase bg-gray-200">
+            <div className="h-full w-3/12 flex items-center justify-start px-4">
+              Member
             </div>
-            <div className="text-sm">
-              {currentItems.map((item) => (
-                <div
-                  key={item.userId}
-                  className="flex items-center justify-start hover:bg-gray-100 text-gray-700 border-b"
-                >
-                  <div className="h-16 w-3/12 flex items-center justify-start gap-2 px-4">
-                    <Image
-                      width={20}
-                      height={20}
-                      src={
-                        item.profilePhoto
-                          ? item.profilePhoto
-                          : "/images/profile_user_avatar.png"
-                      }
-                      alt="Profile Photo"
-                      className="h-10 w-10 rounded-full border"
-                    />
-                    <span>
-                      {item.fName} {item.lName}
-                    </span>
-                  </div>
-                  <div className="w-1/12 flex items-center justify-start px-4">
-                    {item.isAdmin ? "Yes" : "No"}
-                  </div>
-                  <div className="w-3/12 flex items-center justify-start px-4">
-                    {item.email}
-                  </div>
-                  <div className="w-60 flex items-center justify-start px-4">
-                    {item.lastActivity ? item.lastActivity : "N/A"}
-                  </div>
-                  <div className="w-52 font-medium">
-                    <div className="relative flex items-center justify-center overflow-hidden">
-                      <button
-                        onClick={() => handleDeleteClick(item.userId)}
-                        className={`w-32 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
-                          deleteRowId === item.userId
-                            ? "-translate-x-40"
-                            : "-translate-x-5"
-                        } transition-all duration-500 ease-in-out`}
-                      >
-                        Delete User
-                      </button>
-                      <div
-                        className={`absolute flex items-center justify-center gap-3 transform ${
-                          deleteRowId === item.userId
-                            ? "-translate-x-4"
-                            : "translate-x-44"
-                        } transition-all duration-500 ease-in-out`}
-                      >
-                        <button
-                          onClick={() => handleDeleteUser(item.userId)}
-                          className="w-16 text-sm bg-red-300 py-1 rounded-md hover:bg-red-400"
-                        >
-                          Confirm
-                        </button>
-                        <button
-                          onClick={handleCancel}
-                          className="w-16 text-sm bg-gray-200 py-1 rounded-md hover:bg-gray-300"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="w-52 font-medium">
-                    <div className="relative flex items-center justify-center overflow-hidden">
-                      <button
-                        onClick={() => handlePrivilegeChangeClick(item.userId)}
-                        className={`w-32 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
-                          privilegeChangeRowId === item.userId
-                            ? "-translate-x-40"
-                            : "-translate-x-[26px]"
-                        } transition-all duration-500 ease-in-out`}
-                      >
-                        {item.isAdmin ? "Demote to user" : "Elevate to admin"}
-                      </button>
-                      <div
-                        className={`absolute flex items-center justify-center gap-3 transform ${
-                          privilegeChangeRowId === item.userId
-                            ? "-translate-x-5"
-                            : "translate-x-40"
-                        } transition-all duration-500 ease-in-out`}
-                      >
-                        <button
-                          onClick={() =>
-                            handleUpdatePrivilege(item.email, !item.isAdmin)
-                          }
-                          className="w-16 text-sm text-white bg-blue-500 py-1 rounded-md hover:bg-blue-600"
-                        >
-                          Confirm
-                        </button>
-                        <button
-                          onClick={handleCancel}
-                          className="w-16 text-sm bg-gray-200 py-1 rounded-md hover:bg-gray-300"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="h-full w-1/12 flex items-center justify-start px-4">
+              Admin
+            </div>
+            <div className="h-full w-3/12 flex items-center justify-start px-4">
+              Email
+            </div>
+            <div className="h-full w-60 flex items-center justify-start px-4">
+              Last Activity
+            </div>
+            <div className="h-full w-2/12 flex items-center justify-start px-4">
+              Action
+            </div>
+            <div className="h-full w-2/12 flex items-center justify-start px-4">
+              Change Role
             </div>
           </div>
-          <div className="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t bg-gray-50 sm:grid-cols-9">
+          {currentItems.map((item) => (
+            <div
+              key={item.userId}
+              className="h-16 w-full flex text-sm text-gray-700 text-left border-b hover:bg-gray-100"
+            >
+              <div className="h-full w-3/12 flex items-center justify-start gap-2 px-4 overflow-hidden">
+                <Image
+                  width={20}
+                  height={20}
+                  src={
+                    item.profilePhoto
+                      ? item.profilePhoto
+                      : "/images/profile_user_avatar.png"
+                  }
+                  alt="Profile Photo"
+                  className="h-10 w-10 rounded-full border"
+                />
+                <span>
+                  {item.fName} {item.lName}
+                </span>
+              </div>
+              <div className="h-full w-1/12 flex items-center justify-start px-4 border-b">
+                {item.isAdmin ? "Yes" : "No"}
+              </div>
+              <div className="h-full w-3/12 flex items-center justify-start px-4 border-b overflow-hidden">
+                {item.email}
+              </div>
+              <div className="h-full w-60 flex items-center justify-start px-4 border-b overflow-hidden">
+                {item.lastActivity ? item.lastActivity : "N/A"}
+              </div>
+              <div className="relative h-full w-2/12 flex items-center justify-start pl-8 border-b overflow-hidden">
+                <button
+                  onClick={() => handleDeleteClick(item.userId)}
+                  className={`w-28 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
+                    deleteRowId === item.userId
+                      ? "-translate-x-40"
+                      : "-translate-x-4"
+                  } transition-all duration-500 ease-in-out`}
+                >
+                  Delete User
+                </button>
+                <div
+                  className={`absolute flex items-center justify-center gap-3 transform ${
+                    deleteRowId === item.userId
+                      ? "-translate-x-4"
+                      : "translate-x-44"
+                  } transition-all duration-500 ease-in-out`}
+                >
+                  <button
+                    onClick={() => handleDeleteUser(item.userId)}
+                    className="w-16 text-sm bg-red-300 py-1 rounded-md hover:bg-red-400"
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="w-16 text-sm bg-gray-200 py-1 rounded-md hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+              <div className="relative h-full w-2/12 flex items-center justify-start pl-11 border-b overflow-hidden">
+                <button
+                  onClick={() => handlePrivilegeChangeClick(item.userId)}
+                  className={`w-32 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
+                    privilegeChangeRowId === item.userId
+                      ? "-translate-x-48"
+                      : "-translate-x-[26px]"
+                  } transition-all duration-500 ease-in-out`}
+                >
+                  {item.isAdmin ? "Demote to user" : "Elevate to admin"}
+                </button>
+                <div
+                  className={`absolute flex items-center justify-center gap-3 transform ${
+                    privilegeChangeRowId === item.userId
+                      ? "-translate-x-[26px]"
+                      : "translate-x-40 opacity-0"
+                  } transition-all duration-500 ease-in-out`}
+                >
+                  <button
+                    onClick={() =>
+                      handleUpdatePrivilege(item.email, !item.isAdmin)
+                    }
+                    className="w-16 text-sm text-white bg-blue-500 py-1 rounded-md hover:bg-blue-600"
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    onClick={handleCancel}
+                    className="w-16 text-sm bg-gray-200 py-1 rounded-md hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+          <div className="w-full grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t bg-gray-50 sm:grid-cols-9">
             <span className="flex items-center col-span-3">
               Showing {startIndex + 1}-{endIndex} of {filteredData.length}
             </span>

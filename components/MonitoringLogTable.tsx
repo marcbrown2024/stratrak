@@ -18,9 +18,6 @@ import Tooltip from "@mui/material/Tooltip";
 // enums
 import { AlertType } from "@/enums";
 
-// custom components
-import Loader from "./Loader";
-
 //icons
 import { FaFolderOpen } from "react-icons/fa6";
 import { MdFolderDelete, MdCancel, MdDelete } from "react-icons/md";
@@ -149,7 +146,7 @@ const MonitoringLogTable = (props: Props) => {
         <div className="h-full w-full flex items-center justify-start">
           <div
             className={`flex gap-3 ${
-              isProgressActive ? "-translate-x-24" : "translate-x-0"
+              isProgressActive ? "-translate-x-28" : "translate-x-0"
             } transition duration-300 ease-in-out`}
           >
             {!isAdmin &&
@@ -162,7 +159,7 @@ const MonitoringLogTable = (props: Props) => {
                     type="button"
                     className="transition-transform duration-300 hover:scale-110"
                   >
-                    <FaFolderOpen className="text-lg text-[#ec8e36]" />
+                    <FaFolderOpen className="text-2xl text-[#ec8e36]" />
                   </button>
                 </Link>
               </Tooltip>
@@ -178,7 +175,7 @@ const MonitoringLogTable = (props: Props) => {
                     }}
                     className="transition-transform duration-300 hover:scale-110"
                   >
-                    <MdFolderDelete className="text-xl text-[#cf3030]" />
+                    <MdFolderDelete className="text-2xl text-[#cf3030]" />
                   </button>
                 </Tooltip>
                 <Tooltip title="Change Progress">
@@ -190,7 +187,7 @@ const MonitoringLogTable = (props: Props) => {
                     }}
                     className="transition-transform duration-300 hover:scale-110"
                   >
-                    <TbAdjustmentsCheck className="text-xl text-[#3591e7]" />
+                    <TbAdjustmentsCheck className="text-2xl text-[#3591e7]" />
                   </button>
                 </Tooltip>
               </>
@@ -209,7 +206,7 @@ const MonitoringLogTable = (props: Props) => {
                       onClick={() => handleDeleteTrial(id)}
                       className="transition-transform duration-300 hover:scale-110"
                     >
-                      <MdDelete className="text-xl text-[#7d1f2e]" />
+                      <MdDelete className="text-2xl text-[#7d1f2e]" />
                     </button>
                   </Tooltip>
                   <Tooltip title="Cancel">
@@ -221,7 +218,7 @@ const MonitoringLogTable = (props: Props) => {
                       }}
                       className="transition-transform duration-300 hover:scale-110"
                     >
-                      <IoClose className="text-xl" />
+                      <IoClose className="text-2xl" />
                     </button>
                   </Tooltip>
                 </div>
@@ -237,7 +234,7 @@ const MonitoringLogTable = (props: Props) => {
                       onClick={() => handleSetProgress(id, "Inactive")}
                       className="transition-transform duration-300 hover:scale-110"
                     >
-                      <FaCircle className="text-xl text-gray-300" />
+                      <FaCircle className="text-2xl text-gray-300" />
                     </button>
                   </Tooltip>
                   <Tooltip title="Active">
@@ -246,7 +243,7 @@ const MonitoringLogTable = (props: Props) => {
                       onClick={() => handleSetProgress(id, "Active")}
                       className="transition-transform duration-300 hover:scale-110"
                     >
-                      <FaCircle className="text-xl text-green-400" />
+                      <FaCircle className="text-2xl text-green-400" />
                     </button>
                   </Tooltip>
                   <Tooltip title="Completed">
@@ -255,7 +252,7 @@ const MonitoringLogTable = (props: Props) => {
                       onClick={() => handleSetProgress(id, "Completed")}
                       className="transition-transform duration-300 hover:scale-110"
                     >
-                      <FaCircle className="text-xl text-[#1286ff]" />
+                      <FaCircle className="text-2xl text-[#1286ff]" />
                     </button>
                   </Tooltip>
                   <Tooltip title="Cancel">
@@ -267,7 +264,7 @@ const MonitoringLogTable = (props: Props) => {
                       }}
                       className="transition-transform duration-300 hover:scale-110"
                     >
-                      <MdCancel className="text-2xl text-red-600" />
+                      <MdCancel className="text-[27px] text-red-600" />
                     </button>
                   </Tooltip>
                 </div>
