@@ -104,12 +104,14 @@ const LogTable = (props: Props) => {
     flex: 1,
     renderCell: (params) => {
       const { row } = params;
+      const isBase64Image = row.signature.startsWith("data:image");
+  
       return (
         <button
           onClick={() => setSelectedRow(row, true)}
           className="h-[50px] w-fit flex items-center text-center"
         >
-          {row.signature ? (
+          {isBase64Image ? (
             <Image
               width={200}
               height={200}
@@ -121,12 +123,12 @@ const LogTable = (props: Props) => {
               }}
             />
           ) : (
-            <span>No signature available</span>
+            <p>{row.signature || "No signature available"}</p>
           )}
         </button>
       );
     },
-  };
+  }; 
 
   const ActionColumn: GridColDef = {
     field: "action",

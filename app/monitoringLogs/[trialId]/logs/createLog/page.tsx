@@ -2,27 +2,23 @@
 
 // react/nextjs components
 import React, { useEffect, useRef, useState } from "react";
-import { redirect, useRouter } from "next/navigation";
 
 // firebase components/functions
-import { createLog, getTrial } from "@/firebase";
+import { getTrial } from "@/firebase";
 
 // global stores
 import { useLogStore } from "@/store/CreateLogStore";
-import { useAlertStore } from "@/store/AlertStore";
 import LoadingStore from "@/store/LoadingStore";
 
 // custom components
 import CreateLogTableRow from "@/components/CreateLogTableRow";
-import Loader from "@/components/Loader";
+import Acknowledgement from "@/components/Acknowledgement";
+import Disclaimer from "@/components/Disclaimer";
 
 // libraries
-import { defaultLog, getCurrentDateTime } from "@/lib/defaults";
+import { defaultLog } from "@/lib/defaults";
 
-// enums
-import { AlertType } from "@/enums";
-
-// icons
+// custom hooks
 import useUser from "@/hooks/UseUser";
 
 type params = {
@@ -32,64 +28,24 @@ type params = {
 };
 
 const CreateLog = ({ params }: params) => {
-  const {user} = useUser()
-  const router = useRouter();
+  const { user } = useUser();
   const { setLoading } = LoadingStore();
   const [savingLog, setSavingLog] = useState<boolean>(false);
-
   const [logs, clearLogs, updateLogs] = useLogStore((state) => [
     state.logs,
     state.clearLogs,
     state.updateLogs,
   ]);
-
   const [tableRowsIds, setTableRowsIds] = useState<number[]>([0]);
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
-
   const trialId = params.trialId;
   const createLogTableRef = useRef<HTMLTableElement>(null);
-  const [setAlert, closeAlert] = useAlertStore((state) => [
-    state.setAlert,
-    state.closeAlert,
-  ]);
-
-  const saveLogs = () => {
-    closeAlert();
-    let alert: AlertBody;
-    let alertType: AlertType;
-
-    if (user?.signature) {
-      setSavingLog(true);
-      createLog({...logs[0], dateOfVisit: getCurrentDateTime()}, trialId).then((response) => {
-        if (response.success) {
-          alert = {
-            title: "Success!",
-            content:
-              "Log" +
-              (Object.keys(logs).length > 1 ? "s were" : " was") +
-              "  saved successfully.",
-          };
-          alertType = AlertType.Success;
-            router.push(`/monitoringLogs/${trialId}/logs`);
-        } else {
-          alert = {
-            title: "Something went wrong",
-            content: "Could not save log, please try again",
-          };
-          alertType = AlertType.Error;
-        }
-        setAlert(alert, alertType);
-        setSavingLog(false);
-      });
-    } else {
-      alert = {
-        title: "Notice!",
-        content: "Need to have a signature to save log",
-      };
-      alertType = AlertType.Info;
-      setAlert(alert, alertType);
-    }
-  };
+  const [showAckPopup, setShowAckPopup] = useState<
+    null | "signAndSave" | "saveDontSign"
+  >(null);
+  const [showDisPopup, setShowDisPopup] = useState<
+    null | "signAndSave" | "saveDontSign"
+  >(null);
 
   const resetLogs = () => {
     clearLogs();
@@ -190,15 +146,58 @@ const CreateLog = ({ params }: params) => {
           </div>
         </div>
       </div>
-      <div className="w-full flex items-center justify-center py-4">
-        <button
-          disabled={savingLog}
-          onClick={saveLogs}
-          className="px-4 py-3 w-full max-w-[12rem] bg-blue-500 text-white rounded-full hover:opacity-90 disabled:hover:opacity-100 text-sm sm:text-base"
-        >
-          {savingLog ? "Saving log..." : "Save log"}
-        </button>
+      <div className="h-48 w-full flex items-end justify-center py-4">
+        <div className="w-1/4 flex flex-col items-center gap-3">
+          <button
+            disabled={savingLog}
+            // onClick={saveLogs}
+            onClick={() => setShowAckPopup("signAndSave")}
+            className="w-full max-w-[11rem] bg-blue-500 text-sm sm:text-base text-white font-semibold py-3 rounded-lg hover:opacity-90 hover:scale-[99%] disabled:hover:opacity-100 shadow-xl"
+          >
+            Sign and Save
+          </button>
+          <span
+            onClick={() => setShowDisPopup("signAndSave")}
+            className="text-sm text-gray-800 font-thin cursor-pointer"
+          >
+            Disclaimer
+          </span>
+        </div>
+        <div className="w-1/4 flex flex-col items-center gap-3">
+          <button
+            disabled={savingLog}
+            onClick={() => setShowAckPopup("saveDontSign")}
+            className="w-full max-w-[11rem] bg-red-500 text-sm sm:text-base text-white font-semibold py-3 rounded-lg hover:opacity-90 hover:scale-[99%] disabled:hover:opacity-100 shadow-xl"
+          >
+            Save Don&apos;t Sign
+          </button>
+          <span
+            onClick={() => setShowDisPopup("saveDontSign")}
+            className="text-sm text-gray-800 font-thin cursor-pointer"
+          >
+            Disclaimer
+          </span>
+        </div>
       </div>
+      {showDisPopup && (
+        <div className="fixed h-full w-full bg-slate-50">
+          <Disclaimer
+            showDisPopup={showDisPopup}
+            setShowDisPopup={setShowDisPopup}
+          />
+        </div>
+      )}
+      {showAckPopup && (
+        <div className="fixed h-full w-full bg-slate-50">
+          <Acknowledgement
+            trialId={trialId}
+            logs={logs}
+            setSavingLog={setSavingLog}
+            showAckPopup={showAckPopup}
+            setShowAckPopup={setShowAckPopup}
+          />
+        </div>
+      )}
     </div>
   );
 };

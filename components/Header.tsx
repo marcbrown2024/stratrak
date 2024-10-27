@@ -16,7 +16,7 @@ import { useModalStore } from "@/store/DropDownModalStore";
 import useUser from "@/hooks/UseUser";
 
 const Header = () => {
-  const {user} = useUser()
+  const { user } = useUser();
   const scrolled = UseScroll(5);
   const currentPathname = usePathname();
   const selectedLayout = useSelectedLayoutSegment();
@@ -31,17 +31,22 @@ const Header = () => {
 
   // Find the current item's title based on the current path
   const words = currentPathname.split("/").filter(Boolean).pop() ?? "";
+
+  console.log(words);
+
   const currentPath = splitCamelCase(words);
 
   // Determine the display title based on the current pathname
   const displayTitle =
-    currentPathname === "/"
-      ? "Home"
-      : ["Active", "Inactive", "Completed"].includes(currentPath)
-      ? `${currentPath} Trials`
-      : currentPath;
+  currentPathname === "/"
+    ? "Home"
+    : words === "regulatoryDocs"
+    ? "Regulatory Documents"
+    : ["Active", "Inactive", "Completed"].includes(currentPath)
+    ? `${currentPath} Trials`
+    : currentPath;
 
-  useEffect(() => {
+    useEffect(() => {
     const closePopupsOnOutsideClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       if (!target.closest(".Popup")) {
@@ -79,7 +84,7 @@ const Header = () => {
           : ""
       } ${selectedLayout ? "border-b border-zinc-200 bg-slate-50" : ""} z-30`}
     >
-      <div className="h-14 flex items-center justify-between px-4">
+      <div className="h-14 flex items-center justify-between px-6">
         <span className="hidden md:flex text-xl font-bold tracking-wide">
           {displayTitle}
         </span>

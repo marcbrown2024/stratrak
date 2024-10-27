@@ -27,43 +27,50 @@ const SignaturePopUp = () => {
     const hours = String(date.getHours()).padStart(2, "0");
     const minutes = String(date.getMinutes()).padStart(2, "0");
     const seconds = String(date.getSeconds()).padStart(2, "0");
-    
+
     // Calculate the timezone offset in minutes and convert it to hours and minutes
     const timezoneOffset = -date.getTimezoneOffset();
-    const offsetHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, "0");
-    const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, "0");
-  
+    const offsetHours = String(
+      Math.floor(Math.abs(timezoneOffset) / 60)
+    ).padStart(2, "0");
+    const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(
+      2,
+      "0"
+    );
+
     // Format the timezone offset to match the format ±hh:mm
     const offsetSign = timezoneOffset >= 0 ? "+" : "-";
-    
+
     return `${hours}:${minutes}:${seconds} ${offsetSign}${offsetHours}:${offsetMinutes}`;
   };
 
   return (
-    <div className="relative flex space-x-6 bg-slate-50 px-8 pt-8 mb-64 border border-slate-400 rounded-lg">
+    <div className="relative h-48 flex space-x-6 bg-slate-50 px-8 py-8 mb-64 border border-slate-400 rounded-lg">
       <button
         onClick={() => setSelectedRow(null, false)}
         className="absolute -top-4 -right-3"
       >
         <IoCloseCircleSharp size={36} color="#2563eb" />
       </button>
-      <div className="flex items-center justify-center">
-        <div className="flex flex-col items-start justify-center gap-2">
-          <span className="text-2xl text-blue-600 font-medium">
-            Electronic Signature
-          </span>
-          <div>
+      <div className="h-full flex flex-col items-start justify-start gap-2">
+        <span className="text-2xl text-blue-600 font-medium">
+          Electronic Signature
+        </span>
+        <div>
+          {selectedRow?.signature?.startsWith("data:image") ? (
             <Image
-              width={300}
-              height={300}
-              src={selectedRow?.signature}
+              width={250}
+              height={250}
+              src={selectedRow.signature}
               alt="User Signature"
               style={{
                 maxWidth: "auto",
                 maxHeight: "auto",
               }}
             />
-          </div>
+          ) : (
+            <p>{selectedRow?.signature || "No signature available"}</p>
+          )}
         </div>
       </div>
       <div className="flex flex-col items-center justify-start gap-3">

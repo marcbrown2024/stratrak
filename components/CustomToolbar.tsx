@@ -121,7 +121,6 @@ const CustomToolbar = () => {
       </div>
       <div className="flex gap-1 opacity-70">
         <GridToolbarColumnsButton />
-        <GridToolbarDensitySelector />
         <GridToolbarFilterButton />
         {currentPathname == `/monitoringLogs` && (
           <GridToolbarExport
@@ -139,6 +138,26 @@ const CustomToolbar = () => {
           </Button>
         )}
       </div>
+      {currentPathname === `/monitoringLogs/${trialId}/regulatoryDocs` && (
+        <>
+          <Link href={`/monitoringLogs/${trialId}/regulatoryDocs/upload`}>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: "#007bff", color: "#fff" }}
+            >
+              Download
+            </Button>
+          </Link>
+          <Link href={`/monitoringLogs/${trialId}/regulatoryDocs/upload`}>
+            <Button
+              variant="contained"
+              style={{ backgroundColor: "#007bff", color: "#fff" }}
+            >
+              Upload
+            </Button>
+          </Link>
+        </>
+      )}
       {isAdminAndTrialPath ? (
         <Link href="/monitoringLogs/createMonitoringLog">
           <Button

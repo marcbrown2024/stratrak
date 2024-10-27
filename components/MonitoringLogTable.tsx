@@ -19,10 +19,10 @@ import Tooltip from "@mui/material/Tooltip";
 import { AlertType } from "@/enums";
 
 //icons
+import { FaCircle, FaClipboardList} from "react-icons/fa";
 import { FaFolderOpen } from "react-icons/fa6";
 import { MdFolderDelete, MdCancel, MdDelete } from "react-icons/md";
 import { TbAdjustmentsCheck } from "react-icons/tb";
-import { FaCircle } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import useUser from "@/hooks/UseUser";
 
@@ -153,16 +153,28 @@ const MonitoringLogTable = (props: Props) => {
             (props.filter === "Inactive" || props.filter === "Completed") ? (
               <span>No actions available</span>
             ) : (
-              <Tooltip title="Go to logs">
-                <Link href={`/monitoringLogs/${id}/logs`} className="flex">
-                  <button
-                    type="button"
-                    className="transition-transform duration-300 hover:scale-110"
-                  >
-                    <FaFolderOpen className="text-2xl text-[#ec8e36]" />
-                  </button>
-                </Link>
-              </Tooltip>
+              <>
+                <Tooltip title="Go to regulatory docs">
+                  <Link href={`/monitoringLogs/${id}/regulatoryDocs`} className="flex">
+                    <button
+                      type="button"
+                      className="transition-transform duration-300 hover:scale-110"
+                    >
+                      <FaFolderOpen className="text-2xl text-[#ec8e36]" />
+                    </button>
+                  </Link>
+                </Tooltip>
+                <Tooltip title="Go to logs">
+                  <Link href={`/monitoringLogs/${id}/logs`} className="flex">
+                    <button
+                      type="button"
+                      className="transition-transform duration-300 hover:scale-110"
+                    >
+                      <FaClipboardList className="text-2xl text-[#2783ad]" />
+                    </button>
+                  </Link>
+                </Tooltip>
+              </>
             )}
             {isAdmin && (
               <>
