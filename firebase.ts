@@ -19,6 +19,14 @@ import {
   where,
 } from "firebase/firestore";
 
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  listAll,
+  uploadBytes,
+} from "firebase/storage";
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -204,6 +212,101 @@ export const getLogs = async (trialId: string) => {
     response = { success: false, data: e };
   }
   return response;
+};
+
+export const createTrialFolders = async (
+  folderNames: string[],
+  trialId: string,
+  organizationId: string
+) => {
+  const storage = getStorage(); // Get the storage instance
+  const folderPaths = folderNames.map(
+    (name) => `Organizations/${organizationId}/trials/${trialId}/${name}`
+  );
+
+  const promises = folderPaths.map(async (path) => {
+    const storageRef = ref(storage, path); // Use the ref function to get the reference
+    const placeholderFile = new Blob([], { type: "text/plain" }); // An empty file
+    await uploadBytes(ref(storageRef, ".placeholder"), placeholderFile); // Use uploadBytes to upload the placeholder
+  });
+
+  await Promise.all(promises);
+};
+
+export const uploadFilesToFolder = async (
+  folderName: string,
+  trialId: string,
+  organizationId: string,
+  files: FileList
+) => {
+  const storage = getStorage();
+  const folderPath = `Organizations/${organizationId}/trials/${trialId}/${folderName}`;
+
+  const uploadPromises = Array.from(files).map(async (file) => {
+    const fileRef = ref(storage, `${folderPath}/${file.name}`);
+    await uploadBytes(fileRef, file);
+  });
+
+  await Promise.all(uploadPromises);
+};
+
+export const fetchFoldersInTrial = async (
+  organizationId: string,
+  trialId: string
+) => {
+  const storage = getStorage();
+  const trialRef = ref(
+    storage,
+    `Organizations/${organizationId}/trials/${trialId}`
+  );
+  try {
+    const result = await listAll(trialRef);
+    const folders = result.prefixes.map((folder) => folder.name); // Get the names of the folders
+    return folders; // Return the list of folders
+  } catch (error) {
+    console.error("Error fetching folders:", error);
+    return [];
+  }
+};
+
+export const fetchFilesInFolder = async (
+  organizationId: string,
+  trialId: string,
+  folderName: string
+) => {
+  const storage = getStorage();
+  const folderRef = ref(
+    storage,
+    `/Organizations/${organizationId}/trials/${trialId}/${folderName}`
+  );
+  try {
+    const result = await listAll(folderRef);
+    const files = result.items.map((item) => item.name); // Get the names of the files
+    return files; // Return the list of files
+  } catch (error) {
+    console.error("Error fetching files:", error);
+    return [];
+  }
+};
+
+export const fetchAndPreviewFile = async (
+  organizationId: string,
+  trialId: string,
+  folderName: string,
+  fileName: string
+) => {
+  const storage = getStorage();
+  const fileRef = ref(
+    storage,
+    `Organizations/${organizationId}/trials/${trialId}/${folderName}/${fileName}`
+  );
+  try {
+    const url = await getDownloadURL(fileRef);
+    return url;
+  } catch (error) {
+    console.error("Error getting file URL:", error);
+    return null;
+  }
 };
 
 export const createLog = async (log: LogDetails, trialId: string) => {
@@ -426,7 +529,8 @@ export const getAllUsers = async (orgId: string) => {
 };
 
 export const updateUserProfile = async (
-  userId: string, profileData: Partial<ProfileFormData>
+  userId: string,
+  profileData: Partial<ProfileFormData>
 ): Promise<{ success: boolean }> => {
   try {
     // Reference to the users collection

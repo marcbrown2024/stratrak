@@ -5,94 +5,60 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 
 // firestore functions
-import { createTrialFolders, fetchFoldersInTrial, getTrial } from "@/firebase";
-
-// global store
-import LoadingStore from "@/store/LoadingStore";
+import { fetchFilesInFolder, getTrial } from "@/firebase";
 
 // custom hooks
 import useUser from "@/hooks/UseUser";
+
+// global store
+import LoadingStore from "@/store/LoadingStore";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
 
 //components
 import RegulatoryDocTable from "@/components/RegulatoryDocTable";
-import AddNewFolder from "@/components/AddNewFolder";
-
-const folderNames = [
-  "monitoringVisitReports",
-  "caseReportForms",
-  "clinicalTrialAgreement",
-  "curriculumVitaeOfInvestigators",
-  "delegationOfAuthorityLog",
-  "drugAccountabilityRecords",
-  "financialDisclosureForm",
-  "informedConsentForm",
-  "institutionalReviewBoard",
-  "insuranceOrIndemnityDocumentation",
-  "investigationalNewDrug",
-  "investigatorBrochure",
-  "seriousAdverseEvent",
-  "siteSpecificStandard",
-  "sourceDocuments",
-  "studyProtocol",
-];
 
 const columns: GridColDef[] = [
   {
     field: "fileName",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     type: "string",
-    headerName: "Regulatory Submissions",
+    headerName: "File Name",
     flex: 1,
   },
 ];
 
-const RegulatoryDocPage = () => {
+const RegDocFiles = () => {
   const { user } = useUser();
-  const { trialId } = useParams();
+  const { trialId, regDocId } = useParams<{
+    trialId: string;
+    regDocId: string;
+  }>();
   const { setLoading } = LoadingStore();
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
-  const [fetchedFolderNames, setFetchedFolderNames] = useState<string[]>([]);
-  
+  const [fileNames, setFileNames] = useState<string[]>([]);
+
+  const formatString = (str: string) => {
+    return str
+      .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space between camelCase words
+      .replace(/^./, (char) => char.toUpperCase()); // Capitalize the first letter
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-
-      // Fetch trial details
       const trialResponse = await getTrial(trialId as string);
       setTrial(trialResponse.data);
-
-      // Fetch existing folders
-      const regDocsResponse = await fetchFoldersInTrial(
+      const regDocsResponse = await fetchFilesInFolder(
         user?.orgId as string,
-        trialId as string
+        trialId as string,
+        regDocId as string
       );
-      setFetchedFolderNames(regDocsResponse);
-
-      // Check for missing folders
-      const missingFolders = folderNames.filter(
-        (folder) => !regDocsResponse.includes(folder)
+      const filteredFiles = regDocsResponse.filter(
+        (fileName) => fileName !== ".placeholder"
       );
-
-      if (missingFolders.length > 0) {
-        // Create missing folders
-        await createTrialFolders(
-          missingFolders,
-          trialId as string,
-          user?.orgId as string
-        );
-
-        // Refetch folders after creation
-        const updatedFolders = await fetchFoldersInTrial(
-          user?.orgId as string,
-          trialId as string
-        );
-        setFetchedFolderNames(updatedFolders);
-      }
-
+      setFileNames(filteredFiles);
       setLoading(false);
     };
 
@@ -109,24 +75,25 @@ const RegulatoryDocPage = () => {
             <p>Investigator Name:</p>
             <p>Protocol:</p>
             <p>Site Visit:</p>
+            <p>Regulatory Document:</p>
           </div>
           <div className="flex flex-col">
             <p>{trial?.investigatorName || "N/A"}</p>
             <p>{trial?.protocol || "N/A"}</p>
             <p>{trial?.siteVisit || "N/A"}</p>
+            <p>{formatString(regDocId) || "N/A"}</p>
           </div>
         </div>
       </div>
       <div className="flex flex-col items-center justify-center gap-8">
         <RegulatoryDocTable
           columns={columns}
-          rows={fetchedFolderNames}
+          rows={fileNames}
           trialId={trialId as string}
         />
       </div>
-      <AddNewFolder setFetchedFolderNames={setFetchedFolderNames} />
     </div>
   );
 };
 
-export default RegulatoryDocPage;
+export default RegDocFiles;

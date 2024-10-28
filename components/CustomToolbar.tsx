@@ -1,16 +1,15 @@
 // react/nextjs components
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 
 // firebase components
-import { getLogs, getTrials } from "@/firebase";
+import { uploadFilesToFolder, getLogs, getTrials } from "@/firebase";
 
 // mui components
 import {
   GridToolbarQuickFilter,
   GridToolbarColumnsButton,
-  GridToolbarDensitySelector,
   GridToolbarExport,
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
@@ -19,6 +18,13 @@ import Button from "@mui/material/Button";
 // custom hooks
 import useUser from "@/hooks/UseUser";
 
+// global store
+import { useAlertStore } from "@/store/AlertStore";
+import AddNewFolderStore from "@/store/AddNewFolderStore";
+
+// enums
+import { AlertType } from "@/enums";
+
 // icons
 import { FiDownload } from "react-icons/fi";
 
@@ -26,8 +32,49 @@ const CustomToolbar = () => {
   const { user } = useUser();
   const { trialId } = useParams();
   const currentPathname = usePathname();
+  const { setVisibility } = AddNewFolderStore();
   const [logs, setLogs] = useState<LogDetails[]>([]);
   const [monitoringlogs, setMonitoringlogs] = useState<TrialDetails[]>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [setAlert, closeAlert] = useAlertStore((state) => [
+    state.setAlert,
+    state.closeAlert,
+  ]);
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Programmatically click the file input
+    }
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
+    const folderName = currentPathname.split("/").slice(-2, -1)[0]; // Extract the folder name from the pathname
+
+    if (files) {
+      if (user && files) {
+        try {
+          await uploadFilesToFolder(
+            folderName,
+            trialId as string,
+            user.orgId,
+            files
+          );
+          setAlert(
+            { title: "Success!", content: "Files were uploaded successfully." },
+            AlertType.Success
+          );
+        } catch (error) {
+          setAlert(
+            { title: "Error!", content: `Failed to upload files: ${error}` },
+            AlertType.Error
+          );
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     getTrials(user?.orgId as string).then((response) => {
@@ -148,16 +195,38 @@ const CustomToolbar = () => {
               Download
             </Button>
           </Link>
-          <Link href={`/monitoringLogs/${trialId}/regulatoryDocs/upload`}>
-            <Button
-              variant="contained"
-              style={{ backgroundColor: "#007bff", color: "#fff" }}
-            >
-              Upload
-            </Button>
-          </Link>
+          <Button
+            onClick={() => setVisibility(true)}
+            variant="contained"
+            style={{ backgroundColor: "#007bff", color: "#fff" }}
+          >
+            New Folder
+          </Button>
         </>
       )}
+
+      <>
+        {currentPathname.includes(`/monitoringLogs/${trialId}`) &&
+          currentPathname.endsWith("/files") && (
+            <>
+              <Button
+                variant="contained"
+                style={{ backgroundColor: "#007bff", color: "#fff" }}
+                onClick={handleUploadClick} // Trigger the file input
+              >
+                Upload
+              </Button>
+              <input
+                type="file"
+                ref={fileInputRef} // Attach the ref
+                onChange={handleFileChange} // Handle file selection
+                style={{ display: "none" }} // Hide the file input
+                multiple // Allow multiple file selection
+              />
+            </>
+          )}
+      </>
+
       {isAdminAndTrialPath ? (
         <Link href="/monitoringLogs/createMonitoringLog">
           <Button

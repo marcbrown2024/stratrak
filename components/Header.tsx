@@ -23,30 +23,38 @@ const Header = () => {
   const { toggleModal, closeModal } = useModalStore();
 
   const splitCamelCase = (str: string) => {
-    // Use regex to split camel case string into separate words and capitalize the first letter
     return str
       .replace(/([a-z])([A-Z])/g, "$1 $2")
       .replace(/^./, (char) => char.toUpperCase());
   };
 
-  // Find the current item's title based on the current path
-  const words = currentPathname.split("/").filter(Boolean).pop() ?? "";
+  // Split the pathname into segments and filter out empty strings
+  const words = currentPathname.split("/").filter(Boolean);
 
-  console.log(words);
+  // Check if the last segment is 'files'
+  const isFilesPage = words[words.length - 1] === "files";
 
-  const currentPath = splitCamelCase(words);
+  let currentPath = "";
+
+  // If on the 'files' page, use the previous segment for the title
+  if (isFilesPage && words.length > 1) {
+    currentPath = `${splitCamelCase(words[words.length - 2])} Files`; // Get the previous segment
+  } else {
+    // If not on the 'files' page, just take the last segment
+    currentPath = splitCamelCase(words.pop() ?? "");
+  }
 
   // Determine the display title based on the current pathname
   const displayTitle =
-  currentPathname === "/"
-    ? "Home"
-    : words === "regulatoryDocs"
-    ? "Regulatory Documents"
-    : ["Active", "Inactive", "Completed"].includes(currentPath)
-    ? `${currentPath} Trials`
-    : currentPath;
+    currentPathname === "/"
+      ? "Home"
+      : words[words.length - 1] === "regulatoryDocs"
+      ? "Regulatory Documents"
+      : ["Active", "Inactive", "Completed"].includes(currentPath)
+      ? `${currentPath} Trials`
+      : currentPath;
 
-    useEffect(() => {
+  useEffect(() => {
     const closePopupsOnOutsideClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       if (!target.closest(".Popup")) {
