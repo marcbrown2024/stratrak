@@ -21,11 +21,15 @@ import {
 
 import {
   getDownloadURL,
+  getMetadata,
   getStorage,
   ref,
   listAll,
   uploadBytes,
 } from "firebase/storage";
+
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -237,17 +241,31 @@ export const uploadFilesToFolder = async (
   folderName: string,
   trialId: string,
   organizationId: string,
-  files: FileList
+  files: FileList | null,
+  user: { fName: string; lName: string }
 ) => {
   const storage = getStorage();
-  const folderPath = `Organizations/${organizationId}/trials/${trialId}/${folderName}`;
+  const folderPath = `Organizations/${organizationId}/trials/${trialId}/${folderName}/`;
 
-  const uploadPromises = Array.from(files).map(async (file) => {
-    const fileRef = ref(storage, `${folderPath}/${file.name}`);
-    await uploadBytes(fileRef, file);
-  });
+  if (files) {
+    const promises = Array.from(files).map(async (file) => {
+      const fileRef = ref(storage, `${folderPath}${file.name}`);
+      const now = new Date();
+      const localTime = now.toLocaleString();
 
-  await Promise.all(uploadPromises);
+      // Create metadata
+      const metadata = {
+        customMetadata: {
+          uploadedBy: `${user.fName} ${user.lName}`,
+          uploadedAt: localTime,
+        },
+      };
+
+      await uploadBytes(fileRef, file, metadata);
+    });
+
+    await Promise.all(promises);
+  }
 };
 
 export const fetchFoldersInTrial = async (
@@ -289,6 +307,25 @@ export const fetchFilesInFolder = async (
   }
 };
 
+export const getFileMetadata = async (
+  organizationId: string,
+  trialId: string,
+  folderName: string,
+  fileName: string
+) => {
+  const storage = getStorage();
+  const fileRef = ref(
+    storage,
+    `Organizations/${organizationId}/trials/${trialId}/${folderName}/${fileName}`
+  );
+  try {
+    const metadata = await getMetadata(fileRef);
+    return metadata;
+  } catch (error) {
+    console.error("Error getting file metadata:", error);
+  }
+};
+
 export const fetchAndPreviewFile = async (
   organizationId: string,
   trialId: string,
@@ -304,8 +341,85 @@ export const fetchAndPreviewFile = async (
     const url = await getDownloadURL(fileRef);
     return url;
   } catch (error) {
-    console.error("Error getting file URL:", error);
     return null;
+  }
+};
+
+export const downloadFolderAsZip = async (
+  organizationId: string,
+  trialId: string
+) => {
+  console.log("Starting folder download...");
+
+  const jszip = new JSZip();
+  const storage = getStorage();
+  const folderPath = `Organizations/${organizationId}/trials/${trialId}`; // Your folder path
+
+  try {
+    const folderRef = ref(storage, folderPath);
+    console.log("Folder reference created:", folderRef);
+
+    const downloadFiles = async (
+      folderRef: ReturnType<typeof ref>,
+      path: string
+    ) => {
+      const folder = await listAll(folderRef);
+      console.log("Folder:", path);
+      console.log("Files in the folder:", folder.items);
+
+      const promises = folder.items.map(
+        async (item: ReturnType<typeof ref>) => {
+          console.log("Downloading file:", item.name);
+          const fileRef = ref(storage, item.fullPath);
+
+          // Get the download URL and fetch the file as a blob
+          const fileBlob = await getDownloadURL(fileRef).then(
+            async (url: string) => {
+              const response = await fetch(url);
+              if (!response.ok) {
+                console.error("Failed to fetch file:", item.name);
+                throw new Error("Failed to fetch file");
+              }
+              return await response.blob();
+            }
+          );
+
+          // Add the file to the zip
+          jszip.folder(path)?.file(item.name, fileBlob);
+        }
+      );
+
+      await Promise.all(promises);
+
+      // Recursively download files from subfolders
+      for (const subfolder of folder.prefixes) {
+        if (subfolder && subfolder.fullPath) {
+          await downloadFiles(
+            ref(storage, subfolder.fullPath),
+            `${path}${subfolder.name}/`
+          );
+        }
+      }
+    };
+
+    await downloadFiles(folderRef, "");
+
+    console.log(
+      "Number of files added to the ZIP:",
+      Object.keys(jszip.files).length
+    );
+
+    if (Object.keys(jszip.files).length === 0) {
+      console.log("ZIP is empty.");
+      return;
+    }
+
+    const blob = await jszip.generateAsync({ type: "blob" });
+    saveAs(blob, "download.zip");
+    console.log("Download completed.");
+  } catch (error) {
+    console.error("Error:", error);
+    alert("An error occurred while downloading the folder.");
   }
 };
 

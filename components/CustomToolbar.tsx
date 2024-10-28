@@ -43,35 +43,36 @@ const CustomToolbar = () => {
 
   const handleUploadClick = () => {
     if (fileInputRef.current) {
-      fileInputRef.current.click(); // Programmatically click the file input
+      fileInputRef.current.click();
     }
   };
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    closeAlert();
     const files = event.target.files;
-    const folderName = currentPathname.split("/").slice(-2, -1)[0]; // Extract the folder name from the pathname
+    const folderName = currentPathname.split("/").slice(-2, -1)[0];
 
-    if (files) {
-      if (user && files) {
-        try {
-          await uploadFilesToFolder(
-            folderName,
-            trialId as string,
-            user.orgId,
-            files
-          );
-          setAlert(
-            { title: "Success!", content: "Files were uploaded successfully." },
-            AlertType.Success
-          );
-        } catch (error) {
-          setAlert(
-            { title: "Error!", content: `Failed to upload files: ${error}` },
-            AlertType.Error
-          );
-        }
+    if (user && files) {
+      try {
+        await uploadFilesToFolder(
+          folderName,
+          trialId as string,
+          user.orgId,
+          files,
+          { fName: user.fName, lName: user.lName }
+        );
+        setAlert(
+          { title: "Success!", content: "Files were uploaded successfully." },
+          AlertType.Success
+        );
+        setTimeout(() => window.location.reload(), 2000);
+      } catch (error) {
+        setAlert(
+          { title: "Error!", content: `Failed to upload files: ${error}` },
+          AlertType.Error
+        );
       }
     }
   };
@@ -195,19 +196,22 @@ const CustomToolbar = () => {
               Download
             </Button>
           </Link>
-          <Button
-            onClick={() => setVisibility(true)}
-            variant="contained"
-            style={{ backgroundColor: "#007bff", color: "#fff" }}
-          >
-            New Folder
-          </Button>
+          {user?.isAdmin && (
+            <Button
+              onClick={() => setVisibility(true)}
+              variant="contained"
+              style={{ backgroundColor: "#007bff", color: "#fff" }}
+            >
+              New Folder
+            </Button>
+          )}
         </>
       )}
 
       <>
         {currentPathname.includes(`/monitoringLogs/${trialId}`) &&
-          currentPathname.endsWith("/files") && (
+          currentPathname.endsWith("/files") &&
+          user?.isAdmin && (
             <>
               <Button
                 variant="contained"

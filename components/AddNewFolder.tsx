@@ -101,8 +101,8 @@ const AddNewFolder = (props: Props) => {
   return (
     <>
       {visible && (
-        <div className="fixed h-full w-full flex items-center justify-center bg-opacity-50">
-          <div className="relative h-40 w-1/3 flex flex-col items-center justify-center gap-4 bg-gray-400 mb-60 rounded-lg shadow-lg">
+        <div className="fixed h-full w-full flex items-center justify-center bg-white bg-opacity-60">
+          <div className="relative h-48 w-1/4 flex flex-col items-center justify-center gap-4 bg-white mb-64 border border-gray-300 rounded-lg shadow-xl">
             <button
               onClick={handleCloseModal}
               className="absolute -top-4 -right-4 bg-white rounded-full"
@@ -114,13 +114,13 @@ const AddNewFolder = (props: Props) => {
               value={newFolderName}
               onChange={(e) => setNewFolderName(e.target.value)}
               placeholder="Enter folder name"
-              className="w-3/4 text-gray-600 p-2 mb-2 border rounded focus:outline-none focus:ring focus:ring-blue-500"
+              className="w-3/4 text-gray-600 p-2 mb-2 border-2 border-blue-500 rounded focus:outline-none focus:ring focus:ring-blue-100"
             />
             <div
               onClick={handleAddFolder}
-              className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              className="cursor-pointer bg-blue-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
             >
-              Add New Folder
+              Create
             </div>
           </div>
         </div>

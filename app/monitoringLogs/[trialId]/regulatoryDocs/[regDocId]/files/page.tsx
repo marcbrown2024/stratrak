@@ -19,12 +19,29 @@ import { GridColDef } from "@mui/x-data-grid";
 //components
 import RegulatoryDocTable from "@/components/RegulatoryDocTable";
 
+// icons
+import { IoCloseCircleSharp } from "react-icons/io5";
+
 const columns: GridColDef[] = [
   {
     field: "fileName",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     type: "string",
     headerName: "File Name",
+    flex: 1,
+  },
+  {
+    field: "uploadedBy",
+    headerClassName: "text-blue-500 uppercase bg-blue-50",
+    type: "string",
+    headerName: "Uploaded By",
+    flex: 1,
+  },
+  {
+    field: "uploadedAt",
+    headerClassName: "text-blue-500 uppercase bg-blue-50",
+    type: "string",
+    headerName: "Uploaded At",
     flex: 1,
   },
 ];
@@ -38,6 +55,8 @@ const RegDocFiles = () => {
   const { setLoading } = LoadingStore();
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
   const [fileNames, setFileNames] = useState<string[]>([]);
+  const [showDocument, setShowDocument] = useState<boolean>(false);
+  const [documentURL, setDocumentURL] = useState<string>("");
 
   const formatString = (str: string) => {
     return str
@@ -90,8 +109,27 @@ const RegDocFiles = () => {
           columns={columns}
           rows={fileNames}
           trialId={trialId as string}
+          setShowDocument={setShowDocument}
+          setDocumentURL={setDocumentURL}
         />
       </div>
+      {showDocument && (
+        <div className="fixed h-3/4 w-2/5 py-8">
+          <iframe
+            src={`${documentURL}`}
+            onLoad={() => setLoading(false)}
+            className="w-full h-full border-2 border-black"
+            title="Document Viewer"
+          />
+          <button
+            onClick={() => setShowDocument(false)}
+            className="absolute bottom-12 right-6 w-32 flex items-center justify-center gap-2 p-1 border shadow-md hover:scale-95"
+          >
+            <IoCloseCircleSharp size={40} color="#2563eb" />
+            <span className="">Close</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

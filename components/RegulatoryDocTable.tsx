@@ -5,36 +5,41 @@ import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 // firestore functions
-import { fetchAndPreviewFile } from "@/firebase";
-
-// global stores
-import { useAlertStore } from "@/store/AlertStore";
-
-// custom hooks
-import useUser from "@/hooks/UseUser";
+import { fetchAndPreviewFile, getFileMetadata } from "@/firebase";
 
 // mui components
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import CustomToolbar from "@/components/CustomToolbar";
 
-// enums
-import { AlertType } from "@/enums";
+// custom hooks
+import useUser from "@/hooks/UseUser";
+
+// global store
+import LoadingStore from "@/store/LoadingStore";
 
 type Props = {
   columns: GridColDef[];
   rows: string[];
   trialId: string;
+  setShowDocument?: React.Dispatch<React.SetStateAction<boolean>>;
+  setDocumentURL?: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const RegulatoryDocTable = (props: Props) => {
   const { user } = useUser();
   const router = useRouter();
   const currentPathname = usePathname();
-  const [setAlert] = useAlertStore((state) => [state.setAlert]);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const { setLoading } = LoadingStore();
   const [docs, setDocs] = useState<
-    { id: number; originalId: string; fileName: string }[]
+    {
+      id: number;
+      originalId: string;
+      fileName: string;
+      uploadedBy?: string;
+      uploadedAt?: string;
+    }[]
   >([]);
+  const folderName = currentPathname.split("/").slice(-2, -1)[0];
 
   const formatString = (str: string) => {
     return str
@@ -43,22 +48,34 @@ const RegulatoryDocTable = (props: Props) => {
   };
 
   useEffect(() => {
-    if (user) {
-      setIsAdmin(user.isAdmin);
-    }
-  }, [user]);
+    const fetchData = async () => {
+      if (props.rows && user) {
+        const newDocs = await Promise.all(
+          props.rows.map(async (doc, index) => {
+            const fileName = doc; // Assuming doc is the file name
+            const metadata = await getFileMetadata(
+              user.orgId,
+              props.trialId,
+              folderName,
+              fileName
+            ); // Get metadata for each file
 
-  useEffect(() => {
-    if (props.rows) {
-      // Structure the rows to have the 'fileName' property
-      const newDocs = props.rows.map((doc, index) => ({
-        id: index,
-        originalId: doc,
-        fileName: formatString(doc),
-      }));
-      setDocs(newDocs);
-    }
-  }, [props]);
+            return {
+              id: index,
+              originalId: fileName,
+              fileName: formatString(fileName),
+              uploadedBy: metadata?.customMetadata?.uploadedBy || "Unknown",
+              uploadedAt: metadata?.customMetadata?.uploadedAt || "Not specified",
+            };
+          })
+        );
+
+        setDocs(newDocs);
+      }
+    };
+
+    fetchData();
+  }, [props, user?.orgId, props.trialId, folderName]);
 
   const handleRowClick = async (params: any) => {
     const regDocId = docs[params.row.id]?.originalId;
@@ -71,7 +88,6 @@ const RegulatoryDocTable = (props: Props) => {
         );
       }
     } else {
-      const folderName = currentPathname.split("/").slice(-2, -1)[0];
       const fileUrl = await fetchAndPreviewFile(
         user?.orgId as string,
         props.trialId,
@@ -79,15 +95,9 @@ const RegulatoryDocTable = (props: Props) => {
         regDocId
       );
       if (fileUrl) {
-        // Open the file URL in a new tab
-        const newTab = window.open(fileUrl, "_blank");
-
-        // Check if the new tab was blocked
-        if (newTab) {
-          newTab.focus(); // Bring the new tab into focus
-        } else {
-          alert("Please allow popups for this website to view the file."); // Alert if the popup is blocked
-        }
+        props.setShowDocument?.(true);
+        props.setDocumentURL?.(fileUrl);
+        setLoading(true);
       }
     }
   };
