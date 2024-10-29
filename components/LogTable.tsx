@@ -16,6 +16,9 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import CustomToolbar from "@/components/CustomToolbar";
 import Tooltip from "@mui/material/Tooltip";
 
+// custom hooks
+import useUser from "@/hooks/UseUser";
+
 // enums
 import { AlertType } from "@/enums";
 
@@ -23,7 +26,6 @@ import { AlertType } from "@/enums";
 import { MdDelete } from "react-icons/md";
 import { FaFileCircleMinus } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
-import useUser from "@/hooks/UseUser";
 
 type Props = {
   columns: GridColDef[];
@@ -157,33 +159,31 @@ const LogTable = (props: Props) => {
               </button>
             </Tooltip>
 
-            <div
-              className={`gap-3 ${
-                isProgressActive && deleteLogRow ? "flex" : "hidden"
-              }`}
-            >
-              <Tooltip title="Delete">
-                <button
-                  type="button"
-                  onClick={() => handleDeleteLog(id)}
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <MdDelete className="text-2xl text-[#7d1f2e]" />
-                </button>
-              </Tooltip>
-              <Tooltip title="Cancel">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeleteLogRow(false);
-                    setActiveRowId(null);
-                  }}
-                  className="transition-transform duration-300 hover:scale-110"
-                >
-                  <IoClose className="text-2xl" />
-                </button>
-              </Tooltip>
-            </div>
+            {isProgressActive && deleteLogRow ? (
+              <div className="gap-3 flex">
+                <Tooltip title="Delete">
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteLog(id)}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <MdDelete className="text-2xl text-[#7d1f2e]" />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Cancel">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDeleteLogRow(false);
+                      setActiveRowId(null);
+                    }}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <IoClose className="text-2xl" />
+                  </button>
+                </Tooltip>
+              </div>
+            ) : null}
           </div>
         </div>
       );

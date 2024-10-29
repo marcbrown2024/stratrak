@@ -65,10 +65,11 @@ const RegDocFiles = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFiles = async () => {
       setLoading(true);
       const trialResponse = await getTrial(trialId as string);
       setTrial(trialResponse.data);
+      
       const regDocsResponse = await fetchFilesInFolder(
         user?.orgId as string,
         trialId as string,
@@ -82,7 +83,7 @@ const RegDocFiles = () => {
     };
 
     if (user?.orgId && trialId) {
-      fetchData();
+      fetchFiles();
     }
   }, [user?.orgId, trialId]);
 
@@ -123,7 +124,7 @@ const RegDocFiles = () => {
           />
           <button
             onClick={() => setShowDocument(false)}
-            className="absolute bottom-12 right-6 w-32 flex items-center justify-center gap-2 p-1 border shadow-md hover:scale-95"
+            className="absolute bottom-12 right-6 w-32 flex items-center justify-center gap-2 bg-white p-1 border shadow-md hover:scale-95"
           >
             <IoCloseCircleSharp size={40} color="#2563eb" />
             <span className="">Close</span>

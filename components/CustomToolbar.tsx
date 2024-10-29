@@ -4,7 +4,13 @@ import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 
 // firebase components
-import { uploadFilesToFolder, getLogs, getTrials } from "@/firebase";
+import {
+  downloadFolderAsZip,
+  getLogs,
+  getTrial,
+  getTrials,
+  uploadFilesToFolder,
+} from "@/firebase";
 
 // mui components
 import {
@@ -41,6 +47,34 @@ const CustomToolbar = () => {
     state.closeAlert,
   ]);
 
+  const handleDownload = async () => {
+    const trialResponse = await getTrial(trialId as string);
+
+    if (user && trialResponse.data) {
+      try {
+        const { investigatorName, protocol, siteVisit } = trialResponse.data;
+
+        await downloadFolderAsZip(
+          user.orgId,
+          trialId as string,
+          `${investigatorName.trim().replace(/ /g, "_")}_${protocol
+            .trim()
+            .replace(/ /g, "_")}_${siteVisit.trim().replace(/ /g, "_")}`
+        );
+
+        setAlert(
+          { title: "Success!", content: "Download was successful." },
+          AlertType.Success
+        );
+      } catch (error) {
+        setAlert(
+          { title: "Error!", content: `Failed to download files: ${error}` },
+          AlertType.Error
+        );
+      }
+    }
+  };
+
   const handleUploadClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -55,6 +89,28 @@ const CustomToolbar = () => {
     const folderName = currentPathname.split("/").slice(-2, -1)[0];
 
     if (user && files) {
+      const invalidFiles = [];
+
+      // Check if all files are PDFs
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].type !== "application/pdf") {
+          invalidFiles.push(files[i].name);
+        }
+      }
+
+      if (invalidFiles.length > 0) {
+        const fileMessage =
+          invalidFiles.length === 1
+            ? `The following file is not a PDF: ${invalidFiles[0]}`
+            : `The following files are not PDFs: ${invalidFiles.join(', ')}`;
+  
+        setAlert(
+          { title: "Info!", content: fileMessage },
+          AlertType.Info
+        );
+        return;
+      }
+
       try {
         await uploadFilesToFolder(
           folderName,
@@ -188,14 +244,13 @@ const CustomToolbar = () => {
       </div>
       {currentPathname === `/monitoringLogs/${trialId}/regulatoryDocs` && (
         <>
-          <Link href={`/monitoringLogs/${trialId}/regulatoryDocs/upload`}>
-            <Button
-              variant="contained"
-              style={{ backgroundColor: "#007bff", color: "#fff" }}
-            >
-              Download
-            </Button>
-          </Link>
+          <Button
+            onClick={handleDownload}
+            variant="contained"
+            style={{ backgroundColor: "#007bff", color: "#fff" }}
+          >
+            Download
+          </Button>
           {user?.isAdmin && (
             <Button
               onClick={() => setVisibility(true)}

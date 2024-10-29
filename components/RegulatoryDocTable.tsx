@@ -5,17 +5,32 @@ import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 // firestore functions
-import { fetchAndPreviewFile, getFileMetadata } from "@/firebase";
+import {
+  deleteFile,
+  deleteFolder,
+  fetchAndPreviewFile,
+  getFileMetadata,
+} from "@/firebase";
 
 // mui components
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import CustomToolbar from "@/components/CustomToolbar";
+import Tooltip from "@mui/material/Tooltip";
 
 // custom hooks
 import useUser from "@/hooks/UseUser";
 
 // global store
+import { useAlertStore } from "@/store/AlertStore";
 import LoadingStore from "@/store/LoadingStore";
+
+// enums
+import { AlertType } from "@/enums";
+
+//icons
+import { MdDelete } from "react-icons/md";
+import { FaFileCircleMinus } from "react-icons/fa6";
+import { IoClose } from "react-icons/io5";
 
 type Props = {
   columns: GridColDef[];
@@ -30,6 +45,8 @@ const RegulatoryDocTable = (props: Props) => {
   const router = useRouter();
   const currentPathname = usePathname();
   const { setLoading } = LoadingStore();
+  const [activeRowId, setActiveRowId] = useState<number | null>(null);
+  const [deleteRow, setDeleteRow] = useState<boolean>(false);
   const [docs, setDocs] = useState<
     {
       id: number;
@@ -39,6 +56,11 @@ const RegulatoryDocTable = (props: Props) => {
       uploadedAt?: string;
     }[]
   >([]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [
+    state.setAlert,
+    state.closeAlert,
+  ]);
+
   const folderName = currentPathname.split("/").slice(-2, -1)[0];
 
   const formatString = (str: string) => {
@@ -47,25 +69,115 @@ const RegulatoryDocTable = (props: Props) => {
       .replace(/^./, (char) => char.toUpperCase()); // Capitalize the first letter
   };
 
+  const handleSetDelete = (id: number) => {
+    setActiveRowId(id);
+    setDeleteRow(true);
+  };
+
+  const handleDeleteRow = async (id: number) => {
+    closeAlert();
+    // Check if currentPathname indicates a file or regulatoryDocs folder
+    const lastPathSegment = currentPathname.split("/").pop();
+    const regDocId = docs[id].originalId;
+
+    try {
+      if (lastPathSegment === "files") {
+        // Delete a specific file
+        const fileDeleted = await deleteFile(
+          user?.orgId as string,
+          props.trialId,
+          folderName,
+          regDocId
+        );
+        if (fileDeleted) {
+          setAlert(
+            {
+              title: "Success!",
+              content: `File "${regDocId}" deleted successfully.`,
+            },
+            AlertType.Success
+          );
+          setTimeout(() => window.location.reload(), 2000);
+        } else {
+          setAlert(
+            {
+              title: "Error!",
+              content: `Failed to delete file "${regDocId}".`,
+            },
+            AlertType.Success
+          );
+        }
+      } else if (lastPathSegment === "regulatoryDocs") {
+        // Delete a specific folder
+        const folderDeleted = await deleteFolder(
+          user?.orgId as string,
+          props.trialId,
+          regDocId
+        );
+        if (folderDeleted) {
+          setAlert(
+            {
+              title: "Success!",
+              content: `Folder "${regDocId}" deleted successfully.`,
+            },
+            AlertType.Success
+          );
+          setTimeout(() => window.location.reload(), 2000);
+        } else {
+          setAlert(
+            {
+              title: "Error!",
+              content: `Failed to delete folder "${regDocId}".`,
+            },
+            AlertType.Success
+          );
+        }
+      }
+    } catch (error) {
+      setAlert(
+        {
+          title: "Error!",
+          content: `An error occurred during the deletion process.`,
+        },
+        AlertType.Success
+      );
+    }
+  };
+
   useEffect(() => {
+    const shouldSkipMetadataFetch =
+      currentPathname.includes(`/monitoringLogs/${props.trialId}`) &&
+      currentPathname.endsWith("/files");
+
     const fetchData = async () => {
       if (props.rows && user) {
         const newDocs = await Promise.all(
           props.rows.map(async (doc, index) => {
-            const fileName = doc; // Assuming doc is the file name
-            const metadata = await getFileMetadata(
-              user.orgId,
-              props.trialId,
-              folderName,
-              fileName
-            ); // Get metadata for each file
+            const fileName = doc;
+            if (shouldSkipMetadataFetch) {
+              const metadata = await getFileMetadata(
+                user.orgId,
+                props.trialId,
+                folderName,
+                fileName
+              );
+
+              return {
+                id: index,
+                originalId: fileName,
+                fileName: formatString(fileName),
+                uploadedBy: metadata?.customMetadata?.uploadedBy || "Unknown",
+                uploadedAt:
+                  metadata?.customMetadata?.uploadedAt || "Not specified",
+              };
+            }
 
             return {
               id: index,
               originalId: fileName,
               fileName: formatString(fileName),
-              uploadedBy: metadata?.customMetadata?.uploadedBy || "Unknown",
-              uploadedAt: metadata?.customMetadata?.uploadedAt || "Not specified",
+              // uploadedBy: metadata?.customMetadata?.uploadedBy || "Unknown",
+              // uploadedAt: metadata?.customMetadata?.uploadedAt || "Not specified",
             };
           })
         );
@@ -77,14 +189,13 @@ const RegulatoryDocTable = (props: Props) => {
     fetchData();
   }, [props, user?.orgId, props.trialId, folderName]);
 
-  const handleRowClick = async (params: any) => {
-    const regDocId = docs[params.row.id]?.originalId;
+  const handleRowClick = async (originalId: string) => {
     const basePath = `/monitoringLogs/${props.trialId}/regulatoryDocs`;
 
     if (currentPathname === basePath) {
-      if (regDocId) {
+      if (originalId) {
         router.push(
-          `/monitoringLogs/${props.trialId}/regulatoryDocs/${regDocId}/files`
+          `/monitoringLogs/${props.trialId}/regulatoryDocs/${originalId}/files`
         );
       }
     } else {
@@ -92,7 +203,7 @@ const RegulatoryDocTable = (props: Props) => {
         user?.orgId as string,
         props.trialId,
         folderName,
-        regDocId
+        originalId
       );
       if (fileUrl) {
         props.setShowDocument?.(true);
@@ -102,12 +213,73 @@ const RegulatoryDocTable = (props: Props) => {
     }
   };
 
+  const actionColumn: GridColDef = {
+    field: "action",
+    headerClassName: "text-blue-500 uppercase bg-blue-50",
+    headerName: "Action",
+    headerAlign: "left",
+    flex: 0.6,
+    renderCell: (params) => {
+      const { id } = params.row;
+      const isProgressActive = id === activeRowId;
+
+      return (
+        <div className="h-full w-full flex items-center justify-center 2xl:justify-start">
+          <div
+            className={`flex gap-3 ${
+              isProgressActive ? "-translate-x-10" : "translate-x-0"
+            } transition duration-300 ease-in-out`}
+          >
+            <Tooltip title="Delete File">
+              <button
+                type="button"
+                onClick={() => handleSetDelete(id)}
+                className="transition-transform duration-300 hover:scale-110"
+              >
+                <FaFileCircleMinus className="text-2xl text-[#cf3030]" />
+              </button>
+            </Tooltip>
+
+            {isProgressActive && deleteRow ? (
+              <div className="gap-3 flex">
+                <Tooltip title="Delete">
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteRow(id)}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <MdDelete className="text-2xl text-[#7d1f2e]" />
+                  </button>
+                </Tooltip>
+                <Tooltip title="Cancel">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDeleteRow(false);
+                      setActiveRowId(null);
+                    }}
+                    className="transition-transform duration-300 hover:scale-110"
+                  >
+                    <IoClose className="text-2xl" />
+                  </button>
+                </Tooltip>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      );
+    },
+  };
+
   return (
     <div className="w-full flex items-center">
       <DataGrid
         className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4 cursor-pointer"
         rows={docs}
-        columns={[...props.columns]}
+        columns={[
+          ...props.columns,
+          ...(user?.isAdmin ? [actionColumn] : []),
+        ]}
         initialState={{
           pagination: {
             paginationModel: {
@@ -125,7 +297,12 @@ const RegulatoryDocTable = (props: Props) => {
         pageSizeOptions={[8]}
         disableMultipleRowSelection
         disableColumnMenu
-        onRowClick={handleRowClick}
+        onCellClick={(params) => {
+          const isActionColumn = params.field === "action";
+          if (!isActionColumn) {
+            handleRowClick(params.row.originalId);
+          }
+        }}
       />
     </div>
   );

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useParams } from "next/navigation";
 
 // firestore functions
-import { createTrialFolders, fetchFoldersInTrial, getTrial } from "@/firebase";
+import { createTrialFolders, fetchFoldersInTrial } from "@/firebase";
 
 // global store
 import { useAlertStore } from "@/store/AlertStore";
@@ -51,8 +51,7 @@ const AddNewFolder = (props: Props) => {
 
         // Fetch existing folders to check for duplicates
         const existingFolders = await fetchFoldersInTrial(
-          user?.orgId as string,
-          trialId as string
+          `Organizations/${user?.orgId}/trials/${trialId}`
         );
 
         // Check if the folder name already exists
@@ -73,8 +72,7 @@ const AddNewFolder = (props: Props) => {
 
         // Update state to include the new folder
         const updatedFolders = await fetchFoldersInTrial(
-          user?.orgId as string,
-          trialId as string
+          `Organizations/${user?.orgId}/trials/${trialId}`
         );
         props.setFetchedFolderNames(updatedFolders);
         setAlert(
@@ -83,7 +81,7 @@ const AddNewFolder = (props: Props) => {
         );
       } catch (error) {
         setAlert(
-          {title: "Error!", content: `Failed to create folder: ${error}` },
+          { title: "Error!", content: `Failed to create folder: ${error}` },
           AlertType.Error
         );
       } finally {

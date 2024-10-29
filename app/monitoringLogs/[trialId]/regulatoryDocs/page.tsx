@@ -45,20 +45,21 @@ const columns: GridColDef[] = [
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     type: "string",
     headerName: "Regulatory Submissions",
-    flex: 1,
+    flex: 3,
   },
 ];
 
 const RegulatoryDocPage = () => {
   const { user } = useUser();
-  const { trialId } = useParams();
+  const { trialId } = useParams<{
+    trialId: string;
+  }>();
   const { setLoading } = LoadingStore();
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
   const [fetchedFolderNames, setFetchedFolderNames] = useState<string[]>([]);
-  
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFolder = async () => {
       setLoading(true);
 
       // Fetch trial details
@@ -66,9 +67,8 @@ const RegulatoryDocPage = () => {
       setTrial(trialResponse.data);
 
       // Fetch existing folders
-      const regDocsResponse = await fetchFoldersInTrial(
-        user?.orgId as string,
-        trialId as string
+      const regDocsResponse: string[] = await fetchFoldersInTrial(
+        `Organizations/${user?.orgId}/trials/${trialId}`
       );
       setFetchedFolderNames(regDocsResponse);
 
@@ -86,9 +86,8 @@ const RegulatoryDocPage = () => {
         );
 
         // Refetch folders after creation
-        const updatedFolders = await fetchFoldersInTrial(
-          user?.orgId as string,
-          trialId as string
+        const updatedFolders: string[] = await fetchFoldersInTrial(
+          `Organizations/${user?.orgId}/trials/${trialId}`
         );
         setFetchedFolderNames(updatedFolders);
       }
@@ -97,7 +96,7 @@ const RegulatoryDocPage = () => {
     };
 
     if (user?.orgId && trialId) {
-      fetchData();
+      fetchFolder();
     }
   }, [user?.orgId, trialId]);
 

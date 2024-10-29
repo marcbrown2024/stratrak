@@ -19,7 +19,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { AlertType } from "@/enums";
 
 //icons
-import { FaCircle, FaClipboardList} from "react-icons/fa";
+import { FaCircle, FaClipboardList } from "react-icons/fa";
 import { FaFolderOpen } from "react-icons/fa6";
 import { MdFolderDelete, MdCancel, MdDelete } from "react-icons/md";
 import { TbAdjustmentsCheck } from "react-icons/tb";
@@ -42,7 +42,6 @@ const MonitoringLogTable = (props: Props) => {
     state.setAlert,
     state.closeAlert,
   ]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [filteredRows, setFilteredRows] = useState<TrialDetails[]>([]);
   const [isAdmin, setIsAdmin] = useState<boolean>();
 
@@ -54,7 +53,6 @@ const MonitoringLogTable = (props: Props) => {
 
   useEffect(() => {
     if (props.rows.length > 0) {
-      setLoading(false);
       setFilteredRows(
         props.filter
           ? props.rows.filter((row) => row.progress === props.filter)
@@ -146,7 +144,7 @@ const MonitoringLogTable = (props: Props) => {
         <div className="h-full w-full flex items-center justify-start">
           <div
             className={`flex gap-3 ${
-              isProgressActive ? "-translate-x-28" : "translate-x-0"
+              isProgressActive ? "-translate-x-36" : "translate-x-0"
             } transition duration-300 ease-in-out`}
           >
             {!isAdmin &&
@@ -155,7 +153,10 @@ const MonitoringLogTable = (props: Props) => {
             ) : (
               <>
                 <Tooltip title="Go to regulatory docs">
-                  <Link href={`/monitoringLogs/${id}/regulatoryDocs`} className="flex">
+                  <Link
+                    href={`/monitoringLogs/${id}/regulatoryDocs`}
+                    className="flex"
+                  >
                     <button
                       type="button"
                       className="transition-transform duration-300 hover:scale-110"
@@ -207,79 +208,75 @@ const MonitoringLogTable = (props: Props) => {
             {
               <>
                 {/* ----------------------------------------------------------- */}
-                <div
-                  className={`gap-3 ${
-                    isProgressActive && deleteTrialRow ? "flex" : "hidden"
-                  }`}
-                >
-                  <Tooltip title="Delete">
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteTrial(id)}
-                      className="transition-transform duration-300 hover:scale-110"
-                    >
-                      <MdDelete className="text-2xl text-[#7d1f2e]" />
-                    </button>
-                  </Tooltip>
-                  <Tooltip title="Cancel">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setDeleteTrialRow(false);
-                        setActiveRowId(null);
-                      }}
-                      className="transition-transform duration-300 hover:scale-110"
-                    >
-                      <IoClose className="text-2xl" />
-                    </button>
-                  </Tooltip>
-                </div>
+                {isProgressActive && deleteTrialRow ? (
+                  <div className="gap-3 flex">
+                    <Tooltip title="Delete">
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTrial(id)}
+                        className="transition-transform duration-300 hover:scale-110"
+                      >
+                        <MdDelete className="text-2xl text-[#7d1f2e]" />
+                      </button>
+                    </Tooltip>
+                    <Tooltip title="Cancel">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDeleteTrialRow(false);
+                          setActiveRowId(null);
+                        }}
+                        className="transition-transform duration-300 hover:scale-110"
+                      >
+                        <IoClose className="text-2xl" />
+                      </button>
+                    </Tooltip>
+                  </div>
+                ) : null}
                 {/* ----------------------------------------------------------- */}
-                <div
-                  className={`gap-3 ${
-                    isProgressActive && changeProgress ? "flex" : "hidden"
-                  }`}
-                >
-                  <Tooltip title="Inactive">
-                    <button
-                      type="button"
-                      onClick={() => handleSetProgress(id, "Inactive")}
-                      className="transition-transform duration-300 hover:scale-110"
-                    >
-                      <FaCircle className="text-2xl text-gray-300" />
-                    </button>
-                  </Tooltip>
-                  <Tooltip title="Active">
-                    <button
-                      type="button"
-                      onClick={() => handleSetProgress(id, "Active")}
-                      className="transition-transform duration-300 hover:scale-110"
-                    >
-                      <FaCircle className="text-2xl text-green-400" />
-                    </button>
-                  </Tooltip>
-                  <Tooltip title="Completed">
-                    <button
-                      type="button"
-                      onClick={() => handleSetProgress(id, "Completed")}
-                      className="transition-transform duration-300 hover:scale-110"
-                    >
-                      <FaCircle className="text-2xl text-[#1286ff]" />
-                    </button>
-                  </Tooltip>
-                  <Tooltip title="Cancel">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setChangeProgress(false);
-                        setActiveRowId(null);
-                      }}
-                      className="transition-transform duration-300 hover:scale-110"
-                    >
-                      <MdCancel className="text-[27px] text-red-600" />
-                    </button>
-                  </Tooltip>
-                </div>
+                {isProgressActive && changeProgress ? (
+                  <div className="gap-3 flex">
+                    <Tooltip title="Inactive">
+                      <button
+                        type="button"
+                        onClick={() => handleSetProgress(id, "Inactive")}
+                        className="transition-transform duration-300 hover:scale-110"
+                      >
+                        <FaCircle className="text-2xl text-gray-300" />
+                      </button>
+                    </Tooltip>
+                    <Tooltip title="Active">
+                      <button
+                        type="button"
+                        onClick={() => handleSetProgress(id, "Active")}
+                        className="transition-transform duration-300 hover:scale-110"
+                      >
+                        <FaCircle className="text-2xl text-green-400" />
+                      </button>
+                    </Tooltip>
+                    <Tooltip title="Completed">
+                      <button
+                        type="button"
+                        onClick={() => handleSetProgress(id, "Completed")}
+                        className="transition-transform duration-300 hover:scale-110"
+                      >
+                        <FaCircle className="text-2xl text-[#1286ff]" />
+                      </button>
+                    </Tooltip>
+                    <Tooltip title="Cancel">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setChangeProgress(false);
+                          setActiveRowId(null);
+                        }}
+                        className="transition-transform duration-300 hover:scale-110"
+                      >
+                        <MdCancel className="text-[27px] text-red-600" />
+                      </button>
+                    </Tooltip>
+                  </div>
+                ) : null}
               </>
             }
           </div>
@@ -305,7 +302,6 @@ const MonitoringLogTable = (props: Props) => {
         pageSizeOptions={[10]}
         disableMultipleRowSelection
         disableColumnMenu
-        autoHeight
       />
     </div>
   );
