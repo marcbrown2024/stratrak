@@ -2,7 +2,6 @@
 
 // react/nextjs components
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
 
 // firestore functions
 import { getLogs, getTrial } from "@/firebase";
@@ -10,6 +9,7 @@ import { getLogs, getTrial } from "@/firebase";
 // global store
 import LoadingStore from "@/store/LoadingStore";
 import useSignatureStore from "@/store/SignatureStore";
+import SiteNavBarStore from "@/store/SiteNavBarStore";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
@@ -43,10 +43,10 @@ const columns: GridColDef[] = [
 ];
 
 const LogsPage = () => {
-  const { trialId } = useParams();
   const { setLoading } = LoadingStore();
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
   const [logs, setLogs] = useState<LogDetails[]>([]);
+  const { currentTrial } = SiteNavBarStore();
 
   const { visible } = useSignatureStore((state) => ({
     selectedRow: state.selectedRow,
@@ -56,15 +56,15 @@ const LogsPage = () => {
   // Update the state with the imported data
   useEffect(() => {
     setLoading(true);
-    getTrial(trialId as string).then((response) => {
+    getTrial(currentTrial as string).then((response) => {
       setTrial(response.data);
       setLoading(false);
     });
-    getLogs(trialId as string).then((response) => {
+    getLogs(currentTrial as string).then((response) => {
       setLogs(response.data);
       setLoading(false);
     });
-  }, [trialId]);
+  }, [currentTrial]);
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-start gap-10">
@@ -83,7 +83,7 @@ const LogsPage = () => {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center gap-8">
-        <LogTable columns={columns} rows={logs} trialId={trialId as string} />
+        <LogTable columns={columns} rows={logs} trialId={currentTrial} />
       </div>
       {visible && (
         <div className="fixed h-full w-full flex items-center justify-center bg-slate-50">

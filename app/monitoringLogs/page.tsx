@@ -12,9 +12,11 @@ import LoadingStore from "@/store/LoadingStore";
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
 
-//components
-import MonitoringLogTable from "@/components/MonitoringLogTable";
+// custom hooks
 import useUser from "@/hooks/UseUser";
+
+// custom components
+import MonitoringLogTable from "@/components/MonitoringLogTable";
 
 const columns: GridColDef[] = [
   {

@@ -88,7 +88,7 @@ const CreateMonitoringLogs = () => {
     }
 
     for (let rowId in trials) {
-      createTrial(trials[rowId], user?.orgId).then((response) => {
+      createTrial(trials[rowId], user?.orgId as string).then((response) => {
         if (response.success) {
           alert = {
             title: "Success!",
