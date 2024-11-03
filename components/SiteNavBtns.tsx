@@ -2,13 +2,10 @@
 
 // react/nextjs components
 import React, { useEffect, useState } from "react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 // firestore functions
 import { getTrials, fetchFoldersInTrial } from "@/firebase";
-
-// global store
-import SiteNavBarStore from "@/store/SiteNavBarStore";
 
 // custom hooks
 import useUser from "@/hooks/UseUser";
@@ -17,20 +14,13 @@ import useUser from "@/hooks/UseUser";
 import { HiArrowSmallLeft, HiArrowSmallRight } from "react-icons/hi2";
 
 const SiteNavBtns = () => {
-  const { user } = useUser();
+  const router = useRouter();
   const pathname = usePathname();
   const { trialId, regDocId } = useParams();
-  const {
-    trialsArray,
-    foldersArray,
-    currentFolder,
-    setTrialsArray,
-    setCurrentTrial,
-    setFoldersArray,
-    setCurrentFolder,
-  } = SiteNavBarStore();
+  const { user } = useUser();
+  const [trialsArray, setTrialsArray] = useState<string[]>([]);
+  const [foldersArray, setFoldersArray] = useState<string[]>([]);
   const [index, setIndex] = useState<number>(0);
-
   useEffect(() => {
     if (user) {
       if (pathname.endsWith("regulatoryDocs") || pathname.endsWith("logs")) {
@@ -39,7 +29,6 @@ const SiteNavBtns = () => {
             (trial: { id: string }) => trial.id
           );
           setTrialsArray(trialIds);
-          setCurrentTrial(trialId as string);
           const initialIndex = trialIds.indexOf(trialId);
           if (initialIndex !== -1) {
             setIndex(initialIndex);
@@ -53,7 +42,6 @@ const SiteNavBtns = () => {
         ).then((response) => {
           const folders = response.map((folder: string) => folder);
           setFoldersArray(folders);
-          setCurrentFolder(regDocId as string);
           const initialIndex = folders.indexOf(regDocId as string);
           if (initialIndex !== -1) {
             setIndex(initialIndex);
@@ -63,34 +51,37 @@ const SiteNavBtns = () => {
     }
   }, [user, trialId, regDocId, setTrialsArray, setFoldersArray]);
 
-  useEffect(() => {
-    console.log("Updated currentFolder: ", currentFolder);
-  }, [currentFolder]);
-
   const handleBack = () => {
     if (index > 0) {
       setIndex((prevIndex) => prevIndex - 1);
-      if (pathname.endsWith("regulatoryDocs") || pathname.endsWith("logs")) {
-        setCurrentTrial(trialsArray[index - 1]);
+      if (pathname.endsWith("regulatoryDocs")) {
+        router.push(`/monitoringLogs/${trialsArray[index - 1]}/regulatoryDocs`);
+      } else if (pathname.endsWith("logs")) {
+        router.push(`/monitoringLogs/${trialsArray[index - 1]}/logs`);
       } else if (pathname.endsWith("files")) {
-        setCurrentFolder(foldersArray[index - 1]);
-        console.log(foldersArray[index - 1]);
+        router.push(
+          `/monitoringLogs/${trialId}/regulatoryDocs/${
+            foldersArray[index - 1]
+          }/files`
+        );
       }
     }
   };
 
   const handleForward = () => {
-    if (pathname.endsWith("regulatoryDocs") || pathname.endsWith("logs")) {
-      if (index < trialsArray.length - 1) {
-        setIndex((prevIndex) => prevIndex + 1);
-      }
-      setCurrentTrial(trialsArray[index + 1]);
+    if (index < trialsArray.length - 1) {
+      setIndex((prevIndex) => prevIndex + 1);
+    }
+    if (pathname.endsWith("regulatoryDocs")) {
+      router.push(`/monitoringLogs/${trialsArray[index + 1]}/regulatoryDocs`);
+    } else if (pathname.endsWith("logs")) {
+      router.push(`/monitoringLogs/${trialsArray[index + 1]}/logs`);
     } else if (pathname.endsWith("files")) {
-      if (index < foldersArray.length - 1) {
-        setIndex((prevIndex) => prevIndex + 1);
-      }
-      setCurrentFolder(foldersArray[index + 1]);
-      console.log(foldersArray[index + 1]);
+      router.push(
+        `/monitoringLogs/${trialId}/regulatoryDocs/${
+          foldersArray[index + 1]
+        }/files`
+      );
     }
   };
 
@@ -98,20 +89,30 @@ const SiteNavBtns = () => {
     (pathname.endsWith("regulatoryDocs") ||
       pathname.endsWith("files") ||
       pathname.endsWith("logs")) && (
-      <div className="fixed top-20 w-9/12 2xl:w-[80%] flex justify-between space-x-4 pl-12 pr-8">
-        <button
-          onClick={handleBack}
-          className="hover:text-gray-500 border rounded p-2 active:scale-90 duration-200"
-        >
-          <HiArrowSmallLeft size={24} />
-        </button>
-
-        <button
-          onClick={handleForward}
-          className="hover:text-gray-500 border rounded p-2 active:scale-90 duration-200"
-        >
-          <HiArrowSmallRight size={24} />
-        </button>
+      <div className="fixed top-20 w-9/12 flex">
+        <div className="w-1/2 flex justify-start">
+          {index > 0 && (
+            <button
+              onClick={handleBack}
+              className="hover:text-gray-500 border rounded p-2 active:scale-90 duration-200"
+            >
+              <HiArrowSmallLeft size={24} />
+            </button>
+          )}
+        </div>
+        <div className="w-1/2 flex justify-end">
+          {((pathname.endsWith("regulatoryDocs") &&
+            index !== trialsArray.length-1) ||
+            (pathname.endsWith("logs") && index !== trialsArray.length-1) ||
+            (pathname.endsWith("files") && index !== foldersArray.length-1)) && (
+            <button
+              onClick={handleForward}
+              className="hover:text-gray-500 border rounded p-2 active:scale-90 duration-200"
+            >
+              <HiArrowSmallRight size={24} />
+            </button>
+          )}
+        </div>
       </div>
     )
   );

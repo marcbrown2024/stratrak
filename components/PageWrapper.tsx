@@ -16,7 +16,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <div className="relative h-fit md:min-h-[calc(100vh-58px)] flex flex-col flex-grow pt-28">
+    <div className="relative h-fit md:min-h-[calc(100vh-58px)] flex flex-col items-center flex-grow pt-28">
       <SiteNavBtns />
       <DropDownModal />
       {children}

@@ -12,7 +12,6 @@ import useUser from "@/hooks/UseUser";
 
 // global store
 import LoadingStore from "@/store/LoadingStore";
-import SiteNavBarStore from "@/store/SiteNavBarStore";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
@@ -49,13 +48,15 @@ const columns: GridColDef[] = [
 
 const RegDocFiles = () => {
   const { user } = useUser();
-  const { trialId } = useParams();
+  const { trialId, regDocId } = useParams<{
+    trialId: string;
+    regDocId: string;
+  }>();
   const { setLoading } = LoadingStore();
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
   const [fileNames, setFileNames] = useState<string[]>([]);
   const [showDocument, setShowDocument] = useState<boolean>(false);
   const [documentURL, setDocumentURL] = useState<string>("");
-  const { currentFolder } = SiteNavBarStore();
 
   const formatString = (str: string) => {
     return str
@@ -68,11 +69,11 @@ const RegDocFiles = () => {
       setLoading(true);
       const trialResponse = await getTrial(trialId as string);
       setTrial(trialResponse.data);
-
+      
       const regDocsResponse = await fetchFilesInFolder(
         user?.orgId as string,
         trialId as string,
-        currentFolder as string
+        regDocId as string
       );
       const filteredFiles = regDocsResponse.filter(
         (fileName) => fileName !== ".placeholder"
@@ -84,8 +85,7 @@ const RegDocFiles = () => {
     if (user?.orgId && trialId) {
       fetchFiles();
     }
-
-  }, [user?.orgId, trialId, currentFolder]);
+  }, [user?.orgId, trialId]);
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-start gap-10">
@@ -101,7 +101,7 @@ const RegDocFiles = () => {
             <p>{trial?.investigatorName || "N/A"}</p>
             <p>{trial?.protocol || "N/A"}</p>
             <p>{trial?.siteVisit || "N/A"}</p>
-            <p>{formatString(currentFolder) || "N/A"}</p>
+            <p>{formatString(regDocId) || "N/A"}</p>
           </div>
         </div>
       </div>

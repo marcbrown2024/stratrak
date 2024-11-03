@@ -40,6 +40,25 @@ type Props = {
   setDocumentURL?: React.Dispatch<React.SetStateAction<string>>;
 };
 
+const folderNames = [
+  "monitoringVisitReports",
+  "caseReportForms",
+  "clinicalTrialAgreement",
+  "curriculumVitaeOfInvestigators",
+  "delegationOfAuthorityLog",
+  "drugAccountabilityRecords",
+  "financialDisclosureForm",
+  "informedConsentForm",
+  "institutionalReviewBoard",
+  "insuranceOrIndemnityDocumentation",
+  "investigationalNewDrug",
+  "investigatorBrochure",
+  "seriousAdverseEvent",
+  "siteSpecificStandard",
+  "sourceDocuments",
+  "studyProtocol",
+];
+
 const RegulatoryDocTable = (props: Props) => {
   const { user } = useUser();
   const router = useRouter();
@@ -75,13 +94,13 @@ const RegulatoryDocTable = (props: Props) => {
   };
 
   const handleDeleteRow = async (id: number) => {
-    closeAlert();
     // Check if currentPathname indicates a file or regulatoryDocs folder
     const lastPathSegment = currentPathname.split("/").pop();
     const regDocId = docs[id].originalId;
 
     try {
       if (lastPathSegment === "files") {
+        closeAlert();
         // Delete a specific file
         const fileDeleted = await deleteFile(
           user?.orgId as string,
@@ -93,32 +112,46 @@ const RegulatoryDocTable = (props: Props) => {
           setAlert(
             {
               title: "Success!",
-              content: `File "${regDocId}" deleted successfully.`,
+              content: `File "${formatString(regDocId)}" deleted successfully.`,
             },
             AlertType.Success
           );
-          setTimeout(() => window.location.reload(), 2000);
         } else {
           setAlert(
             {
               title: "Error!",
-              content: `Failed to delete file "${regDocId}".`,
+              content: `Failed to delete file "${formatString(regDocId)}".`,
             },
-            AlertType.Success
+            AlertType.Error
           );
         }
       } else if (lastPathSegment === "regulatoryDocs") {
-        // Delete a specific folder
+        closeAlert();
+        // Check if regDocId is in the folderNames array
+        if (folderNames.includes(regDocId)) {
+          setAlert(
+            {
+              title: "Error!",
+              content: `Folder "${formatString(regDocId)}" cannot be deleted as it is a protected folder.`,
+            },
+            AlertType.Info
+          );
+          setTimeout(() => window.location.reload(), 2000);
+          return;
+        }
+
+        // Proceed with delete if not in folderNames
         const folderDeleted = await deleteFolder(
           user?.orgId as string,
           props.trialId,
           regDocId
         );
+
         if (folderDeleted) {
           setAlert(
             {
               title: "Success!",
-              content: `Folder "${regDocId}" deleted successfully.`,
+              content: `Folder "${formatString(regDocId)}" deleted successfully.`,
             },
             AlertType.Success
           );
@@ -127,9 +160,9 @@ const RegulatoryDocTable = (props: Props) => {
           setAlert(
             {
               title: "Error!",
-              content: `Failed to delete folder "${regDocId}".`,
+              content: `Failed to delete folder "${formatString(regDocId)}".`,
             },
-            AlertType.Success
+            AlertType.Error
           );
         }
       }
@@ -139,7 +172,7 @@ const RegulatoryDocTable = (props: Props) => {
           title: "Error!",
           content: `An error occurred during the deletion process.`,
         },
-        AlertType.Success
+        AlertType.Error
       );
     }
   };
@@ -276,10 +309,7 @@ const RegulatoryDocTable = (props: Props) => {
       <DataGrid
         className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4 cursor-pointer"
         rows={docs}
-        columns={[
-          ...props.columns,
-          ...(user?.isAdmin ? [actionColumn] : []),
-        ]}
+        columns={[...props.columns, ...(user?.isAdmin ? [actionColumn] : [])]}
         initialState={{
           pagination: {
             paginationModel: {

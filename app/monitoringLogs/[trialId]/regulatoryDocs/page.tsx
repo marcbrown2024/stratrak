@@ -2,13 +2,13 @@
 
 // react/nextjs components
 import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 
 // firestore functions
 import { createTrialFolders, fetchFoldersInTrial, getTrial } from "@/firebase";
 
 // global store
 import LoadingStore from "@/store/LoadingStore";
-import SiteNavBarStore from "@/store/SiteNavBarStore";
 
 // custom hooks
 import useUser from "@/hooks/UseUser";
@@ -51,22 +51,24 @@ const columns: GridColDef[] = [
 
 const RegulatoryDocPage = () => {
   const { user } = useUser();
+  const { trialId } = useParams<{
+    trialId: string;
+  }>();
   const { setLoading } = LoadingStore();
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
   const [fetchedFolderNames, setFetchedFolderNames] = useState<string[]>([]);
-  const { currentTrial } = SiteNavBarStore();
 
   useEffect(() => {
     const fetchFolder = async () => {
       setLoading(true);
 
       // Fetch trial details
-      const trialResponse = await getTrial(currentTrial as string);
+      const trialResponse = await getTrial(trialId as string);
       setTrial(trialResponse.data);
 
       // Fetch existing folders
       const regDocsResponse: string[] = await fetchFoldersInTrial(
-        `Organizations/${user?.orgId}/trials/${currentTrial}`
+        `Organizations/${user?.orgId}/trials/${trialId}`
       );
       setFetchedFolderNames(regDocsResponse);
 
@@ -79,13 +81,13 @@ const RegulatoryDocPage = () => {
         // Create missing folders
         await createTrialFolders(
           missingFolders,
-          currentTrial as string,
+          trialId as string,
           user?.orgId as string
         );
 
         // Refetch folders after creation
         const updatedFolders: string[] = await fetchFoldersInTrial(
-          `Organizations/${user?.orgId}/trials/${currentTrial}`
+          `Organizations/${user?.orgId}/trials/${trialId}`
         );
         setFetchedFolderNames(updatedFolders);
       }
@@ -93,10 +95,10 @@ const RegulatoryDocPage = () => {
       setLoading(false);
     };
 
-    if (user?.orgId && currentTrial) {
+    if (user?.orgId && trialId) {
       fetchFolder();
     }
-  }, [user?.orgId, currentTrial]);
+  }, [user?.orgId, trialId]);
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-start gap-10">
@@ -118,7 +120,7 @@ const RegulatoryDocPage = () => {
         <RegulatoryDocTable
           columns={columns}
           rows={fetchedFolderNames}
-          trialId={currentTrial}
+          trialId={trialId as string}
         />
       </div>
       <AddNewFolder setFetchedFolderNames={setFetchedFolderNames} />
