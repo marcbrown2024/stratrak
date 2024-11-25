@@ -1,7 +1,7 @@
 "use client";
 
 // react/nextjs components
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 // global stores
 import { useTrialStore } from "@/store/CreateTrialStore";
@@ -13,6 +13,9 @@ import useUser from "@/hooks/UseUser";
 
 // enums
 import { AlertType } from "@/enums";
+
+// icons
+import { FaChevronDown } from "react-icons/fa";
 
 type params = {
   rowId: number;
@@ -29,15 +32,21 @@ const TableRow = ({ rowId }: params) => {
     state.closeAlert,
   ]);
   const [options, setOptions] = useState<{
-    protocolList: string[];
     siteList: string[];
   } | null>(null);
   const [modal, setModal] = useState<{
     isVisible: boolean;
-    field: "protocolList" | "siteList" | null;
+    field: "siteList" | null;
     action: "add" | "remove" | null;
     value: string;
   }>({ isVisible: false, field: null, action: null, value: "" });
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const filteredOptions =
+    options?.siteList?.filter((site) =>
+      site.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   const handleAddOrRemoveOption = async () => {
     closeAlert();
@@ -110,10 +119,26 @@ const TableRow = ({ rowId }: params) => {
     }
   }, [user?.orgId]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       {/* Investigator Name */}
-      <div className="w-1/3 whitespace-nowrap text-sm font-medium text-gray-800">
+      <div className="relative w-1/3 whitespace-nowrap text-sm font-medium text-gray-800">
         <input
           type="text"
           defaultValue={logs[rowId]["investigatorName"]}
@@ -125,79 +150,68 @@ const TableRow = ({ rowId }: params) => {
       </div>
       {/* Protocol */}
       <div className="w-1/3 flex whitespace-nowrap text-sm text-gray-800">
-        <select
+        <input
           id={`protocol-${rowId}`}
+          type="text"
           defaultValue={logs[rowId]["protocol"]}
           onChange={(e) => updateLog(rowId, "protocol", e.target.value)}
-          className="block w-60 text-sm text-gray-900 bg-white p-2.5 px-2 border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 hover:cursor-pointer"
+          className="block w-11/12 text-sm text-gray-900 p-2.5 border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500"
+          placeholder="Enter a protocol..."
+        />
+      </div>
+      {/* Site Visit */}
+      <div className="w-1/3 flex whitespace-nowrap text-sm text-gray-800">
+        {/* Dropdown Trigger */}
+        <div
+          onClick={() => setDropdownVisible((prev) => !prev)}
+          className="w-[21rem] flex items-center justify-between text-sm text-gray-900 bg-white p-2.5 px-2 border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 hover:cursor-pointer"
         >
-          <option value="" disabled>
-            Select a protocol
-          </option>
-          {options?.protocolList?.map((protocol, index) => (
-            <option key={index} value={protocol}>
-              {protocol}
-            </option>
-          ))}
-        </select>
+          <p>{logs[rowId].siteVisit || " Select a site"}</p>
+          <FaChevronDown color="#868686" />
+        </div>
+        {/* Dropdown Content */}
+        {isDropdownVisible && (
+          <div
+            className="absolute top-28 h-96 w-[21rem] bg-white p-3 rounded-b-md shadow-md z-10"
+            ref={dropdownRef}
+          >
+            {/* Search Input */}
+            <input
+              type="text"
+              placeholder="Search site..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full text-sm text-gray-900 px-2 py-2 mb-2 border-b focus:outline-none"
+            />
+
+            {/* Filtered Options */}
+            {filteredOptions.length > 0 &&
+              filteredOptions?.map((site, index) => (
+                <div
+                  key={index}
+                  onClick={() => {
+                    updateLog(rowId, "siteVisit", site);
+                    setDropdownVisible(false);
+                  }}
+                  className="p-2 rounded-md hover:bg-gray-200 cursor-pointer"
+                >
+                  {site}
+                </div>
+              ))}
+          </div>
+        )}
 
         <div className="flex items-center">
           <button
             onClick={() =>
               setModal({
                 isVisible: true,
-                field: "protocolList",
-                action: "add",
-                value: "",
-              })
-            }
-            className="text-xl text-blue-500 hover:text-blue-700 ml-2"
-          >
-            +
-          </button>
-          <button
-            onClick={() =>
-              setModal({
-                isVisible: true,
-                field: "protocolList",
-                action: "remove",
-                value: logs[rowId]["protocol"],
-              })
-            }
-            className="text-xl text-red-500 hover:text-red-700 ml-2"
-          >
-            -
-          </button>
-        </div>
-      </div>
-      {/* Site Visit */}
-      <div className="w-1/3 flex whitespace-nowrap text-sm text-gray-800">
-        <select
-          id={`siteVisit-${rowId}`}
-          defaultValue={logs[rowId]["siteVisit"]}
-          onChange={(e) => updateLog(rowId, "siteVisit", e.target.value)}
-          className="block w-60 text-sm text-gray-900 bg-white p-2.5 px-2 border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 hover:cursor-pointer"
-        >
-          <option value="" disabled>
-            Select a protocol
-          </option>
-          {options?.siteList.map((site, index) => (
-            <option key={index} value={site}>
-              {site}
-            </option>
-          ))}
-        </select>
-        <div className="flex items-center">
-          <button
-            onClick={() =>
-              setModal({
-                isVisible: true,
                 field: "siteList",
                 action: "add",
                 value: "",
               })
             }
-            className="text-xl text-blue-500 hover:text-blue-700 ml-2"
+            className="text-2xl text-blue-500 hover:text-blue-700 ml-2"
           >
             +
           </button>
@@ -210,7 +224,7 @@ const TableRow = ({ rowId }: params) => {
                 value: logs[rowId]["protocol"],
               })
             }
-            className="text-xl text-red-500 hover:text-red-700 ml-2"
+            className="text-2xl text-red-500 hover:text-red-700 ml-2"
           >
             -
           </button>
@@ -230,7 +244,7 @@ const TableRow = ({ rowId }: params) => {
               onChange={(e) =>
                 setModal((prev) => ({ ...prev, value: e.target.value }))
               }
-              placeholder={modal.field === "protocolList" ? `protocol` : `site`}
+              placeholder="site"
               className="border rounded p-2 mb-4 w-full"
             />
             <div className="flex justify-center gap-3">
