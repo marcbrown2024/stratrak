@@ -89,7 +89,7 @@ const SiteNavBtns = () => {
     (pathname.endsWith("regulatoryDocs") ||
       pathname.endsWith("files") ||
       pathname.endsWith("logs")) && (
-      <div className="fixed top-20 w-[75%] xl:w-[80%] flex">
+      <div className="fixed top-20 w-[76%] 2xl:w-[80%] flex">
         <div className="w-1/2 flex justify-start">
           {index > 0 && (
             <button
