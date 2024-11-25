@@ -142,44 +142,9 @@ const CustomToolbar = () => {
     });
   }, [trialId, user?.orgId]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}.${String(date.getDate()).padStart(2, "0")}`;
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-
-    // Calculate the timezone offset in minutes and convert it to hours and minutes
-    const timezoneOffset = -date.getTimezoneOffset();
-    const offsetHours = String(
-      Math.floor(Math.abs(timezoneOffset) / 60)
-    ).padStart(2, "0");
-    const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(
-      2,
-      "0"
-    );
-
-    // Format the timezone offset to match the format ±hh:mm
-    const offsetSign = timezoneOffset >= 0 ? "+" : "-";
-
-    return `${hours}:${minutes}:${seconds} ${offsetSign}${offsetHours}:${offsetMinutes}`;
-  };
-
   const isAdminAndTrialPath =
     user?.isAdmin && currentPathname === "/monitoringLogs";
   const isLogPath = currentPathname === `/monitoringLogs/${trialId}/logs`;
-
-  const exportFields: string[] =
-    currentPathname === "/monitoringLogs"
-      ? ["investigatorName", "protocol", "siteVisit"]
-      : [];
 
   const handleEDocsExport = () => {
     if (apiRef.current) {
@@ -213,9 +178,7 @@ const CustomToolbar = () => {
             monitoringLog.protocol
           }","${monitoringLog.siteVisit}","${
             log.monitorName
-          }","Digitally signed by ${log.monitorName}, Date: ${formatDate(
-            log.dateOfVisit
-          )}, Time: ${formatTime(log.dateOfVisit)}","${log.typeOfVisit}","${
+          }","Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit},${log.typeOfVisit}","${
             log.purposeOfVisit
           }","${log.dateOfVisit}"`;
         })
@@ -242,9 +205,6 @@ const CustomToolbar = () => {
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         {currentPathname == `/monitoringLogs` && (
-          // <GridToolbarExport
-          //   csvOptions={{ fields: exportFields }}
-          // />
           <Button
             onClick={handleEDocsExport}
             className="flex items-center justify-center gap-2"

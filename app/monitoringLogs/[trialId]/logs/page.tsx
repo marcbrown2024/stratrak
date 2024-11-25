@@ -67,8 +67,8 @@ const LogsPage = () => {
   }, [trialId]);
 
   return (
-    <div className="relative h-full w-full flex flex-col items-center justify-start gap-10">
-      <div className="h-fit w-[60rem] 2xl:w-[80rem] flex items-start justify-start">
+    <div className="relative h-full w-full space-y-10">
+      <div className="w-[96%] h-fit flex items-start justify-start mx-auto">
         <div className="w-full sm:w-fit flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 bg-white px-4 sm:px-8 py-2 rounded-lg border">
           <div className="font-bold text-gray-500">
             <p>Investigator Name:</p>
@@ -82,11 +82,11 @@ const LogsPage = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center gap-8">
+      <div className="w-[96%] flex flex-col items-center justify-center gap-8 mx-auto">
         <LogTable columns={columns} rows={logs} trialId={trialId as string} />
       </div>
       {visible && (
-        <div className="fixed h-full w-full flex items-center justify-center bg-slate-50">
+        <div className="fixed top-4 right-0 h-full w-[calc(100%-12rem)] xl:w-[calc(100%-18rem)] flex items-center justify-center bg-white/50">
           <SignaturePopUp />
         </div>
       )}

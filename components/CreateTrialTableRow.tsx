@@ -19,9 +19,10 @@ import { FaChevronDown } from "react-icons/fa";
 
 type params = {
   rowId: number;
+  tablelength: number;
 };
 
-const TableRow = ({ rowId }: params) => {
+const TableRow = ({ rowId, tablelength }: params) => {
   const { user } = useUser();
   const [logs, updateLog] = useTrialStore((state) => [
     state.trials,
@@ -144,7 +145,7 @@ const TableRow = ({ rowId }: params) => {
           defaultValue={logs[rowId]["investigatorName"]}
           onChange={(e) => updateLog(rowId, "investigatorName", e.target.value)}
           id={`investigatorName-${rowId}`}
-          className="block w-11/12 text-sm text-gray-900 p-2.5 border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500"
+          className={`block w-11/12 text-sm text-gray-900 p-2.5 border-b-[1px] border-b-transparent ${rowId === (tablelength-1) ? "rounded-bl-lg" :  ""} focus:outline-0 focus:border-blue-500`}
           placeholder="Enter name..."
         />
       </div>
@@ -232,8 +233,8 @@ const TableRow = ({ rowId }: params) => {
       </div>
       {/* Modal */}
       {modal.isVisible && (
-        <div className="fixed top-0 left-0 h-full w-10/12 flex items-center justify-center bg-black/10 ml-72">
-          <div className="w-96 bg-white p-6 lg:mr-10 rounded-lg shadow-lg">
+        <div className="fixed top-0 left-0 h-full w-10/12 flex items-center justify-center bg-white/20 ml-72">
+          <div className="w-96 bg-[#b5d5f4] p-6 lg:mr-10 rounded-lg shadow-lg">
             <h2 className="text-lg font-semibold mb-4">
               {modal.action === "add" ? "Add to " : "Remove from "}
               {formatField(modal.field)}

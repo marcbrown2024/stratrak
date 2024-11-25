@@ -126,17 +126,17 @@ const CreateMonitoringLogs = () => {
 
   return (
     <div className="relative h-full w-full max-w-screen-xl flex flex-col mx-auto justify-start gap-6">
-      <div className="w-full flex justify-end pr-4 lg:pr-6">
+      <div className="w-11/12 flex justify-end mx-auto">
         <button
           onClick={resetTrials}
-          className="bg-red-500 text-white px-4 py-2 rounded-full disabled:opacity-30"
+          className="bg-red-500 text-white px-6 py-2 rounded-full disabled:opacity-30"
         >
           Reset
         </button>
       </div>
       <div className="w-11/12 space-y-4 mx-auto overflow-hidden">
         <div ref={createTrialTableRef} className="border rounded-lg">
-          <div className="w-full flex text-blue-500 bg-sky-50 pl-3">
+          <div className="w-full flex text-blue-500 bg-sky-50 pl-3 rounded-t-lg">
             <div className="h-12 w-1/3 flex items-center text-[13px] font-medium uppercase">
               Investigator Name
             </div>
@@ -147,11 +147,13 @@ const CreateMonitoringLogs = () => {
               Site Visit
             </div>
           </div>
-          {tableRowsIds.map((i, k) => (
-            <div key={k} className="w-full flex justify-between">
-              <CreateTrialTableRow rowId={i} />
-            </div>
-          ))}
+          <div className="space-y-4">
+            {tableRowsIds.map((i, k) => (
+              <div key={k} className="w-full flex justify-between">
+                <CreateTrialTableRow rowId={i} tablelength={tableRowsIds.length}/>
+              </div>
+            ))}
+          </div>
         </div>
         {/* add or delete row */}
         <div className="flex space-x-2">

@@ -20,7 +20,7 @@ const Sidebar = () => {
     return null;
   }
   return (
-    <div className="fixed h-full md:w-72 hidden md:flex flex-1 bg-[#1286ff] z-50">
+    <div className="fixed h-full w-48 xl:w-72 flex flex-1 bg-[#1286ff] z-50">
       <div className="w-full flex flex-col space-y-6">
         <Link
           href="/"

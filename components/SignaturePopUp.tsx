@@ -14,46 +14,16 @@ const SignaturePopUp = () => {
     setSelectedRow: state.setSelectedRow,
   }));
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}.${String(date.getDate()).padStart(2, "0")}`;
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-
-    // Calculate the timezone offset in minutes and convert it to hours and minutes
-    const timezoneOffset = -date.getTimezoneOffset();
-    const offsetHours = String(
-      Math.floor(Math.abs(timezoneOffset) / 60)
-    ).padStart(2, "0");
-    const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(
-      2,
-      "0"
-    );
-
-    // Format the timezone offset to match the format ±hh:mm
-    const offsetSign = timezoneOffset >= 0 ? "+" : "-";
-
-    return `${hours}:${minutes}:${seconds} ${offsetSign}${offsetHours}:${offsetMinutes}`;
-  };
-
   return (
-    <div className="relative h-48 flex space-x-6 bg-slate-50 px-8 py-8 mb-64 border border-slate-400 rounded-lg">
+    <div className="relative h-48 flex space-x-6 bg-[#b5d5f4] px-8 py-8 mb-64 border border-slate-400 rounded-lg">
       <button
         onClick={() => setSelectedRow(null, false)}
-        className="absolute -top-4 -right-3"
+        className="absolute -top-4 -right-3 bg-white rounded-full"
       >
         <IoCloseCircleSharp size={36} color="#2563eb" />
       </button>
       <div className="h-full flex flex-col items-start justify-start gap-2">
-        <span className="text-2xl text-blue-600 font-medium">
+        <span className="text-2xl font-medium">
           Electronic Signature
         </span>
         <div>
@@ -74,7 +44,7 @@ const SignaturePopUp = () => {
         </div>
       </div>
       <div className="flex flex-col items-center justify-start gap-3">
-        <div className="w-full text-2xl text-blue-600 font-medium">
+        <div className="w-full text-2xl font-medium">
           Digital Signature
         </div>
         <div className="flex items-center justify-center gap-4">
@@ -89,8 +59,7 @@ const SignaturePopUp = () => {
           <div className="flex flex-col items-start justify-center leading-5">
             <span>Digitally signed</span>
             <span>by {selectedRow?.monitorName}</span>
-            <span>Date: {formatDate(selectedRow?.dateOfVisit)}</span>
-            <span>{formatTime(selectedRow?.dateOfVisit)}</span>
+            <span>Date: {selectedRow?.dateOfVisit}</span>
           </div>
         </div>
       </div>

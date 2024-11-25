@@ -83,7 +83,7 @@ const MonitoringLogsPage = () => {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">
-      <div className="flex flex-col items-center justify-center gap-8">
+      <div className="w-[95%] flex flex-col items-center justify-center gap-8">
         <MonitoringLogTable
           columns={columns}
           rows={trials}

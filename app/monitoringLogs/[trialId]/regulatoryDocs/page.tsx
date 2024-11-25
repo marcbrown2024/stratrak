@@ -102,7 +102,7 @@ const RegulatoryDocPage = () => {
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-start gap-10">
-      <div className="h-fit w-[60rem] 2xl:w-[80rem] flex items-start justify-start">
+      <div className="h-fit w-[95%] flex items-start justify-start">
         <div className="w-full sm:w-fit flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 bg-white px-4 sm:px-8 py-2 rounded-lg border">
           <div className="font-bold text-gray-500">
             <p>Investigator Name:</p>
@@ -116,7 +116,7 @@ const RegulatoryDocPage = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center gap-8">
+      <div className="w-[95%] flex flex-col items-center justify-center gap-8">
         <RegulatoryDocTable
           columns={columns}
           rows={fetchedFolderNames}

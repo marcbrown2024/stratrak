@@ -307,7 +307,7 @@ const RegulatoryDocTable = (props: Props) => {
   return (
     <div className="w-full flex items-center">
       <DataGrid
-        className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4 cursor-pointer"
+        className="h-fit w-full p-6 gap-4 cursor-pointer"
         rows={docs}
         columns={[...props.columns, ...(user?.isAdmin ? [actionColumn] : [])]}
         initialState={{

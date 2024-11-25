@@ -288,7 +288,7 @@ const MonitoringLogTable = (props: Props) => {
   return (
     <div className="w-full flex items-center">
       <DataGrid
-        className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4"
+        className="h-fit w-full p-6 gap-4"
         rows={filteredRows}
         columns={[...props.columns, actionColumn]}
         initialState={{
