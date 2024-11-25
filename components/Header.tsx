@@ -48,6 +48,8 @@ const Header = () => {
   const displayTitle =
     currentPathname === "/"
       ? "Home"
+      : currentPathname === "/monitoringLogs"
+      ? "eRegulatory binders"
       : words[words.length - 1] === "regulatoryDocs"
       ? "Regulatory Documents"
       : ["Active", "Inactive", "Completed"].includes(currentPath)

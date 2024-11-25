@@ -26,7 +26,7 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
         <>
           <div className="w-full flex items-center justify-between text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer">
             <Link href={item.path} className="w-full">
-              <div className="flex flex-row space-x-4 items-center">
+              <div className="flex flex-row space-x-2 items-center">
                 {item.icon}
                 <span className="font-semibold text-white">{item.title}</span>
               </div>
@@ -38,7 +38,7 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
             </button>
           </div>
           {subMenuOpen && (
-            <div className="my-2 ml-12 flex flex-col space-y-4">
+            <div className="my-2 ml-8 flex flex-col space-y-4">
               {item.subMenuItems?.map((subItem, idx) => (
                 <Link
                   key={idx}
@@ -57,7 +57,7 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
         item.usage !== "smallScreen" && (
           <Link
             href={item.path}
-            className="flex flex-row items-center text-white space-x-4 p-2 rounded-lg hover:bg-white/10"
+            className="flex flex-row items-center text-white space-x-2 p-2 rounded-lg hover:bg-white/10"
           >
             {item.icon}
             <span className="font-semibold">{item.title}</span>

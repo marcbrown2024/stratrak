@@ -17,6 +17,8 @@ import {
   Timestamp,
   updateDoc,
   where,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 
 import {
@@ -707,5 +709,60 @@ export const getOrganizationName = async (
     }
   } catch (error) {
     throw new Error("Error getting organization name");
+  }
+};
+
+export const getOptions = async (orgId: string) => {
+  try {
+    const optionsRef = collection(db, "options");
+    const optionsSnap = await getDocs(optionsRef);
+    const matchingDoc = optionsSnap.docs.find((doc) => doc.id === orgId);
+
+    if (matchingDoc) {
+      const options = {
+        id: matchingDoc.id,
+        ...matchingDoc.data(),
+      };
+      return { success: true, data: options };
+    } else {
+      return {
+        success: false,
+        data: `No document found with the ID matching orgId: ${orgId}`,
+      };
+    }
+  } catch (e: any) {
+    return { success: false, data: e.message || "An error occurred" };
+  }
+};
+
+export const updateOptionsField = async (
+  orgId: string,
+  field: string,
+  action: string,
+  value: string
+) => {
+  try {
+    // Get the document reference by orgId
+    const docRef = doc(db, "options", orgId);
+
+    // Perform the action (add or remove)
+    if (action === "add") {
+      // Add value to the array field
+      await updateDoc(docRef, {
+        [field]: arrayUnion(value), // arrayUnion ensures value is added only if not present
+      });
+    } else if (action === "remove") {
+      // Remove value from the array field
+      await updateDoc(docRef, {
+        [field]: arrayRemove(value), // arrayRemove ensures value is removed
+      });
+    }
+
+    return {
+      success: true,
+      data: `${action} operation successful for ${field}`,
+    };
+  } catch (e: any) {
+    return { success: false, data: e.message || "An error occurred" };
   }
 };

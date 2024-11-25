@@ -18,14 +18,14 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
   //   icon: <MdDashboardCustomize size={24} />,
   // },
   {
-    title: "Monitoring Logs",
+    title: "Studies",
     path: "/monitoringLogs",
     icon: <MdFolderShared size={24} />,
     subMenu: true,
     subMenuItems: [
-    { title: "Active Monitoring Logs", path: "/monitoringLogs/active", requireAdmin: false },
-      { title: "Inactive Monitoring Logs", path: "/monitoringLogs/inactive", requireAdmin: false },
-      { title: "Completed Monitoring Logs", path: "/monitoringLogs/completed", requireAdmin: false },
+    { title: "Active Studies", path: "/monitoringLogs/active", requireAdmin: false },
+      { title: "Inactive Studies", path: "/monitoringLogs/inactive", requireAdmin: false },
+      { title: "Completed Studies", path: "/monitoringLogs/completed", requireAdmin: false },
     ],
     requireAdmin: false,
   },

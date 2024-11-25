@@ -410,19 +410,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
 
   const pageNumbers = getPageNumbers();
 
-  const isFormDataEmpty = (): boolean => {
-    return Object.entries(formData).every(([key, value]) => {
-      if (key === "isAdmin") {
-        // Ignore the isAdmin field
-        return true;
-      }
-      if (typeof value === "string") {
-        return value === "";
-      }
-      return value === null;
-    });
-  };
-
   return (
     <div className="relative w-full flex flex-col items-start justify-start">
       <div className="h-24 w-11/12 flex items-end justify-between bg-slate-50 z-10">
@@ -545,7 +532,6 @@ const CustomTable: React.FC<CustomTableProps> = ({ users, refreshUsers }) => {
                   >
                     <button
                       type="button"
-                      // disabled={isFormDataEmpty()}
                       onClick={() => setCreateUserButton(true)}
                       className="h-10 w-fit flex items-center justify-center font-medium px-5 py-3 bg-gray-300 rounded-md hover:scale-105 hover:bg-gray-300"
                     >

@@ -20,7 +20,7 @@ const Sidebar = () => {
     return null;
   }
   return (
-    <div className="fixed h-full md:w-80 hidden md:flex flex-1 bg-[#1286ff] z-50">
+    <div className="fixed h-full md:w-72 hidden md:flex flex-1 bg-[#1286ff] z-50">
       <div className="w-full flex flex-col space-y-6">
         <Link
           href="/"
@@ -38,7 +38,7 @@ const Sidebar = () => {
           </div>
         </Link>
 
-        <div className="flex flex-col space-y-2 md:px-6">
+        <div className="flex flex-col space-y-2 md:px-2">
           {SIDENAV_ITEMS.map((item, idx) => {
             return <MenuItem key={idx} item={item} />;
           })}

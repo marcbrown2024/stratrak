@@ -9,13 +9,15 @@ import { getAllUsers } from "@/firebase";
 // global components
 import LoadingStore from "@/store/LoadingStore";
 
+// custom hooks
+import useUser from "@/hooks/UseUser";
+
 // custom components
 import CustomTable from "@/components/CustomTable";
 
 // icons
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
 import { redirect } from "next/navigation";
-import useUser from "@/hooks/UseUser";
 
 const Page = () => {
   const { user } = useUser();

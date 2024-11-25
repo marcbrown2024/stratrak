@@ -16,8 +16,10 @@ import {
 import {
   GridToolbarQuickFilter,
   GridToolbarColumnsButton,
-  GridToolbarExport,
   GridToolbarFilterButton,
+  gridPaginatedVisibleSortedGridRowIdsSelector,
+  useGridApiContext,
+  GridCsvExportOptions,
 } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 
@@ -38,6 +40,7 @@ const CustomToolbar = () => {
   const { user } = useUser();
   const { trialId } = useParams();
   const currentPathname = usePathname();
+  const apiRef = useGridApiContext();
   const { setVisibility } = AddNewFolderStore();
   const [logs, setLogs] = useState<LogDetails[]>([]);
   const [monitoringlogs, setMonitoringlogs] = useState<TrialDetails[]>([]);
@@ -102,12 +105,9 @@ const CustomToolbar = () => {
         const fileMessage =
           invalidFiles.length === 1
             ? `The following file is not a PDF: ${invalidFiles[0]}`
-            : `The following files are not PDFs: ${invalidFiles.join(', ')}`;
-  
-        setAlert(
-          { title: "Info!", content: fileMessage },
-          AlertType.Info
-        );
+            : `The following files are not PDFs: ${invalidFiles.join(", ")}`;
+
+        setAlert({ title: "Info!", content: fileMessage }, AlertType.Info);
         return;
       }
 
@@ -181,7 +181,16 @@ const CustomToolbar = () => {
       ? ["investigatorName", "protocol", "siteVisit"]
       : [];
 
+  const handleEDocsExport = () => {
+    if (apiRef.current) {
+      apiRef.current.exportDataAsCsv({
+        fileName: "eRegulatory_binders.csv",
+      });
+    }
+  };
+
   const handleExport = () => {
+    let title = "";
     const csvContent =
       "data:text/csv;charset=utf-8," +
       "Investigator Name,Protocol,Site Visit,Monitor Name,Signature,Type of Visit,Purpose of Visit,Date of Visit\n" +
@@ -196,6 +205,9 @@ const CustomToolbar = () => {
           if (!monitoringLog) {
             return "";
           }
+
+          title = `${monitoringLog.investigatorName.replace(/\s/g, '')}_${monitoringLog.protocol.replace(/\s/g, '')}_${monitoringLog.siteVisit.replace(/\s/g, '')}`;
+
 
           return `"${monitoringLog.investigatorName}","${
             monitoringLog.protocol
@@ -212,7 +224,10 @@ const CustomToolbar = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `log-${trialId}.csv`);
+    link.setAttribute(
+      "download",
+      `${title}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -227,10 +242,16 @@ const CustomToolbar = () => {
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         {currentPathname == `/monitoringLogs` && (
-          <GridToolbarExport
-            printOptions={{ fields: exportFields }}
-            csvOptions={{ fields: exportFields }}
-          />
+          // <GridToolbarExport
+          //   csvOptions={{ fields: exportFields }}
+          // />
+          <Button
+            onClick={handleEDocsExport}
+            className="flex items-center justify-center gap-2"
+          >
+            <FiDownload size={20} />
+            Download
+          </Button>
         )}
         {currentPathname === `/monitoringLogs/${trialId}/logs` && (
           <Button
@@ -238,7 +259,7 @@ const CustomToolbar = () => {
             className="flex items-center justify-center gap-2"
           >
             <FiDownload size={20} />
-            Export
+            Download
           </Button>
         )}
       </div>
