@@ -149,7 +149,7 @@ const CustomToolbar = () => {
   const handleEDocsExport = () => {
     if (apiRef.current) {
       apiRef.current.exportDataAsCsv({
-        fileName: "eRegulatory_binders.csv",
+        fileName: "trialist_studies.csv",
       });
     }
   };
@@ -171,26 +171,22 @@ const CustomToolbar = () => {
             return "";
           }
 
-          title = `${monitoringLog.investigatorName.replace(/\s/g, '')}_${monitoringLog.protocol.replace(/\s/g, '')}_${monitoringLog.siteVisit.replace(/\s/g, '')}`;
+          title = `${monitoringLog.investigatorName.replace(
+            /\s/g,
+            ""
+          )}_${monitoringLog.protocol.replace(
+            /\s/g,
+            ""
+          )}_${monitoringLog.siteVisit.replace(/\s/g, "")}`;
 
-
-          return `"${monitoringLog.investigatorName}","${
-            monitoringLog.protocol
-          }","${monitoringLog.siteVisit}","${
-            log.monitorName
-          }","Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit},${log.typeOfVisit}","${
-            log.purposeOfVisit
-          }","${log.dateOfVisit}"`;
+          return `"${monitoringLog.investigatorName}","${monitoringLog.protocol}","${monitoringLog.siteVisit}","${log.monitorName}","Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit}","${log.typeOfVisit}","${log.purposeOfVisit}","${log.dateOfVisit}"`;
         })
         .join("\n");
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute(
-      "download",
-      `${title}.csv`
-    );
+    link.setAttribute("download", `${title}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
