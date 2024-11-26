@@ -39,7 +39,7 @@ const LogTable = (props: Props) => {
   const [deleteLogRow, setDeleteLogRow] = useState<boolean>(false);
   const [setAlert] = useAlertStore((state) => [state.setAlert]);
   const [logs, setLogs] = useState<LogDetails[]>([]);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = useState<boolean | undefined>(false);
   const setSelectedRow = useSignatureStore((state) => state.setSelectedRow);
 
   useEffect(() => {

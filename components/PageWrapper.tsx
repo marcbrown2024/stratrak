@@ -1,8 +1,8 @@
 "use client";
 
 // react/nextjs components
-import { ReactNode, useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
 // custom components
 import SiteNavBtns from "./SiteNavBtns";
@@ -16,7 +16,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <div className="relative h-fit md:min-h-[calc(100vh-58px)] flex flex-col items-center flex-grow pt-28">
+    <div className={`relative h-fit md:min-h-[calc(100vh-58px)] flex flex-col items-center flex-grow ${currentPathname === "/admin" ? "py-10" : "pt-20"}`}>
       <SiteNavBtns />
       <DropDownModal />
       {children}

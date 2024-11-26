@@ -1,6 +1,7 @@
 // type for log details
 type LogDetails = {
   trialId?: string;
+  ammended?: boolean;
   monitorName: string;
   signature: string;
   typeOfVisit: "Remote" | "Onsite" | "Waiver Call";
@@ -50,7 +51,7 @@ type AlertBody = {
 
 type User = {
   email: string;
-  isAdmin: boolean;
+  isAdmin: boolean | undefined;
   profilePhoto: string;
   id: string;
   fName: string;

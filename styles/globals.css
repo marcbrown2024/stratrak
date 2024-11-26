@@ -8,5 +8,16 @@ html {
   scroll-behavior: smooth;
 }
 
-:root {
+.custom-scrollbar::-webkit-scrollbar {
+  width: 2px;
+  scrollbar-color: #f3f4f6 transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #efeeee;
+  border-radius: 1rem;
 }
