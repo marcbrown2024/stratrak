@@ -69,7 +69,7 @@ const RegDocFiles = () => {
       setLoading(true);
       const trialResponse = await getTrial(trialId as string);
       setTrial(trialResponse.data);
-      
+
       const regDocsResponse = await fetchFilesInFolder(
         user?.orgId as string,
         trialId as string,
@@ -105,14 +105,16 @@ const RegDocFiles = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center gap-8">
-        <RegulatoryDocTable
-          columns={columns}
-          rows={fileNames}
-          trialId={trialId as string}
-          setShowDocument={setShowDocument}
-          setDocumentURL={setDocumentURL}
-        />
+      <div className="h-full w-full flex flex-col items-center justify-start">
+        <div className="w-[95%] flex flex-col items-center justify-center gap-8">
+          <RegulatoryDocTable
+            columns={columns}
+            rows={fileNames}
+            trialId={trialId as string}
+            setShowDocument={setShowDocument}
+            setDocumentURL={setDocumentURL}
+          />
+        </div>
       </div>
       {showDocument && (
         <div className="fixed h-3/4 w-2/5 py-8">

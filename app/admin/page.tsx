@@ -29,7 +29,6 @@ const Page = () => {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [addUser, setAddUser] = useState<boolean>(false);
-  const [ammendlog, setAmendLog] = useState(false);
   const [filter, setFilter] = useState<"Users" | "Admins" | "All Users">(
     "All Users"
   );
@@ -151,14 +150,6 @@ const Page = () => {
             {addUser ? "Cancel" : "Add User"}
           </div>
         </button>
-        <button
-          onClick={() => setAmendLog(true)}
-          className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-        >
-          <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-            {ammendlog ? "Cancel" : "Amend Logs"}
-          </div>
-        </button>
       </div>
       {/* Custom Table */}
       <CustomTable
@@ -168,7 +159,7 @@ const Page = () => {
         setCurrentPage={setCurrentPage}
         filter={filter}
       />
-      <AdminPopup addUser={addUser} ammendlog={ammendlog} setAmendLog={setAmendLog} setAddUser={setAddUser} refreshUsers={refreshUsers}/>
+      <AdminPopup addUser={addUser} setAddUser={setAddUser} refreshUsers={refreshUsers}/>
     </div>
   );
 };

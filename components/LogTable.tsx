@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 // firebase components/functions
-import { deleteLog, getLogs } from "@/firebase";
+import { deleteLog, getLogs, updateLogSignature } from "@/firebase";
 
 // global stores
 import { useAlertStore } from "@/store/AlertStore";
@@ -37,10 +37,24 @@ const LogTable = (props: Props) => {
   const { user } = useUser();
   const [activeRowId, setActiveRowId] = useState<number | null>(null);
   const [deleteLogRow, setDeleteLogRow] = useState<boolean>(false);
-  const [setAlert] = useAlertStore((state) => [state.setAlert]);
+  const [setAlert, closeAlert] = useAlertStore((state) => [
+    state.setAlert,
+    state.closeAlert,
+  ]);
   const [logs, setLogs] = useState<LogDetails[]>([]);
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(false);
   const setSelectedRow = useSignatureStore((state) => state.setSelectedRow);
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<string | number, string>
+  >({});
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+
+  useEffect(() => {
+    const anySelected = Object.values(selectedOptions).some(
+      (value) => value !== ""
+    );
+    setShowConfirmation(anySelected);
+  }, [selectedOptions]);
 
   useEffect(() => {
     if (user) {
@@ -84,6 +98,56 @@ const LogTable = (props: Props) => {
     setActiveRowId(null);
   };
 
+  const handleAmmendSignature = async () => {
+    closeAlert();
+    let alert: AlertBody;
+    let alertType: AlertType;
+
+    // Iterate over all selected options (now using for...of instead of forEach)
+    for (const [rowId, selectedOption] of Object.entries(selectedOptions)) {
+      // Logic based on the selected option for each row
+      const signature =
+        selectedOption === "esignature"
+          ? user?.signature
+          : "E-signatures are not permitted";
+
+      if (user?.userId && signature) {
+        updateLogSignature(rowId, signature)
+          .then((response) => {
+            if (response.success) {
+              setAlert(
+                {
+                  title: "Success!",
+                  content: "Signature updated successfully.",
+                },
+                AlertType.Success
+              );
+            } else {
+              setAlert(
+                {
+                  title: "Error!",
+                  content: "Could not update signature. Please try again.",
+                },
+                AlertType.Error
+              );
+            }
+          })
+          .catch((error) => {
+            setAlert(
+              {
+                title: "Error!",
+                content: `An error occurred while updating the signature. ${error}`,
+              },
+              AlertType.Error
+            );
+          });
+      }
+    }
+
+    setShowConfirmation(false);
+    setTimeout(() => window.location.reload(), 2000);
+  };
+
   const MonitorNameColumn: GridColDef = {
     field: "monitorName",
     headerClassName: "text-blue-500 uppercase bg-blue-50",
@@ -92,7 +156,13 @@ const LogTable = (props: Props) => {
     renderCell: (params) => {
       const { row } = params;
       if (row.monitorName) {
-        return <span>{row.monitorName}</span>;
+        return (
+          <div className="relative">
+            <Tooltip title={row.ammended ? "amended" : ""}>
+              <span>{row.monitorName}</span>
+            </Tooltip>
+          </div>
+        );
       } else {
         return <span>No Monitor name available</span>;
       }
@@ -107,30 +177,57 @@ const LogTable = (props: Props) => {
     renderCell: (params) => {
       const { row } = params;
       const isBase64Image = row.signature.startsWith("data:image");
-  
+
+      const handleSelectChange = (
+        event: React.ChangeEvent<HTMLSelectElement>,
+        rowId: string | number
+      ) => {
+        setSelectedOptions((prev) => ({
+          ...prev,
+          [rowId]: event.target.value,
+        }));
+      };
+
       return (
-        <button
-          onClick={() => setSelectedRow(row, true)}
-          className="h-[50px] w-fit flex items-center text-center"
-        >
-          {isBase64Image ? (
-            <Image
-              width={200}
-              height={200}
-              src={row.signature}
-              alt="User Signature"
-              style={{
-                width: "150px",
-                height: "60px",
-              }}
-            />
+        <>
+          {row.signature === "Must be done by monitor" &&
+          row.monitorName === `${user?.fName} ${user?.lName}` ? (
+            <select
+              value={selectedOptions[row.id] || ""}
+              onChange={(event) => handleSelectChange(event, row.id)}
+              className="border rounded w-full py-2 px-3 text-gray-700 leading-tight appearance-none focus:outline-none focus:shadow-outline animate-pulse"
+            >
+              <option value="">Select an option</option>
+              <option value="esignature">E-signature</option>
+              <option value="notPermitted">
+                E-signatures are not permitted
+              </option>
+            </select>
           ) : (
-            <p>{row.signature || "No signature available"}</p>
+            <button
+              onClick={() => setSelectedRow(row, true)}
+              className="h-[50px] w-fit flex items-center text-center"
+            >
+              {isBase64Image ? (
+                <Image
+                  width={200}
+                  height={200}
+                  src={row.signature}
+                  alt="User Signature"
+                  style={{
+                    width: "150px",
+                    height: "60px",
+                  }}
+                />
+              ) : (
+                <p>{row.signature || "No signature available"}</p>
+              )}
+            </button>
           )}
-        </button>
+        </>
       );
     },
-  }; 
+  };
 
   const ActionColumn: GridColDef = {
     field: "action",
@@ -155,7 +252,7 @@ const LogTable = (props: Props) => {
                 onClick={() => handleSetDelete(id)}
                 className="transition-transform duration-300 hover:scale-110"
               >
-                <FaFileCircleMinus className="text-2xl text-[#cf3030]" />
+                <FaFileCircleMinus className="text-2xl text-[#cf3030] ${}" />
               </button>
             </Tooltip>
 
@@ -190,6 +287,13 @@ const LogTable = (props: Props) => {
     },
   };
 
+  const getRowClassName = (params: any) => {
+    if (params.row.ammended) {
+      return "text-gray-500";
+    }
+    return "";
+  };
+
   return (
     <div className="w-full flex items-center">
       <DataGrid<LogDetails>
@@ -213,7 +317,27 @@ const LogTable = (props: Props) => {
         pageSizeOptions={[10]}
         disableMultipleRowSelection
         disableColumnMenu
+        getRowClassName={getRowClassName}
       />
+      {showConfirmation && selectedOptions && (
+        <div className="fixed bottom-4 left-1/2 h-fit w-[28rem] flex items-center justify-center gap-4">
+          <button
+            onClick={() => {
+              setShowConfirmation(false);
+              setSelectedOptions({});
+            }}
+            className="h-12 w-36 text-white font-semibold bg-red-600 shadow-lg hover:bg-red-700 hover:scale-95"
+          >
+            cancel
+          </button>
+          <button
+            onClick={handleAmmendSignature}
+            className="h-12 w-36 text-white font-semibold bg-blue-600 shadow-lg hover:bg-blue-700 hover:scale-95"
+          >
+            confirm
+          </button>
+        </div>
+      )}
     </div>
   );
 };

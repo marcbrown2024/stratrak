@@ -10,13 +10,15 @@ import { getLogs, getTrial } from "@/firebase";
 // global store
 import LoadingStore from "@/store/LoadingStore";
 import useSignatureStore from "@/store/SignatureStore";
+import AdminPopupStore from "@/store/AdminPopupStore";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
 
-//components
+// custom components
 import LogTable from "@/components/LogTable";
 import SignaturePopUp from "@/components/SignaturePopUp";
+import AdminPopup from "@/components/AdminPopup";
 
 const columns: GridColDef[] = [
   {
@@ -45,6 +47,7 @@ const columns: GridColDef[] = [
 const LogsPage = () => {
   const { trialId } = useParams();
   const { setLoading } = LoadingStore();
+  const { isOpen } = AdminPopupStore();
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
   const [logs, setLogs] = useState<LogDetails[]>([]);
 
@@ -90,6 +93,8 @@ const LogsPage = () => {
           <SignaturePopUp />
         </div>
       )}
+
+      {isOpen && <AdminPopup />}
     </div>
   );
 };

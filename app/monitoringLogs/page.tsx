@@ -57,7 +57,7 @@ const MonitoringLogsPage = () => {
 
   useEffect(() => {
     if (user) {
-      getUserFromDb(user?.id).then((response) => {
+      getUserFromDb(user?.userId).then((response) => {
         const user = response?.data ?? null;
         setUpdatedUser(user);
       });

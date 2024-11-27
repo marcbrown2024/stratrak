@@ -444,6 +444,9 @@ export const createLog = async (log: LogDetails, trialId: string) => {
     const newLogRef = await addDoc(logsRef, {
       ...log,
       trialId: trialId,
+      ammendedDate: log.ammendedDate
+        ? convertToFirestoreTimestamp(log.ammendedDate)
+        : null,
       dateOfVisit: convertToFirestoreTimestamp(log.dateOfVisit),
     });
     const newLogSnap = await getDoc(newLogRef);
@@ -582,15 +585,21 @@ export const getUserFromDb = async (firebaseUserId: string) => {
 
 export const uploadSignature = async (userId: string, base64String: string) => {
   try {
-    // Create a document reference for the user
-    const userRef = doc(db, "users", userId);
+    // Reference the 'users' collection and query for documents with the matching userId field
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("userId", "==", userId));
 
-    // Save the base64 string to the user's document
-    await setDoc(userRef, { signature: base64String }, { merge: true });
+    // Fetch matching documents
+    const querySnapshot = await getDocs(q);
 
-    return { success: true };
+    if (!querySnapshot.empty) {
+      // Update the signature field in the first matching document
+      const docRef = querySnapshot.docs[0].ref;
+      await updateDoc(docRef, { signature: base64String });
+
+      return { success: true };
+    }
   } catch (e) {
-    const error = e as Error;
     return { success: false, data: e };
   }
 };
@@ -646,7 +655,6 @@ export const getAllUsers = async (orgId: string) => {
 
     usersSnap.forEach((doc) => {
       users.push({
-        id: doc.id,
         ...doc.data(),
       } as User);
     });
@@ -764,5 +772,25 @@ export const updateOptionsField = async (
     };
   } catch (e: any) {
     return { success: false, data: e.message || "An error occurred" };
+  }
+};
+
+
+export const updateLogSignature = async (
+  documentId: string,
+  signature: string
+): Promise<{ success: boolean }> => {
+  try {
+    // Reference to the document in the "trials" collection by document ID
+    const docRef = doc(db, "logs", documentId);
+
+    // Update the signature field with the base64 string
+    await updateDoc(docRef, { signature: signature });
+
+    return { success: true };
+  } catch (e: any) {
+    // Log the error if needed for debugging
+    console.error("Error updating signature:", e);
+    return { success: false };
   }
 };

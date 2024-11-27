@@ -165,7 +165,7 @@ const TableRow = ({ rowId, tablelength }: params) => {
         {/* Dropdown Trigger */}
         <div
           onClick={() => setDropdownVisible((prev) => !prev)}
-          className="w-[21rem] flex items-center justify-between text-sm text-gray-900 bg-white p-2.5 px-2 border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 hover:cursor-pointer"
+          className="w-[21rem] flex items-center justify-between text-sm text-gray-400 bg-white p-2.5 px-2 border-b-[1px] border-b-transparent focus:outline-0 focus:border-blue-500 hover:cursor-pointer"
         >
           <p>{logs[rowId].siteVisit || " Select a site"}</p>
           <FaChevronDown color="#868686" />

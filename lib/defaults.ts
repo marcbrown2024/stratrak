@@ -21,7 +21,7 @@ export function getCurrentDateTime() {
   const padWithZero = (num: number) => (num < 10 ? `0${num}` : num);
 
   const year = now.getFullYear();
-  const month = padWithZero(now.getMonth() + 1); // Months are 0-based
+  const month = padWithZero(now.getMonth() + 1);
   const day = padWithZero(now.getDate());
   const hours = padWithZero(now.getHours());
   const minutes = padWithZero(now.getMinutes());

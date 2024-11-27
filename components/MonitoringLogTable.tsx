@@ -285,6 +285,13 @@ const MonitoringLogTable = (props: Props) => {
     },
   };
 
+  const CustomNoRowsOverlay = () => (
+    <div className="flex flex-col items-center justify-center h-full text-gray-500">
+      <p>No data available</p>
+    </div>
+  );
+  
+
   return (
     <div className="w-full flex items-center">
       <DataGrid
@@ -298,7 +305,10 @@ const MonitoringLogTable = (props: Props) => {
             },
           },
         }}
-        slots={{ toolbar: CustomToolbar }}
+        slots={{
+          toolbar: CustomToolbar,
+          noRowsOverlay: CustomNoRowsOverlay,
+        }}
         pageSizeOptions={[10]}
         disableMultipleRowSelection
         disableColumnMenu

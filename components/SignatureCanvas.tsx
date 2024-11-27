@@ -172,7 +172,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
     if (canvasRef.current) {
       const canvas = canvasRef.current;
       const base64String = canvas.toDataURL("image/png"); // Get the base64 string of the image
-      const userId = user?.id;
+      const userId = user?.userId;
 
       if (userId) {
         setSignature(base64String);

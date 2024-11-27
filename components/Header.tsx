@@ -44,17 +44,19 @@ const Header = () => {
     currentPath = splitCamelCase(words.pop() ?? "");
   }
 
-  // Determine the display title based on the current pathname
+  const pathTitles = [
+    { path: "/", title: "Home" },
+    { path: "/monitoringLogs", title: "eRegulatory binders" },
+    { path: "/monitoringLogs/active", title: "eRegulatory binders" },
+    { path: "/monitoringLogs/inactive", title: "eRegulatory binders" },
+    { path: "/monitoringLogs/completed", title: "eRegulatory binders" },
+  ];
+
   const displayTitle =
-    currentPathname === "/"
-      ? "Home"
-      : currentPathname === "/monitoringLogs"
-      ? "eRegulatory binders"
-      : words[words.length - 1] === "regulatoryDocs"
+    pathTitles.find((item) => item.path === currentPathname)?.title ??
+    (words[words.length - 1] === "regulatoryDocs"
       ? "Regulatory Documents"
-      : ["Active", "Inactive", "Completed"].includes(currentPath)
-      ? `${currentPath} Trials`
-      : currentPath;
+      : currentPath);
 
   useEffect(() => {
     const closePopupsOnOutsideClick = (event: MouseEvent) => {
@@ -95,17 +97,15 @@ const Header = () => {
       } ${selectedLayout ? "border-b border-zinc-200 bg-slate-50" : ""} z-30`}
     >
       <div className="h-14 flex items-center justify-between px-6">
-        <span className="hidden md:flex text-xl font-bold tracking-wide">
+        <span className="flex text-xl font-bold tracking-wide">
           {displayTitle}
         </span>
+
         <div className="flex items-center space-x-4">
           <Link
             href="/"
             className="flex flex-row space-x-3 items-center justify-center md:hidden"
-          >
-            <span className="h-8 w-8 bg-blue-500 rounded-lg" />
-            <span className="font-bold text-xl text-blue-500 flex ">Logo</span>
-          </Link>
+          ></Link>
         </div>
         <button
           onClick={() => toggleModal()}

@@ -17,9 +17,7 @@ import {
   GridToolbarQuickFilter,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
-  gridPaginatedVisibleSortedGridRowIdsSelector,
   useGridApiContext,
-  GridCsvExportOptions,
 } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 
@@ -29,6 +27,7 @@ import useUser from "@/hooks/UseUser";
 // global store
 import { useAlertStore } from "@/store/AlertStore";
 import AddNewFolderStore from "@/store/AddNewFolderStore";
+import AdminPopupStore from "@/store/AdminPopupStore";
 
 // enums
 import { AlertType } from "@/enums";
@@ -42,6 +41,7 @@ const CustomToolbar = () => {
   const currentPathname = usePathname();
   const apiRef = useGridApiContext();
   const { setVisibility } = AddNewFolderStore();
+  const { isOpen, setIsOpen } = AdminPopupStore();
   const [logs, setLogs] = useState<LogDetails[]>([]);
   const [monitoringlogs, setMonitoringlogs] = useState<TrialDetails[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -274,14 +274,24 @@ const CustomToolbar = () => {
         </Link>
       ) : (
         isLogPath && (
-          <Link href={`/monitoringLogs/${trialId}/logs/createLog`}>
-            <Button
+          <>
+            <Link href={`/monitoringLogs/${trialId}/logs/createLog`}>
+              <Button
+                variant="contained"
+                style={{ backgroundColor: "#007bff", color: "#fff" }}
+              >
+                Add Log
+              </Button>
+            </Link>
+            {user?.isAdmin && <Button
               variant="contained"
-              style={{ backgroundColor: "#007bff", color: "#fff" }}
+              style={{ backgroundColor: "#384151", color: "#fff" }}
+              onClick={() => setIsOpen(true)}
             >
-              Add Log
-            </Button>
-          </Link>
+              {isOpen ? "Cancel" : "Ammend Log"}
+            </Button>}
+            
+          </>
         )
       )}
     </div>

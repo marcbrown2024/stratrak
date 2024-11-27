@@ -1,7 +1,11 @@
 // type for log details
 type LogDetails = {
   trialId?: string;
+  adminName?: string;
+  adminSig?: string;
   ammended?: boolean;
+  ammendedDate?: string;
+  ammendedReason?: string;
   monitorName: string;
   signature: string;
   typeOfVisit: "Remote" | "Onsite" | "Waiver Call";
@@ -53,7 +57,6 @@ type User = {
   email: string;
   isAdmin: boolean | undefined;
   profilePhoto: string;
-  id: string;
   fName: string;
   lName: string;
   orgId: string;

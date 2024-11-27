@@ -29,7 +29,7 @@ import { MdPhotoSizeSelectActual } from "react-icons/md";
 import useUser from "@/hooks/UseUser";
 
 const Page = () => {
-  const {user} = useUser()
+  const { user } = useUser();
   const initialFormData: ProfileFormData = {
     profilePhoto: user?.profilePhoto ?? "",
     fName: user?.fName ?? "",
@@ -55,7 +55,6 @@ const Page = () => {
     state.setAlert,
     state.closeAlert,
   ]);
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -98,8 +97,8 @@ const Page = () => {
 
   const RemoveSignature = async () => {
     setSignature(blankImage);
-    if (user?.id) {
-      await uploadSignature(user?.id, blankImage);
+    if (user?.userId) {
+      await uploadSignature(user?.userId, blankImage);
     }
   };
 
@@ -124,8 +123,8 @@ const Page = () => {
     setFormData(initialFormData);
     handleRemoveFile();
     setSignature(user?.signature ?? "");
-    if (user?.id) {
-      await uploadSignature(user?.id, user.signature);
+    if (user?.userId) {
+      await uploadSignature(user?.userId, user.signature);
     }
   };
 
@@ -240,10 +239,12 @@ const Page = () => {
                         }
                         className="text-xs px-2 py-1 border bg-slate-200 rounded-lg hover:scale-105"
                       >
-                        {signature != blankImage ? "Change" : "Set up"}
+                        {signature !== blankImage && signature !== ""
+                          ? "Change"
+                          : "Set up"}{" "}
                       </button>
                     )}
-                    {signature != blankImage && isEditing && (
+                    {(signature !== blankImage && signature !== "") && isEditing && (
                       <button
                         type="button"
                         disabled={!isEditing}
