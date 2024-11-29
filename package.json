@@ -16,6 +16,7 @@
     "@mui/x-data-grid": "^7.14.0",
     "@nextui-org/react": "^2.4.6",
     "date-fns": "^3.6.0",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "firebase": "^10.13.0",
     "firebase-admin": "^12.4.0",
@@ -33,6 +34,7 @@
     "sharp": "^0.33.5",
     "stratrak": "file:",
     "tailwind-clip-path": "^1.0.0",
+    "xlsx": "^0.18.5",
     "zustand": "^4.5.5"
   },
   "devDependencies": {

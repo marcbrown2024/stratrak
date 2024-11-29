@@ -29,11 +29,17 @@ import { useAlertStore } from "@/store/AlertStore";
 import AddNewFolderStore from "@/store/AddNewFolderStore";
 import AdminPopupStore from "@/store/AdminPopupStore";
 
+// excel manipulation
+import ExcelJS from "exceljs";
+
 // enums
 import { AlertType } from "@/enums";
 
 // icons
 import { FiDownload } from "react-icons/fi";
+
+// constant
+import { logoImage } from "@/constants";
 
 const CustomToolbar = () => {
   const { user } = useUser();
@@ -154,39 +160,82 @@ const CustomToolbar = () => {
     }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     let title = "";
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      "Investigator Name,Protocol,Site Visit,Monitor Name,Signature,Type of Visit,Purpose of Visit,Date of Visit\n" +
-      logs
-        .map((log) => {
-          // Find the specific monitoring log that matches the log's trialId
-          const monitoringLog = monitoringlogs.find(
-            (monLog) => monLog.id === log.trialId
-          );
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Monitoring Visit Log");
 
-          // If no matching monitoring log is found, return an empty row
-          if (!monitoringLog) {
-            return "";
-          }
+    // Add an image at the top
+    const imageId = workbook.addImage({
+      base64: logoImage,
+      extension: "png",
+    });
+    worksheet.addImage(imageId, "A1:D5");
 
-          title = `${monitoringLog.investigatorName.replace(
-            /\s/g,
-            ""
-          )}_${monitoringLog.protocol.replace(
-            /\s/g,
-            ""
-          )}_${monitoringLog.siteVisit.replace(/\s/g, "")}`;
+    // Define headers
+    const headers = [
+      "Investigator Name",
+      "Protocol",
+      "Site Visit",
+      "Monitor Name",
+      "Signature",
+      "Type of Visit",
+      "Purpose of Visit",
+      "Date of Visit",
+    ];
+    worksheet.addRow(headers);
 
-          return `"${monitoringLog.investigatorName}","${monitoringLog.protocol}","${monitoringLog.siteVisit}","${log.monitorName}","Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit}","${log.typeOfVisit}","${log.purposeOfVisit}","${log.dateOfVisit}"`;
-        })
-        .join("\n");
+    // Add data rows
+    logs.forEach((log) => {
+      const monitoringLog = monitoringlogs.find(
+        (monLog) => monLog.id === log.trialId
+      );
 
-    const encodedUri = encodeURI(csvContent);
+      if (!monitoringLog) return;
+
+      title = `Monitoring_Log_${monitoringLog.investigatorName.replace(
+        /\s/g,
+        ""
+      )}_${monitoringLog.protocol.replace(
+        /\s/g,
+        ""
+      )}_${monitoringLog.siteVisit.replace(/\s/g, "")}`;
+
+      worksheet.addRow([
+        monitoringLog.investigatorName,
+        monitoringLog.protocol,
+        monitoringLog.siteVisit,
+        log.monitorName,
+        `Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit}`,
+        log.typeOfVisit,
+        log.purposeOfVisit,
+        log.dateOfVisit,
+      ]);
+    });
+
+    // Determine the last row, default to 0 if no rows exist
+    const lastRow = worksheet.lastRow ? worksheet.lastRow.number : 0;
+
+    // Format the date as ddMMMMyyyy
+    const formattedDate = new Date().toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
+    // Add custom text after the last row
+    const customTextCell = worksheet.getCell(`A${lastRow + 2}`);
+    customTextCell.value = `Monitoring Visit Log v${formattedDate}`;
+
+    // Save the Excel file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${title}.csv`);
+    link.href = url;
+    link.setAttribute("download", `${title}.xlsx`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -283,14 +332,15 @@ const CustomToolbar = () => {
                 Add Log
               </Button>
             </Link>
-            {user?.isAdmin && <Button
-              variant="contained"
-              style={{ backgroundColor: "#384151", color: "#fff" }}
-              onClick={() => setIsOpen(true)}
-            >
-              {isOpen ? "Cancel" : "Ammend Log"}
-            </Button>}
-            
+            {user?.isAdmin && (
+              <Button
+                variant="contained"
+                style={{ backgroundColor: "#384151", color: "#fff" }}
+                onClick={() => setIsOpen(true)}
+              >
+                {isOpen ? "Cancel" : "Ammend Log"}
+              </Button>
+            )}
           </>
         )
       )}
