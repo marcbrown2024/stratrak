@@ -25,14 +25,6 @@ const Sidebar = () => {
   const { user } = useUser();
   const currentPathname = usePathname();
 
-  if (
-    currentPathname === "/login" ||
-    currentPathname === "/login/forgetPassword"
-  ) {
-    return null;
-  }
-
-  // Update the state with the imported data
   useEffect(() => {
     if (user && user.userId) {
       updateUserLastActivity(user.userId)
@@ -40,6 +32,13 @@ const Sidebar = () => {
         .catch(() => {});
     }
   }, [user]);
+
+  if (
+    currentPathname === "/login" ||
+    currentPathname === "/login/forgetPassword"
+  ) {
+    return null;
+  }
 
   return (
     <div className="fixed h-full w-48 xl:w-72 flex flex-1 bg-[#1286ff] z-50">
