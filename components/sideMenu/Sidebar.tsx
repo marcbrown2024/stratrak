@@ -1,24 +1,46 @@
 "use client";
 
 // react/nextjs components
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-import { SIDENAV_ITEMS } from "@/constants";
-import logo from '@/public/images/logo-blue-bg-removed.png'
+// firestore functions
+import { updateUserLastActivity } from "@/firebase";
+
+// custom hooks
+import useUser from "@/hooks/UseUser";
 
 // custom components
 import MenuItem from "./MenuItem";
-import Image from "next/image";
+
+// constant data
+import { SIDENAV_ITEMS } from "@/constants";
+
+// images
+import logo from "@/public/images/logo-blue-bg-removed.png";
 
 const Sidebar = () => {
+  const { user } = useUser();
   const currentPathname = usePathname();
 
-  if (currentPathname === "/login" ||
-    currentPathname === "/login/forgetPassword") {
+  if (
+    currentPathname === "/login" ||
+    currentPathname === "/login/forgetPassword"
+  ) {
     return null;
   }
+
+  // Update the state with the imported data
+  useEffect(() => {
+    if (user && user.userId) {
+      updateUserLastActivity(user.userId)
+        .then(() => {})
+        .catch(() => {});
+    }
+  }, [user]);
+
   return (
     <div className="fixed h-full w-48 xl:w-72 flex flex-1 bg-[#1286ff] z-50">
       <div className="w-full flex flex-col space-y-6">
@@ -31,7 +53,7 @@ const Sidebar = () => {
               src={logo}
               width={200}
               height={75}
-              alt={'site logo'}
+              alt={"site logo"}
               priority
               className="object-cover w-full h-full -ml-10 transform scale-75"
             />

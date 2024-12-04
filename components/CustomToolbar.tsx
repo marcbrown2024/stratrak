@@ -29,17 +29,13 @@ import { useAlertStore } from "@/store/AlertStore";
 import AddNewFolderStore from "@/store/AddNewFolderStore";
 import AdminPopupStore from "@/store/AdminPopupStore";
 
-// excel manipulation
-import ExcelJS from "exceljs";
-
 // enums
 import { AlertType } from "@/enums";
 
+import ExcelJS from "exceljs";
+
 // icons
 import { FiDownload } from "react-icons/fi";
-
-// constant
-import { logoImage } from "@/constants";
 
 const CustomToolbar = () => {
   const { user } = useUser();
@@ -160,49 +156,92 @@ const CustomToolbar = () => {
     }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     let title = "";
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      "Investigator Name,Protocol,Site Visit,Monitor Name,Signature,Type of Visit,Purpose of Visit,Date of Visit\n" +
-      logs
-        .map((log) => {
-          // Find the specific monitoring log that matches the log's trialId
-          const monitoringLog = monitoringlogs.find(
-            (monLog) => monLog.id === log.trialId
-          );
-  
-          // If no matching monitoring log is found, return an empty row
-          if (!monitoringLog) {
-            return "";
-          }
-  
-          title = `${monitoringLog.investigatorName.replace(
-            /\s/g,
-            ""
-          )}_${monitoringLog.protocol.replace(
-            /\s/g,
-            ""
-          )}_${monitoringLog.siteVisit.replace(/\s/g, "")}`;
-  
-          return `"${monitoringLog.investigatorName}","${monitoringLog.protocol}","${monitoringLog.siteVisit}","${log.monitorName}","Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit}","${log.typeOfVisit}","${log.purposeOfVisit}","${log.dateOfVisit}"`;
-        })
-        .join("\n") +
-      // Append the additional row with "Monitoring Visit Log" and "Trialist"
-      `\n"Monitoring Visit Log v${new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })}","","","","","","","Trialist"`;
-  
-    const encodedUri = encodeURI(csvContent);
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Monitoring Logs");
+
+    // Define columns (you can modify this if needed)
+    worksheet.columns = [
+      { header: "Investigator Name", key: "investigatorName", width: 25 },
+      { header: "Protocol", key: "protocol", width: 20 },
+      { header: "Site Visit", key: "siteVisit", width: 20 },
+      { header: "Monitor Name", key: "monitorName", width: 20 },
+      { header: "Signature", key: "signature", width: 30 },
+      { header: "Type of Visit", key: "typeOfVisit", width: 20 },
+      { header: "Purpose of Visit", key: "purposeOfVisit", width: 30 },
+      { header: "Date of Visit", key: "dateOfVisit", width: 20 },
+    ];
+
+    // Add data rows
+    logs.forEach((log) => {
+      const monitoringLog = monitoringlogs.find(
+        (monLog) => monLog.id === log.trialId
+      );
+
+      // If no matching monitoring log is found, skip this row
+      if (!monitoringLog) return;
+
+      title = `${monitoringLog.investigatorName.replace(
+        /\s/g,
+        ""
+      )}_${monitoringLog.protocol.replace(
+        /\s/g,
+        ""
+      )}_${monitoringLog.siteVisit.replace(/\s/g, "")}`;
+
+      worksheet.addRow({
+        investigatorName: monitoringLog.investigatorName,
+        protocol: monitoringLog.protocol,
+        siteVisit: monitoringLog.siteVisit,
+        monitorName: log.monitorName,
+        signature: `Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit}`,
+        typeOfVisit: log.typeOfVisit,
+        purposeOfVisit: log.purposeOfVisit,
+        dateOfVisit: log.dateOfVisit,
+      });
+    });
+
+    // Remove empty rows
+    worksheet.eachRow((row, rowNumber) => {
+      let isRowEmpty = true;
+      row.eachCell((cell) => {
+        if (cell.value) {
+          isRowEmpty = false;
+        }
+      });
+
+      // If row is empty, remove it
+      if (isRowEmpty) {
+        worksheet.spliceRows(rowNumber, 1);
+      }
+    });
+
+    // Set the header (this will be shown at the top of the page when printing or viewing)
+    const headerText = `Monitoring_Log_${title}`;
+    worksheet.headerFooter.oddHeader = `&C${headerText}`; // Center the header text
+
+    // Set the footer with justified alignment:
+    const footerDate = new Date().toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+    const footerText = `Monitoring Visit Log v${footerDate}`;
+
+    // Set footer with justified alignment
+    worksheet.headerFooter.oddFooter = `&L${footerText}       &RTrialist`;
+
+    // Save as .xlsx file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Monitoring_Log_${title}.csv`);
-    document.body.appendChild(link);
+    link.href = URL.createObjectURL(blob);
+    link.download = `Monitoring_Log_${title}.xlsx`;
     link.click();
-    document.body.removeChild(link);
-  };  
+  };
 
   return (
     <div className="flex justify-between items-center gap-8">

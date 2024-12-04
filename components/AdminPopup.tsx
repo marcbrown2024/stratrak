@@ -11,7 +11,6 @@ import { FirebaseError } from "firebase/app";
 import {
   createLog,
   createUser,
-  getAllUsers,
   secondaryAuth,
   userEmailExists,
 } from "@/firebase";
@@ -35,6 +34,7 @@ import { AlertType } from "@/enums";
 import { blankImage } from "@/constants";
 
 type PopupProps = {
+  orgUsers?: User[];
   addUser?: boolean;
   setAddUser?: React.Dispatch<React.SetStateAction<boolean>>;
   refreshUsers?: () => void;
@@ -64,6 +64,7 @@ const initialFormData: FormData = {
 };
 
 const AdminPopup: React.FC<PopupProps> = ({
+  orgUsers,
   addUser,
   setAddUser,
   refreshUsers,
@@ -71,8 +72,6 @@ const AdminPopup: React.FC<PopupProps> = ({
   const { user } = useUser();
   const { trialId } = useParams();
   const { isOpen, setIsOpen } = AdminPopupStore();
-  const { setLoading } = LoadingStore();
-  const [orgUsers, setOrgUsers] = useState<User[]>([]);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [ammendlogDetails, setAmmendLogDetails] = useState<LogDetails>({
     adminName: "",
@@ -343,26 +342,10 @@ const AdminPopup: React.FC<PopupProps> = ({
     };
   }, [addUser, isOpen]);
 
-  useEffect(() => {
-    if (!user || !user.isAdmin) return;
-
-    const fetchUsers = async () => {
-      setLoading(true);
-      getAllUsers(user?.orgId ?? "").then((response) => {
-        if (response.success) {
-          setOrgUsers(response.data);
-          setLoading(false);
-        }
-      });
-    };
-
-    fetchUsers();
-  }, [user]);
-
   return (
     <>
       {(addUser || isOpen) && (
-        <div className="fixed top-0 right-0 h-full w-[calc(100%-12rem)] xl:w-[calc(100%-18rem)] flex items-center justify-center bg-slate-100/70 shadow-lg z-50">
+        <div className="fixed top-0 right-0 h-full w-[calc(100%-12rem)] xl:w-[calc(100%-18rem)] flex items-center justify-center bg-slate-100/70 shadow-lg">
           <div className="custom-scrollbar relative h-[30rem] w-96 pb-4 bg-white shadow-xl rounded-lg overflow-y-auto">
             <div className="fixed h-16 w-96 flex items-center justify-center text-2xl bg-blue-700 text-white text-center font-bold uppercase rounded-t-lg">
               {addUser ? "Add to Org" : "Amend a Study Log"}
@@ -510,7 +493,7 @@ const AdminPopup: React.FC<PopupProps> = ({
                       <option value="" disabled>
                         Select a monitor
                       </option>
-                      {orgUsers.map((monitor) => (
+                      {orgUsers?.map((monitor) => (
                         <option
                           key={monitor.userId}
                           value={`${monitor.fName} ${monitor.lName}`}

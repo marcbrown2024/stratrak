@@ -60,6 +60,28 @@ type DBResponse = {
 
 let response: DBResponse;
 
+const convertToFirestoreTimestamp = (dateString: string): Timestamp => {
+  // Create a JavaScript Date object from the date string
+  const date = new Date(dateString);
+
+  // Convert to Firestore Timestamp
+  return Timestamp.fromDate(date);
+};
+
+// Function to convert Firestore Timestamp to a formatted date string
+const convertTimestampToDate = (timestamp: Timestamp | string): string => {
+  try {
+    // Convert Firestore Timestamp to JavaScript Date object
+    const date = (timestamp as Timestamp).toDate();
+
+    // Format the date directly with moment, no need to slice
+    const formattedDate = moment(date).format("YYYY-MM-DD, h:mm A");
+    return formattedDate;
+  } catch (e) {
+    return timestamp as string; // If it's not a Timestamp, return it as a string
+  }
+};
+
 export const getTrials = async (orgId: string) => {
   const trials: TrialDetails[] = [];
 
@@ -181,12 +203,15 @@ export const updateUserLastActivity = async (
     // Check if a document was found
     if (!querySnapshot.empty) {
       const now = new Date();
-      const localTime = now.toLocaleString();
+      const firestoreTimestamp = Timestamp.fromDate(now); // Convert to Firestore Timestamp
 
       // Update the lastActivity field in matching document
-      querySnapshot.forEach(async (doc) => {
-        await updateDoc(doc.ref, { lastActivity: localTime });
-      });
+      const updatePromises = querySnapshot.docs.map((doc) =>
+        updateDoc(doc.ref, { lastActivity: firestoreTimestamp })
+      );
+
+      // Wait for all updates to complete
+      await Promise.all(updatePromises);
 
       return { success: true };
     } else {
@@ -623,28 +648,6 @@ export const userEmailExists = async (email: string) => {
   return response;
 };
 
-const convertToFirestoreTimestamp = (dateString: string): Timestamp => {
-  // Create a JavaScript Date object from the date string
-  const date = new Date(dateString);
-
-  // Convert to Firestore Timestamp
-  return Timestamp.fromDate(date);
-};
-
-// Function to convert Firestore Timestamp to a formatted date string
-const convertTimestampToDate = (timestamp: Timestamp | string): string => {
-  try {
-    // Convert Firestore Timestamp to JavaScript Date object
-    const date = (timestamp as Timestamp).toDate();
-
-    // Format the date directly with moment, no need to slice
-    const formattedDate = moment(date).format("YYYY-MM-DD, h:mm A");
-    return formattedDate;
-  } catch (e) {
-    return timestamp as string; // If it's not a Timestamp, return it as a string
-  }
-};
-
 export const getAllUsers = async (orgId: string) => {
   const users: User[] = [];
 
@@ -654,10 +657,13 @@ export const getAllUsers = async (orgId: string) => {
     const usersSnap = await getDocs(q);
 
     usersSnap.forEach((doc) => {
+      const userData = doc.data();
+
       users.push({
-        ...doc.data(),
+        ...userData,
+        lastActivity: convertTimestampToDate(userData.lastActivity),
       } as User);
-    });
+    }); 
 
     return { success: true, data: users };
   } catch (e: any) {

@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 
 // firestore functions
-import { getLogs, getTrial } from "@/firebase";
+import { getLogs, getTrial, getAllUsers } from "@/firebase";
 
 // global store
 import LoadingStore from "@/store/LoadingStore";
@@ -14,6 +14,9 @@ import AdminPopupStore from "@/store/AdminPopupStore";
 
 // mui assets
 import { GridColDef } from "@mui/x-data-grid";
+
+// custom hooks
+import useUser from "@/hooks/UseUser";
 
 // custom components
 import LogTable from "@/components/LogTable";
@@ -45,9 +48,11 @@ const columns: GridColDef[] = [
 ];
 
 const LogsPage = () => {
+  const { user } = useUser();
   const { trialId } = useParams();
   const { setLoading } = LoadingStore();
   const { isOpen } = AdminPopupStore();
+  const [orgUsers, setOrgUsers] = useState<User[]>([]);
   const [trial, setTrial] = useState<TrialDetails>({} as TrialDetails);
   const [logs, setLogs] = useState<LogDetails[]>([]);
 
@@ -58,16 +63,31 @@ const LogsPage = () => {
 
   // Update the state with the imported data
   useEffect(() => {
+    if (!user) return;
+
     setLoading(true);
-    getTrial(trialId as string).then((response) => {
-      setTrial(response.data);
-      setLoading(false);
-    });
-    getLogs(trialId as string).then((response) => {
-      setLogs(response.data);
-      setLoading(false);
-    });
-  }, [trialId]);
+
+    // Fetch trial, logs, and users concurrently
+    const fetchData = async () => {
+      try {
+        const trialResponse = await getTrial(trialId as string);
+        const logsResponse = await getLogs(trialId as string);
+        const usersResponse = user.isAdmin
+          ? await getAllUsers(user.orgId)
+          : { success: false, data: [] };
+
+        setTrial(trialResponse.data);
+        setLogs(logsResponse.data);
+        if (usersResponse.success) setOrgUsers(usersResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [trialId, user]);
 
   return (
     <div className="relative h-full w-full space-y-10">
@@ -94,7 +114,7 @@ const LogsPage = () => {
         </div>
       )}
 
-      {isOpen && <AdminPopup />}
+      {isOpen && <AdminPopup orgUsers={orgUsers}/>}
     </div>
   );
 };

@@ -6,9 +6,7 @@ import Image from "next/image";
 import Tooltip from "@mui/material/Tooltip";
 
 // firebase components
-import {
-  updatePrivilege,
-} from "@/firebase";
+import { updatePrivilege } from "@/firebase";
 
 import { useAlertStore } from "@/store/AlertStore";
 
@@ -22,6 +20,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import useUser from "@/hooks/UseUser";
 
 type CustomTableProps = {
+  setLoading: (value: boolean) => void;
   users: User[];
   filter: string;
   currentPage: number;
@@ -30,6 +29,7 @@ type CustomTableProps = {
 };
 
 const CustomTable: React.FC<CustomTableProps> = ({
+  setLoading,
   users,
   filter,
   currentPage,
@@ -95,6 +95,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
 
   const handleDeleteUser = async (userId: string) => {
     closeAlert();
+    setLoading(true);
     try {
       // Make a POST request to the API route
       const response = await fetch("/api", {
@@ -109,33 +110,36 @@ const CustomTable: React.FC<CustomTableProps> = ({
 
       let alert: AlertBody;
       let alertType: AlertType;
-
-      if (data.success) {
-        alert = {
-          title: "Success!",
-          content: "User was deleted successfully.",
-        };
-        alertType = AlertType.Success;
-        refreshUsers();
-      } else {
-        alert = {
-          title: "Error!",
-          content: data.message || "Could not delete user. Please try again.",
-        };
-        alertType = AlertType.Error;
-      }
-      setAlert(alert, alertType);
+      handleCancel();
+      setLoading(false);
+      setTimeout(() => {
+        if (data.success) {
+          alert = {
+            title: "Success!",
+            content: "User was deleted successfully.",
+          };
+          alertType = AlertType.Success;
+          refreshUsers();
+        } else {
+          alert = {
+            title: "Error!",
+            content: data.message || "Could not delete user. Please try again.",
+          };
+          alertType = AlertType.Error;
+        }
+        setAlert(alert, alertType);
+      }, 500);
     } catch (error) {
-      setAlert(
-        {
-          title: "Error!",
-          content: "Could not delete user. Please try again.",
-        },
-        AlertType.Error
-      );
+      setTimeout(() => {
+        setAlert(
+          {
+            title: "Error!",
+            content: "Could not delete user. Please try again.",
+          },
+          AlertType.Error
+        );
+      }, 500);
     }
-
-    handleCancel();
   };
 
   const handleUpdatePrivilege = (email: string, isAdmin: boolean) => {
@@ -163,14 +167,23 @@ const CustomTable: React.FC<CustomTableProps> = ({
     handleCancel();
   };
 
-
-
   // Filter users based on the selected filter
-  const filteredData = users.filter((item) => {
-    if (filter === "Admins") return item.isAdmin;
-    if (filter === "Users") return !item.isAdmin;
-    return true;
-  });
+  const filteredData = users
+    .filter((item) => {
+      if (filter === "Admins") return item.isAdmin;
+      if (filter === "Users") return !item.isAdmin;
+      return true;
+    })
+    .sort((a, b) => {
+      // Handle "N/A" for lastActivity
+      if (a.lastActivity === "") return 1; // Place a after b
+      if (b.lastActivity === "") return -1; // Place b after a
+
+      // Sort by lastActivity (most recent first)
+      const dateA = new Date(a.lastActivity).getTime();
+      const dateB = new Date(b.lastActivity).getTime();
+      return dateB - dateA; // Descending order
+    });
 
   // Total items per page
   const ITEMS_PER_PAGE = 8;
@@ -267,38 +280,6 @@ const CustomTable: React.FC<CustomTableProps> = ({
             <div className="h-full w-60 flex items-center justify-start px-4 overflow-hidden">
               {item.lastActivity ? item.lastActivity : "N/A"}
             </div>
-            <div className="relative h-full w-2/12 flex items-center justify-start pl-8 overflow-hidden">
-              <button
-                onClick={() => handleDeleteClick(item.userId)}
-                className={`w-28 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
-                  deleteRowId === item.userId
-                    ? "-translate-x-40"
-                    : "-translate-x-4"
-                } transition-all duration-500 ease-in-out`}
-              >
-                Delete User
-              </button>
-              <div
-                className={`absolute flex items-center justify-center gap-3 transform ${
-                  deleteRowId === item.userId
-                    ? "-translate-x-4"
-                    : "translate-x-44"
-                } transition-all duration-500 ease-in-out`}
-              >
-                <button
-                  onClick={() => handleDeleteUser(item.userId)}
-                  className="w-16 text-sm bg-red-300 py-1 rounded-md hover:bg-red-400"
-                >
-                  Confirm
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="w-16 text-sm bg-gray-200 py-1 rounded-md hover:bg-gray-300"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
             <div className="relative h-full w-2/12 flex items-center justify-start pl-11 overflow-hidden">
               <button
                 onClick={() => handlePrivilegeChangeClick(item.userId)}
@@ -322,6 +303,38 @@ const CustomTable: React.FC<CustomTableProps> = ({
                     handleUpdatePrivilege(item.email, !item.isAdmin)
                   }
                   className="w-16 text-sm text-white bg-blue-500 py-1 rounded-md hover:bg-blue-600"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="w-16 text-sm bg-gray-200 py-1 rounded-md hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+            <div className="relative h-full w-2/12 flex items-center justify-start pl-8 overflow-hidden">
+              <button
+                onClick={() => handleDeleteClick(item.userId)}
+                className={`w-28 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
+                  deleteRowId === item.userId
+                    ? "-translate-x-40"
+                    : "-translate-x-4"
+                } transition-all duration-500 ease-in-out`}
+              >
+                Delete User
+              </button>
+              <div
+                className={`absolute flex items-center justify-center gap-3 transform ${
+                  deleteRowId === item.userId
+                    ? "-translate-x-4"
+                    : "translate-x-44"
+                } transition-all duration-500 ease-in-out`}
+              >
+                <button
+                  onClick={() => handleDeleteUser(item.userId)}
+                  className="w-16 text-sm bg-red-300 py-1 rounded-md hover:bg-red-400"
                 >
                   Confirm
                 </button>

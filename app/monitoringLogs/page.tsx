@@ -1,10 +1,10 @@
 "use client";
 
 // react/nextjs components
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 // firestore functions
-import { getTrials, getUserFromDb, updateUserLastActivity } from "@/firebase";
+import { getTrials } from "@/firebase";
 
 // global store
 import LoadingStore from "@/store/LoadingStore";
@@ -51,18 +51,8 @@ const columns: GridColDef[] = [
 
 const MonitoringLogsPage = () => {
   const { user } = useUser();
-  const [updatedUser, setUpdatedUser] = useState<User>();
   const { setLoading } = LoadingStore();
   const [trials, setTrials] = useState<TrialDetails[]>([]);
-
-  useEffect(() => {
-    if (user) {
-      getUserFromDb(user?.userId).then((response) => {
-        const user = response?.data ?? null;
-        setUpdatedUser(user);
-      });
-    }
-  }, [user]);
 
   // Update the state with the imported data
   useEffect(() => {
@@ -72,12 +62,6 @@ const MonitoringLogsPage = () => {
         setTrials(response.data);
         setLoading(false);
       });
-    }
-
-    if (user && user.userId) {
-      updateUserLastActivity(user.userId)
-        .then(() => {})
-        .catch((error) => {});
     }
   }, [user]);
 

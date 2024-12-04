@@ -153,13 +153,18 @@ const Page = () => {
       </div>
       {/* Custom Table */}
       <CustomTable
+        setLoading={setLoading}
         users={users}
         refreshUsers={refreshUsers}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         filter={filter}
       />
-      <AdminPopup addUser={addUser} setAddUser={setAddUser} refreshUsers={refreshUsers}/>
+      <AdminPopup
+        addUser={addUser}
+        setAddUser={setAddUser}
+        refreshUsers={refreshUsers}
+      />
     </div>
   );
 };
