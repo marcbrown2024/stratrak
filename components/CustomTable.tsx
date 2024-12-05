@@ -20,21 +20,23 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import useUser from "@/hooks/UseUser";
 
 type CustomTableProps = {
-  setLoading: (value: boolean) => void;
   users: User[];
-  filter: string;
-  currentPage: number;
   refreshUsers: () => void;
+  setLoading: (value: boolean) => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  currentPage: number;
+  filter: string;
+  searchQuery: string;
 };
 
 const CustomTable: React.FC<CustomTableProps> = ({
-  setLoading,
   users,
-  filter,
-  currentPage,
   refreshUsers,
+  setLoading,
   setCurrentPage,
+  currentPage,
+  filter,
+  searchQuery,
 }) => {
   const { user } = useUser();
   const [deleteRowId, setDeleteRowId] = useState<string | null>(null);
@@ -167,12 +169,20 @@ const CustomTable: React.FC<CustomTableProps> = ({
     handleCancel();
   };
 
-  // Filter users based on the selected filter
+  // Filter users based on the selected filter and search query
   const filteredData = users
     .filter((item) => {
+      // Filter based on selected filter (Admins/Users)
       if (filter === "Admins") return item.isAdmin;
       if (filter === "Users") return !item.isAdmin;
-      return true;
+
+      // Additionally filter based on search query
+      const searchTerm = searchQuery.toLowerCase();
+      return (
+        item.fName.toLowerCase().includes(searchTerm) || // Filter by fname
+        item.lName.toLowerCase().includes(searchTerm) || // Filter by lname
+        item.email.toLowerCase().includes(searchTerm) // Filter by email (or any other relevant fields)
+      );
     })
     .sort((a, b) => {
       // Handle "N/A" for lastActivity

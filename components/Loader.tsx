@@ -1,9 +1,10 @@
 // react/nextjs components
 import React from "react";
-import { DNA } from "react-loader-spinner";
 
 // global states
 import LoadingStore from "@/store/LoadingStore";
+
+import { DNA } from "react-loader-spinner";
 
 const Loader = () => {
   const loading = LoadingStore((state) => state.loading);

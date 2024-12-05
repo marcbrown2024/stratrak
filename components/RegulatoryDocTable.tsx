@@ -132,7 +132,9 @@ const RegulatoryDocTable = (props: Props) => {
           setAlert(
             {
               title: "Error!",
-              content: `Folder "${formatString(regDocId)}" cannot be deleted as it is a protected folder.`,
+              content: `Folder "${formatString(
+                regDocId
+              )}" cannot be deleted as it is a protected folder.`,
             },
             AlertType.Info
           );
@@ -151,7 +153,9 @@ const RegulatoryDocTable = (props: Props) => {
           setAlert(
             {
               title: "Success!",
-              content: `Folder "${formatString(regDocId)}" deleted successfully.`,
+              content: `Folder "${formatString(
+                regDocId
+              )}" deleted successfully.`,
             },
             AlertType.Success
           );
@@ -204,7 +208,6 @@ const RegulatoryDocTable = (props: Props) => {
                   metadata?.customMetadata?.uploadedAt || "Not specified",
               };
             }
-
             return {
               id: index,
               originalId: fileName,
@@ -304,12 +307,26 @@ const RegulatoryDocTable = (props: Props) => {
     },
   };
 
+  const noRowsColumn: GridColDef = {
+    field: "noRows",
+    headerName: "No rows available",
+    flex: 1,
+    sortable: false,
+    disableColumnMenu: true,
+    headerAlign: "center",
+    headerClassName: "text-blue-500 uppercase bg-blue-50",
+  };
+
   return (
     <div className="w-full flex items-center">
       <DataGrid
         className="h-fit w-full p-6 gap-4 cursor-pointer"
-        rows={docs}
-        columns={[...props.columns, ...(user?.isAdmin ? [actionColumn] : [])]}
+        rows={docs.length > 0 ? docs : [{ id: 1 }]}
+        columns={
+          docs.length > 0
+            ? [...props.columns, ...(user?.isAdmin ? [actionColumn] : [])]
+            : [noRowsColumn]
+        }
         initialState={{
           pagination: {
             paginationModel: {

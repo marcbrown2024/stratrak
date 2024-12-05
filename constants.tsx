@@ -21,24 +21,24 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     title: "Studies",
     path: "/monitoringLogs",
     icon: <MdFolderShared size={24} />,
-    subMenu: true,
-    subMenuItems: [
-      {
-        title: "Active Studies",
-        path: "/monitoringLogs/active",
-        requireAdmin: false,
-      },
-      {
-        title: "Inactive Studies",
-        path: "/monitoringLogs/inactive",
-        requireAdmin: false,
-      },
-      {
-        title: "Completed Studies",
-        path: "/monitoringLogs/completed",
-        requireAdmin: false,
-      },
-    ],
+    subMenu: false,
+    // subMenuItems: [
+    //   {
+    //     title: "Active Studies",
+    //     path: "/monitoringLogs/active",
+    //     requireAdmin: false,
+    //   },
+    //   {
+    //     title: "Inactive Studies",
+    //     path: "/monitoringLogs/inactive",
+    //     requireAdmin: false,
+    //   },
+    //   {
+    //     title: "Completed Studies",
+    //     path: "/monitoringLogs/completed",
+    //     requireAdmin: false,
+    //   },
+    // ],
     requireAdmin: false,
   },
   {
@@ -52,30 +52,30 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
   //   path: "/settings",
   //   icon: <FaCog size={24} />,
   // },
-  {
-    title: "Profile",
-    path: "/profile",
-    usage: "smallScreen",
-    requireAdmin: false,
-  },
-  {
-    title: "Help",
-    path: "/help",
-    usage: "smallScreen",
-    requireAdmin: false,
-  },
-  {
-    title: "Reset Password",
-    path: "/resetPassword",
-    usage: "smallScreen",
-    requireAdmin: false,
-  },
-  {
-    title: "Sign Out",
-    path: "/login",
-    usage: "smallScreen",
-    requireAdmin: false,
-  },
+  // {
+  //   title: "Profile",
+  //   path: "/profile",
+  //   usage: "smallScreen",
+  //   requireAdmin: false,
+  // },
+  // {
+  //   title: "Help",
+  //   path: "/help",
+  //   usage: "smallScreen",
+  //   requireAdmin: false,
+  // },
+  // {
+  //   title: "Reset Password",
+  //   path: "/resetPassword",
+  //   usage: "smallScreen",
+  //   requireAdmin: false,
+  // },
+  // {
+  //   title: "Sign Out",
+  //   path: "/login",
+  //   usage: "smallScreen",
+  //   requireAdmin: false,
+  // },
 ];
 
 export const blankImage =

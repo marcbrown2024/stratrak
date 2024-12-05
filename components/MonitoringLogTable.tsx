@@ -15,6 +15,9 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import CustomToolbar from "@/components/CustomToolbar";
 import Tooltip from "@mui/material/Tooltip";
 
+// custom hookss
+import useUser from "@/hooks/UseUser";
+
 // enums
 import { AlertType } from "@/enums";
 
@@ -24,7 +27,6 @@ import { FaFolderOpen } from "react-icons/fa6";
 import { MdFolderDelete, MdCancel, MdDelete } from "react-icons/md";
 import { TbAdjustmentsCheck } from "react-icons/tb";
 import { IoClose } from "react-icons/io5";
-import useUser from "@/hooks/UseUser";
 
 type Props = {
   columns: GridColDef[];
@@ -285,19 +287,22 @@ const MonitoringLogTable = (props: Props) => {
     },
   };
 
-  const CustomNoRowsOverlay = () => (
-    <div className="flex flex-col items-center justify-center h-full text-gray-500">
-      <p>No data available</p>
-    </div>
-  );
-  
+  const noRowsColumn: GridColDef = {
+    field: "noRows",
+    headerName: "No rows available",
+    flex: 1,
+    sortable: false,
+    disableColumnMenu: true,
+    headerAlign: "center",
+    headerClassName: "text-blue-500 uppercase bg-blue-50"
+  };
 
   return (
     <div className="w-full flex items-center">
       <DataGrid
         className="h-fit w-full p-6 gap-4"
-        rows={filteredRows}
-        columns={[...props.columns, actionColumn]}
+        rows={filteredRows.length > 0 ? filteredRows : [{ id: 1 }]}
+        columns={filteredRows.length > 0 ? [...props.columns, actionColumn] : [noRowsColumn]}
         initialState={{
           pagination: {
             paginationModel: {
@@ -305,10 +310,7 @@ const MonitoringLogTable = (props: Props) => {
             },
           },
         }}
-        slots={{
-          toolbar: CustomToolbar,
-          noRowsOverlay: CustomNoRowsOverlay,
-        }}
+        slots={{ toolbar: CustomToolbar }}
         pageSizeOptions={[10]}
         disableMultipleRowSelection
         disableColumnMenu

@@ -41,9 +41,9 @@ const CustomToolbar = () => {
   const { user } = useUser();
   const { trialId } = useParams();
   const currentPathname = usePathname();
-  const apiRef = useGridApiContext();
   const { setVisibility } = AddNewFolderStore();
   const { isOpen, setIsOpen } = AdminPopupStore();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [logs, setLogs] = useState<LogDetails[]>([]);
   const [monitoringlogs, setMonitoringlogs] = useState<TrialDetails[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -148,99 +148,172 @@ const CustomToolbar = () => {
     user?.isAdmin && currentPathname === "/monitoringLogs";
   const isLogPath = currentPathname === `/monitoringLogs/${trialId}/logs`;
 
-  const handleEDocsExport = () => {
-    if (apiRef.current) {
-      apiRef.current.exportDataAsCsv({
-        fileName: "trialist_studies.csv",
-      });
-    }
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
   };
 
-  const handleExport = async () => {
+  const handleEDocsExport = () => {
+    // Convert monitoringlogs to CSV format
+    const csvContent = monitoringlogs
+      .map(
+        (monitoringLog) =>
+          `"${monitoringLog.investigatorName}","${monitoringLog.protocol}","${monitoringLog.siteVisit}","${monitoringLog.progress}"`
+      )
+      .join('\n')+
+      // Append the additional row with "Monitoring Visit Log" and "Trialist"
+      `\n"eRegulatory binders v${new Date().toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })}","","","Trialist"`;
+
+    // Add CSV header
+    const csvHeader = `"Investigator Name","Protocol","Site Visit","Progress"`;
+    const fullCsv = `${csvHeader}\n${csvContent}`;
+
+    // Create a blob for the CSV data
+    const blob = new Blob([fullCsv], { type: 'text/csv;charset=utf-8;' });
+
+    // Create a link element
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'eRegulatory_binders.csv'); // Set the default file name
+    link.click(); 
+
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+  };  
+
+  const handleLogDownload = async (type: string) => {
     let title = "";
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Monitoring Logs");
+    if (type === "csv") {
+      const csvContent =
+        "data:text/csv;charset=utf-8," +
+        "Investigator Name,Protocol,Site Visit,Monitor Name,Signature,Type of Visit,Purpose of Visit,Date of Visit\n" +
+        logs
+          .map((log) => {
+            // Find the specific monitoring log that matches the log's trialId
+            const monitoringLog = monitoringlogs.find(
+              (monLog) => monLog.id === log.trialId
+            );
 
-    // Define columns (you can modify this if needed)
-    worksheet.columns = [
-      { header: "Investigator Name", key: "investigatorName", width: 25 },
-      { header: "Protocol", key: "protocol", width: 20 },
-      { header: "Site Visit", key: "siteVisit", width: 20 },
-      { header: "Monitor Name", key: "monitorName", width: 20 },
-      { header: "Signature", key: "signature", width: 30 },
-      { header: "Type of Visit", key: "typeOfVisit", width: 20 },
-      { header: "Purpose of Visit", key: "purposeOfVisit", width: 30 },
-      { header: "Date of Visit", key: "dateOfVisit", width: 20 },
-    ];
+            // If no matching monitoring log is found, return an empty row
+            if (!monitoringLog) {
+              return "";
+            }
 
-    // Add data rows
-    logs.forEach((log) => {
-      const monitoringLog = monitoringlogs.find(
-        (monLog) => monLog.id === log.trialId
-      );
+            title = `${monitoringLog.investigatorName.replace(
+              /\s/g,
+              ""
+            )}_${monitoringLog.protocol.replace(
+              /\s/g,
+              ""
+            )}_${monitoringLog.siteVisit.replace(/\s/g, "")}`;
 
-      // If no matching monitoring log is found, skip this row
-      if (!monitoringLog) return;
+            return `"${monitoringLog.investigatorName}","${monitoringLog.protocol}","${monitoringLog.siteVisit}","${log.monitorName}","Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit}","${log.typeOfVisit}","${log.purposeOfVisit}","${log.dateOfVisit}"`;
+          })
+          .join("\n") +
+        // Append the additional row with "Monitoring Visit Log" and "Trialist"
+        `\n"Monitoring Visit Log v${new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}","","","","","","","Trialist"`;
 
-      title = `${monitoringLog.investigatorName.replace(
-        /\s/g,
-        ""
-      )}_${monitoringLog.protocol.replace(
-        /\s/g,
-        ""
-      )}_${monitoringLog.siteVisit.replace(/\s/g, "")}`;
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Monitoring_Log_${title}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (type === "xlsx") {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Monitoring Logs");
 
-      worksheet.addRow({
-        investigatorName: monitoringLog.investigatorName,
-        protocol: monitoringLog.protocol,
-        siteVisit: monitoringLog.siteVisit,
-        monitorName: log.monitorName,
-        signature: `Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit}`,
-        typeOfVisit: log.typeOfVisit,
-        purposeOfVisit: log.purposeOfVisit,
-        dateOfVisit: log.dateOfVisit,
+      // Define columns (you can modify this if needed)
+      worksheet.columns = [
+        { header: "Investigator Name", key: "investigatorName", width: 25 },
+        { header: "Protocol", key: "protocol", width: 20 },
+        { header: "Site Visit", key: "siteVisit", width: 20 },
+        { header: "Monitor Name", key: "monitorName", width: 20 },
+        { header: "Signature", key: "signature", width: 30 },
+        { header: "Type of Visit", key: "typeOfVisit", width: 20 },
+        { header: "Purpose of Visit", key: "purposeOfVisit", width: 30 },
+        { header: "Date of Visit", key: "dateOfVisit", width: 20 },
+      ];
+
+      // Add data rows
+      logs.forEach((log) => {
+        const monitoringLog = monitoringlogs.find(
+          (monLog) => monLog.id === log.trialId
+        );
+
+        // If no matching monitoring log is found, skip this row
+        if (!monitoringLog) return;
+
+        title = `${monitoringLog.investigatorName.replace(
+          /\s/g,
+          ""
+        )}_${monitoringLog.protocol.replace(
+          /\s/g,
+          ""
+        )}_${monitoringLog.siteVisit.replace(/\s/g, "")}`;
+
+        worksheet.addRow({
+          investigatorName: monitoringLog.investigatorName,
+          protocol: monitoringLog.protocol,
+          siteVisit: monitoringLog.siteVisit,
+          monitorName: log.monitorName,
+          signature: `Digitally signed by ${log.monitorName}, Date: ${log.dateOfVisit}`,
+          typeOfVisit: log.typeOfVisit,
+          purposeOfVisit: log.purposeOfVisit,
+          dateOfVisit: log.dateOfVisit,
+        });
       });
-    });
 
-    // Remove empty rows
-    worksheet.eachRow((row, rowNumber) => {
-      let isRowEmpty = true;
-      row.eachCell((cell) => {
-        if (cell.value) {
-          isRowEmpty = false;
+      // Remove empty rows
+      worksheet.eachRow((row, rowNumber) => {
+        let isRowEmpty = true;
+        row.eachCell((cell) => {
+          if (cell.value) {
+            isRowEmpty = false;
+          }
+        });
+
+        // If row is empty, remove it
+        if (isRowEmpty) {
+          worksheet.spliceRows(rowNumber, 1);
         }
       });
 
-      // If row is empty, remove it
-      if (isRowEmpty) {
-        worksheet.spliceRows(rowNumber, 1);
-      }
-    });
+      // Set the header (this will be shown at the top of the page when printing or viewing)
+      const headerText = `Monitoring_Log_${title}`;
+      worksheet.headerFooter.oddHeader = `&C${headerText}`; // Center the header text
 
-    // Set the header (this will be shown at the top of the page when printing or viewing)
-    const headerText = `Monitoring_Log_${title}`;
-    worksheet.headerFooter.oddHeader = `&C${headerText}`; // Center the header text
+      // Set the footer with justified alignment:
+      const footerDate = new Date().toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      const footerText = `Monitoring Visit Log v${footerDate}`;
 
-    // Set the footer with justified alignment:
-    const footerDate = new Date().toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-    const footerText = `Monitoring Visit Log v${footerDate}`;
+      // Set footer with justified alignment
+      worksheet.headerFooter.oddFooter = `&L${footerText}       &RTrialist`;
 
-    // Set footer with justified alignment
-    worksheet.headerFooter.oddFooter = `&L${footerText}       &RTrialist`;
-
-    // Save as .xlsx file
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `Monitoring_Log_${title}.xlsx`;
-    link.click();
+      // Save as .xlsx file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `Monitoring_Log_${title}.xlsx`;
+      link.click();
+    }
+    setIsPopupOpen(false);
   };
 
   return (
@@ -261,13 +334,34 @@ const CustomToolbar = () => {
           </Button>
         )}
         {currentPathname === `/monitoringLogs/${trialId}/logs` && (
-          <Button
-            onClick={handleExport}
-            className="flex items-center justify-center gap-2"
-          >
-            <FiDownload size={20} />
-            Download
-          </Button>
+          <div>
+            {!isPopupOpen && (
+              <Button
+                onClick={togglePopup}
+                className="flex items-center justify-center gap-2"
+              >
+                <FiDownload size={20} />
+                Download
+              </Button>
+            )}
+
+            {isPopupOpen && (
+              <>
+                <Button
+                  className="cursor-pointer hover:bg-gray-200 p-2 rounded"
+                  onClick={() => handleLogDownload("csv")}
+                >
+                  Download as CSV
+                </Button>
+                <Button
+                  className="cursor-pointer hover:bg-gray-200 p-2 rounded mt-1"
+                  onClick={() => handleLogDownload("xlsx")}
+                >
+                  Download as Excel
+                </Button>
+              </>
+            )}
+          </div>
         )}
       </div>
       {currentPathname === `/monitoringLogs/${trialId}/regulatoryDocs` && (

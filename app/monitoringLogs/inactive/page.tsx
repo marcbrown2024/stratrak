@@ -2,6 +2,7 @@
 
 // react/nextjs components
 import React, { useState, useEffect } from "react";
+import { notFound } from 'next/navigation';
 
 // firestore functions
 import { getTrials } from "@/firebase";
@@ -54,15 +55,19 @@ const InActiveMonitoringLogsPage = () => {
   const [trials, setTrials] = useState<TrialDetails[]>([]);
 
   // Update the state with the imported data
+  // useEffect(() => {
+  //   setLoading(true);
+  //   if (user) {
+  //     getTrials(user?.orgId).then((response) => {
+  //       setTrials(response.data);
+  //       setLoading(false);
+  //     });
+  //   }
+  // }, [user?.orgId]);
+
   useEffect(() => {
-    setLoading(true);
-    if (user) {
-      getTrials(user?.orgId).then((response) => {
-        setTrials(response.data);
-        setLoading(false);
-      });
-    }
-  }, [user?.orgId]);
+    notFound()
+  }, []);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-start">

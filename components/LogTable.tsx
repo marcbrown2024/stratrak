@@ -100,9 +100,6 @@ const LogTable = (props: Props) => {
 
   const handleAmmendSignature = async () => {
     closeAlert();
-    let alert: AlertBody;
-    let alertType: AlertType;
-
     // Iterate over all selected options (now using for...of instead of forEach)
     for (const [rowId, selectedOption] of Object.entries(selectedOptions)) {
       // Logic based on the selected option for each row
@@ -294,18 +291,38 @@ const LogTable = (props: Props) => {
     return "";
   };
 
+  const noRowsColumn: GridColDef = {
+    field: "noRows",
+    headerName: "No rows available",
+    flex: 1,
+    sortable: false,
+    disableColumnMenu: true,
+    headerAlign: "center",
+    headerClassName: "text-blue-500 uppercase bg-blue-50"
+  };
+
+  const fallbackRow: DBLog  = {
+    id: "1",
+    trialId: "14543",
+    monitorName: "N/A",
+    signature: "N/A",
+    typeOfVisit: "Remote",
+    purposeOfVisit: "SIV",
+    dateOfVisit: "N/A",
+  };
+
   return (
     <div className="w-full flex items-center">
       <DataGrid<LogDetails>
         className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4"
-        rows={logs}
-        columns={[
+        rows={logs.length > 0 ? logs : [{ ...fallbackRow }]}
+        columns={logs.length > 0 ? [
           MonitorNameColumn,
           SignatureColumn,
           props.columns[0],
           ...props.columns.slice(1),
           ...(isAdmin ? [ActionColumn] : []),
-        ]}
+        ] : [noRowsColumn]}
         initialState={{
           pagination: {
             paginationModel: {

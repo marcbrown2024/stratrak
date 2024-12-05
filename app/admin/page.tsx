@@ -27,14 +27,21 @@ const Page = () => {
   const [userCount, setUserCount] = useState<number>(0);
   const [adminCount, setAdminCount] = useState<number>(0);
   const [totalCount, setTotalCount] = useState<number>(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [addUser, setAddUser] = useState<boolean>(false);
+  const [findUser, setFindUser] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"Users" | "Admins" | "All Users">(
     "All Users"
   );
+
   const handleFilterChange = (newFilter: "Users" | "Admins" | "All Users") => {
     setFilter(newFilter);
     setCurrentPage(1);
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
   };
 
   const refreshUsers = () => {
@@ -117,48 +124,78 @@ const Page = () => {
         </div>
       </div>
       {/* Filter & Action buttons */}
-      <div className="h-16 w-11/12 flex items-center justify-start gap-8">
-        <button
-          onClick={() => handleFilterChange("Users")}
-          className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-        >
-          <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-            Users
+      <div className="h-16 w-11/12 flex items-center justify-start gap-8 overflow-hidden">
+        {!findUser && (
+          <>
+            <button
+              onClick={() => handleFilterChange("Users")}
+              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
+            >
+              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
+                Users
+              </div>
+            </button>
+            <button
+              onClick={() => handleFilterChange("Admins")}
+              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
+            >
+              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
+                Admins
+              </div>
+            </button>
+            <button
+              onClick={() => handleFilterChange("All Users")}
+              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
+            >
+              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
+                All Users
+              </div>
+            </button>
+            <button
+              onClick={() => setAddUser(true)}
+              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
+            >
+              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
+                {addUser ? "Cancel" : "Add User"}
+              </div>
+            </button>
+            <button
+              onClick={() => setFindUser(true)}
+              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
+            >
+              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
+                Find User
+              </div>
+            </button>
+          </>
+        )}
+        {findUser && (
+          <div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              placeholder="Search for a user..."
+              className="w-80 bg-transparent p-2 border-b rounded focus:outline-none"
+            />
+            <button
+              onClick={() => setFindUser(false)}
+              className="ml-2 p-2 rounded hover:scale-95"
+            >
+              Cancel
+            </button>
           </div>
-        </button>
-        <button
-          onClick={() => handleFilterChange("Admins")}
-          className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-        >
-          <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-            Admins
-          </div>
-        </button>
-        <button
-          onClick={() => handleFilterChange("All Users")}
-          className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-        >
-          <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-            All Users
-          </div>
-        </button>
-        <button
-          onClick={() => setAddUser(true)}
-          className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-        >
-          <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-            {addUser ? "Cancel" : "Add User"}
-          </div>
-        </button>
+        )}
       </div>
       {/* Custom Table */}
       <CustomTable
-        setLoading={setLoading}
         users={users}
         refreshUsers={refreshUsers}
-        currentPage={currentPage}
+        setLoading={setLoading}
         setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
         filter={filter}
+        searchQuery={searchQuery}
       />
       <AdminPopup
         addUser={addUser}
