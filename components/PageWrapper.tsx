@@ -20,7 +20,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
 
   return (
     <div
-      className={`relative h-fit md:min-h-[calc(100vh-80px)] flex flex-col items-center justify-center flex-grow px-8 py-8`}
+      className={`relative min-h-[calc(100vh-72px)] flex flex-col items-center justify-center flex-grow px-8 py-8`}
     >
       <SiteNavBtns />
       <DropDownModal />
