@@ -39,7 +39,7 @@ const Sidebar = () => {
 
   return (
     <div className="fixed h-full w-[17rem] flex flex-col items-center justify-start gap-4 bg-[#1286ff] shadow-lg z-50">
-      <div className="h-32 w-4/5 flex items-center px-3">
+      <div className="h-32 w-11/12 flex items-center px-3">
         <Link href="/" className="flex items-center gap-3 text-xl text-white font-extrabold">
           <Image
             src="/images/logo-no-name.png"
@@ -51,7 +51,7 @@ const Sidebar = () => {
           Trialist
         </Link>
       </div>
-      <div className="w-4/5 flex-1 flex flex-col gap-2 pl-3">
+      <div className="w-11/12 flex-1 flex flex-col gap-2 pl-3">
         {SIDENAV_ITEMS.map((item, idx) => {
           return <MenuItem key={idx} item={item} />;
         })}
