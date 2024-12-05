@@ -11,8 +11,7 @@ import useUser from "@/hooks/UseUser";
 
 const MenuItem = ({ item }: { item: SideNavItem }) => {
   const {user} = useUser()
-
-  const pathname = usePathname();
+  const currentPathname = usePathname();
   const [subMenuOpen, setSubMenuOpen] = useState(false);
 
   const toggleSubMenu = () => {
@@ -21,7 +20,7 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
 
   return (item.requireAdmin && !user?.isAdmin) ? null : (
     
-    <div>
+    <>
       {item.subMenu ? (
         <>
           <div className="w-full flex items-center justify-between text-white p-2 rounded-lg hover:bg-white/10 cursor-pointer">
@@ -44,7 +43,7 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
                   key={idx}
                   href={subItem.path}
                   className={`text-white text-sm ${
-                    subItem.path === pathname ? "font-bold" : ""
+                    subItem.path === currentPathname ? "font-bold" : ""
                   } py-1 rounded hover:bg-white/10`}
                 >
                   <span className="pl-2">{subItem.title}</span>
@@ -57,14 +56,14 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
         item.usage !== "smallScreen" && (
           <Link
             href={item.path}
-            className="flex flex-row items-center text-white space-x-2 p-2 rounded-lg hover:bg-white/10"
+            className={`w-full flex items-center justify-start gap-3 text-white px-2 py-3 ${item.path === currentPathname ? "bg-white/20" : ""} rounded-lg hover:bg-white/20 `}
           >
             {item.icon}
             <span className="font-semibold">{item.title}</span>
           </Link>
         )
       )}
-    </div>
+    </>
   );
 };
 

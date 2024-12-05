@@ -18,9 +18,6 @@ import MenuItem from "./MenuItem";
 // constant data
 import { SIDENAV_ITEMS } from "@/constants";
 
-// images
-import logo from "@/public/images/logo-blue-bg-removed.png";
-
 const Sidebar = () => {
   const { user } = useUser();
   const currentPathname = usePathname();
@@ -41,29 +38,23 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="fixed h-full w-48 xl:w-72 flex flex-1 bg-[#1286ff] z-50">
-      <div className="w-full flex flex-col space-y-6">
-        <Link
-          href="/"
-          className="h-14 w-full flex flex-row items-center justify-center md:justify-start space-x-3 md:px-6 border-b border-zinc-100/20"
-        >
-          <div className="h-14 w-full">
-            <Image
-              src={logo}
-              width={200}
-              height={75}
-              alt={"site logo"}
-              priority
-              className="object-cover w-full h-full -ml-10 transform scale-75"
-            />
-          </div>
+    <div className="fixed h-full w-[17rem] flex flex-col items-center justify-start gap-4 bg-[#1286ff] shadow-lg z-50">
+      <div className="h-32 w-4/5 flex items-center px-3">
+        <Link href="/" className="flex items-center gap-3 text-xl text-white font-extrabold">
+          <Image
+            src="/images/logo-no-name.png"
+            width={300}
+            height={300}
+            alt="site logo"
+            className="h-10 w-10 rounded-full"
+          />
+          Trialist
         </Link>
-
-        <div className="flex flex-col space-y-2 md:px-2">
-          {SIDENAV_ITEMS.map((item, idx) => {
-            return <MenuItem key={idx} item={item} />;
-          })}
-        </div>
+      </div>
+      <div className="w-4/5 flex-1 flex flex-col gap-2 pl-3">
+        {SIDENAV_ITEMS.map((item, idx) => {
+          return <MenuItem key={idx} item={item} />;
+        })}
       </div>
     </div>
   );

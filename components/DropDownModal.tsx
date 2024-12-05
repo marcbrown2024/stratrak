@@ -48,7 +48,7 @@ const DropDownModal = () => {
 
   return (
     <div
-      className={`Popup fixed top-12 right-2 2xl:h-[26rem] 2xl:w-[22rem] hidden md:flex flex-col items-center  ${
+      className={`Popup fixed top-16 right-2 2xl:h-[26rem] 2xl:w-[22rem] hidden md:flex flex-col items-center  ${
         isModalOpen ? "visible opacity-100" : "invisible opacity-0"
       } bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-100 ease-in-out`}
     >

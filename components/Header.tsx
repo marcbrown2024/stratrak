@@ -3,7 +3,8 @@
 // react/nextjs components
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useSelectedLayoutSegment } from "next/navigation";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 // constants
 import { SIDENAV_ITEMS } from "@/constants";
@@ -15,11 +16,13 @@ import UseScroll from "@/hooks/UseScroll";
 import { useModalStore } from "@/store/DropDownModalStore";
 import useUser from "@/hooks/UseUser";
 
+// icons
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { FaChevronDown } from "react-icons/fa";
 const Header = () => {
   const { user } = useUser();
   const scrolled = UseScroll(5);
   const currentPathname = usePathname();
-  const selectedLayout = useSelectedLayoutSegment();
   const { toggleModal, closeModal } = useModalStore();
 
   const splitCamelCase = (str: string) => {
@@ -47,9 +50,9 @@ const Header = () => {
   const pathTitles = [
     { path: "/", title: "Home" },
     { path: "/monitoringLogs", title: "eRegulatory binders" },
-    { path: "/monitoringLogs/active", title: "eRegulatory binders" },
-    { path: "/monitoringLogs/inactive", title: "eRegulatory binders" },
-    { path: "/monitoringLogs/completed", title: "eRegulatory binders" },
+    // { path: "/monitoringLogs/active", title: "eRegulatory binders" },
+    // { path: "/monitoringLogs/inactive", title: "eRegulatory binders" },
+    // { path: "/monitoringLogs/completed", title: "eRegulatory binders" },
   ];
 
   const displayTitle =
@@ -78,43 +81,34 @@ const Header = () => {
     return null;
   }
 
-  const getInitials = (user?: User | null): string => {
-    if (!user) return "";
-
-    // Get the first letter of first name and last name
-    const firstInitial = user.fName ? user.fName.charAt(0).toUpperCase() : "";
-    const lastInitial = user.lName ? user.lName.charAt(0).toUpperCase() : "";
-
-    return `${firstInitial}${lastInitial}`;
-  };
-
   return (
-    <div
-      className={`sticky inset-x-0 top-0 w-full transition-all border-b border-zinc-300 ${
-        scrolled
-          ? "border-b border-zinc-200 bg-slate-50/75 backdrop-blur-lg"
-          : ""
-      } ${selectedLayout ? "border-b border-zinc-200 bg-slate-50" : ""} z-30`}
-    >
-      <div className="h-14 flex items-center justify-between px-6">
-        <span className="flex text-xl font-bold tracking-wide">
-          {displayTitle}
-        </span>
-
-        <div className="flex items-center space-x-4">
-          <Link
-            href="/"
-            className="flex flex-row space-x-3 items-center justify-center md:hidden"
-          ></Link>
+    <div className="h-20 w-full flex items-center justify-between gap-6 px-8">
+      <span className="flex text-xl font-bold tracking-wide">
+        {displayTitle}
+      </span>
+      <div className="w-[16.5rem] flex items-center justify-between">
+        <div className="h-[50px] w-[50px] flex items-center justify-center bg-blue-50 rounded-full">
+          <IoMdNotificationsOutline size={28} />
         </div>
-        <button
-          onClick={() => toggleModal()}
-          className="Popup h-10 w-10 md:flex hidden items-center justify-center text-center bg-[#1286ff] rounded-full"
-        >
-          <span className="text-sm text-white font-extrabold">
-            {getInitials(user)}
-          </span>
-        </button>
+        <div className="flex items-center gap-3">
+          <Image
+            width={200}
+            height={200}
+            src={
+              user?.profilePhoto
+                ? user?.profilePhoto
+                : "/images/profile_user_avatar.png"
+            }
+            alt="Profile Photo"
+            className="h-12 w-12 rounded-full"
+          />
+          <button onClick={() => toggleModal()} className="Popup flex items-center gap-3">
+            <span className="text-gray-500 font-bold">
+              {user?.fName} {user?.lName}
+            </span>
+            <FaChevronDown color="#6b7280" />
+          </button>
+        </div>
       </div>
     </div>
   );
