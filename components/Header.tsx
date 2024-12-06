@@ -102,7 +102,7 @@ const Header = () => {
             togglePopup();
             closeModal();
           }}
-          className="relative h-[50px] w-[50px] flex items-center justify-center bg-blue-50 rounded-full"
+          className="relative h-[50px] w-[50px] flex items-center justify-center bg-blue-100 rounded-full"
         >
           <IoMdNotificationsOutline size={28} />
           {notifications.Unread.length > 0 ? (
@@ -133,10 +133,10 @@ const Header = () => {
             className="h-12 w-12 rounded-full"
           />
           <div className="flex items-center gap-3">
-            <span className="text-gray-500 font-bold">
+            <span className="text-gray-700 font-bold">
               {user?.fName} {user?.lName}
             </span>
-            <FaChevronDown color="#6b7280" />
+            <FaChevronDown color="#374151" />
           </div>
         </button>
       </div>

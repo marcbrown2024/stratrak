@@ -834,8 +834,10 @@ export const fetchNotifications = async (
 
     // Map through the query results and return the user-specific notifications
     const userNotifications = userNotificationsSnapshot.docs.map((doc) => ({
+      id: doc.id, // Use doc.id as the 'id' for the notification
       ...doc.data(),
       createdAt: convertTimestampToDate(doc.data().createdAt), // Convert Firestore timestamp to string
+      global: false, // Mark as not global
     })) as UserNotification[];
 
     // Reference to the globalNotifications collection
@@ -852,8 +854,10 @@ export const fetchNotifications = async (
 
     // Map through the query results and return the global notifications
     const globalNotifications = globalNotificationsSnapshot.docs.map((doc) => ({
+      id: doc.id, // Use doc.id as the 'id' for the notification
       ...doc.data(),
       createdAt: convertTimestampToDate(doc.data().createdAt), // Convert Firestore timestamp to string
+      global: true, // Mark as global
     })) as UserNotification[];
 
     // Combine the user-specific and global notifications
@@ -869,5 +873,60 @@ export const fetchNotifications = async (
   } catch (error) {
     console.error("Error fetching notifications: ", error);
     return [];
+  }
+};
+
+
+export const updateIsRead = async (
+  userId: string,
+  notificationId: string,
+  status: boolean,
+  isGlobal: boolean // New parameter to specify if it's a global notification
+): Promise<boolean> => {
+  try {
+    // Reference to the 'users' collection
+    const usersRef = collection(db, "users");
+
+    // Query to find the user document where the userId field matches the parameter
+    const userQuery = query(usersRef, where("userId", "==", userId));
+
+    // Get the query snapshot of the users collection
+    const userQuerySnapshot = await getDocs(userQuery);
+
+    // If the user is not found
+    if (userQuerySnapshot.empty) {
+      return false;
+    }
+
+    // Assuming there's only one document with the matching userId
+    const userDoc = userQuerySnapshot.docs[0];
+
+    // If it's a global notification, update in the globalNotifications collection
+    if (isGlobal) {
+      const notificationRef = doc(db, "globalNotifications", notificationId);
+      
+      // Update the 'isRead' field to the new status for the global notification
+      await updateDoc(notificationRef, {
+        isRead: status,
+      });
+    } else {
+      // If it's a user notification, update in the user's notifications subcollection
+      const notificationRef = doc(
+        db,
+        "users",
+        userDoc.id,
+        "notifications",
+        notificationId
+      );
+      
+      // Update the 'isRead' field to the new status for the user-specific notification
+      await updateDoc(notificationRef, {
+        isRead: status,
+      });
+    }
+    
+    return true;
+  } catch (error) {
+    return false;
   }
 };

@@ -54,6 +54,8 @@ type AlertBody = {
 };
 
 type UserNotification = {
+  id?: string;
+  global?: boolean;
   title: string;
   message: string;
   isRead: boolean;

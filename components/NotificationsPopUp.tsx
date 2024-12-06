@@ -3,15 +3,20 @@
 // react/nextjs components
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 // firebase components
-import { fetchNotifications } from "@/firebase";
+import { fetchNotifications, updateIsRead } from "@/firebase";
 
 // global stores
 import useNotificationStore from "@/store/NotificationStore ";
+import { useAlertStore } from "@/store/AlertStore";
 
 // custom hooks
 import useUser from "@/hooks/UseUser";
+
+// enums
+import { AlertType } from "@/enums";
 
 // Icons
 import { IoSettings } from "react-icons/io5";
@@ -27,40 +32,63 @@ const NotificationsPopUp = () => {
     setNotifications,
   } = useNotificationStore();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  let hoverTimeout: NodeJS.Timeout;
-
-  const handleMouseEnter = (index: number) => {
-    hoverTimeout = setTimeout(() => {
-      setHoveredIndex(index);
-    }, 1500);
-  };
-
-  const handleMouseLeave = () => {
-    clearTimeout(hoverTimeout);
-    setHoveredIndex(null);
-  };
+  const [showGif, setShowGif] = useState<boolean>(false);
+  const [setAlert, closeAlert] = useAlertStore((state) => [
+    state.setAlert,
+    state.closeAlert,
+  ]);
 
   const handleTabClick = (tab: "All" | "Unread" | "Read") => {
     setActiveTab(tab);
   };
 
   useEffect(() => {
-    const getNotifications = async () => {
-      if (user?.userId) {
-        const fetchedNotifications = await fetchNotifications(user.userId);
+    setTimeout(() => {
+      setShowGif(!showGif);
+    }, 3000);
+  }, [showGif]);
 
-        // Categorize the notifications into All, Unread, and Read
-        const categorizedNotifications = {
-          All: fetchedNotifications,
-          Unread: fetchedNotifications.filter((notif) => !notif.isRead),
-          Read: fetchedNotifications.filter((notif) => notif.isRead),
-        };
+  const getNotifications = async () => {
+    if (user?.userId) {
+      const fetchedNotifications = await fetchNotifications(user.userId);
 
-        // Set the categorized notifications in the store
-        setNotifications(categorizedNotifications);
+      // Categorize the notifications into All, Unread, and Read
+      const categorizedNotifications = {
+        All: fetchedNotifications,
+        Unread: fetchedNotifications.filter((notif) => !notif.isRead),
+        Read: fetchedNotifications.filter((notif) => notif.isRead),
+      };
+
+      // Set the categorized notifications in the store
+      setNotifications(categorizedNotifications);
+    }
+  };
+
+  const handleUpdateIsRead = async (
+    notificationId: string,
+    status: boolean,
+    isGlobal: boolean
+  ) => {
+    closeAlert();
+    if (user?.userId) {
+      const result = await updateIsRead(
+        user.userId,
+        notificationId,
+        status,
+        isGlobal
+      );
+      if (result) {
+        getNotifications();
+      } else {
+        setAlert(
+          { title: "Error!", content: "Failed to mark notification as read." },
+          AlertType.Info
+        );
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     // Fetch notifications when the component mounts
     getNotifications();
   }, [user?.userId, setNotifications]);
@@ -126,14 +154,22 @@ const NotificationsPopUp = () => {
         {notifications[activeTab].map((notification: any, index: number) => (
           <div
             key={index}
+            onClick={() => setHoveredIndex(index)}
             className="relative h-20 w-full flex text-sm text-gray-700 bg-white rounded-lg"
-            onMouseEnter={() => handleMouseEnter(index)}
-            onMouseLeave={handleMouseLeave}
           >
             <div className="h-full flex items-center gap-3 rounded-b-lg">
               <div className="h-full w-[4px] bg-blue-600 rounded-tl-lg rounded-bl-lg"></div>
               <div className="h-8 w-8 flex items-center justify-center bg-blue-50 rounded-full">
-                <IoMdNotificationsOutline size={20} color="#1e40af" />
+                {!showGif && isPopupOpen && activeTab !== "Read" ? (
+                  <IoMdNotificationsOutline size={20} color="#1e40af" />
+                ) : (
+                  <Image
+                    src="/click.gif"
+                    alt="hand click gif"
+                    height={100}
+                    width={100}
+                  />
+                )}
               </div>
             </div>
             <div className="flex-1 flex flex-col justify-center gap-2 px-2 py-1">
@@ -141,13 +177,61 @@ const NotificationsPopUp = () => {
               <div className="text-xs">{notification.message}</div>
             </div>
             {hoveredIndex === index && (
-              <div className="absolute top-0 right-0 h-full w-[calc(100%-4px)] bg-white/90 rounded-r-lg">
+              <div className="absolute top-0 right-0 h-full w-[calc(100%-4px)] flex flex-col items-center justify-center gap-2 bg-white/90 rounded-r-lg">
                 <Link
                   href="/notifications"
-                  className="h-full w-full flex items-center justify-center text-blue-700 font-bold"
+                  className="text-xs text-blue-700 font-bold"
                 >
                   Go to Notifications
                 </Link>
+
+                {/* Conditionally render button based on the activeTab */}
+                {activeTab === "Unread" ? (
+                  <button
+                    onClick={() =>
+                      handleUpdateIsRead(
+                        notification.id,
+                        true,
+                        notification.global
+                      )
+                    }
+                    className="text-xs text-blue-700 font-bold"
+                  >
+                    Mark as Read
+                  </button>
+                ) : activeTab === "Read" ? (
+                  <button
+                    onClick={() =>
+                      handleUpdateIsRead(
+                        notification.id,
+                        false,
+                        notification.global
+                      )
+                    }
+                    className="text-xs text-blue-700 font-bold"
+                  >
+                    Mark as Unread
+                  </button>
+                ) : (
+                  <button
+                    onClick={() =>
+                      handleUpdateIsRead(
+                        notification.id,
+                        !notification.isRead,
+                        notification.global
+                      )
+                    }
+                    className="text-xs text-blue-700 font-bold"
+                  >
+                    {notification.isRead ? "Mark as Unread" : "Mark as Read"}
+                  </button>
+                )}
+                <button
+                  onClick={() => setHoveredIndex(null)}
+                  className="text-xs text-blue-700 font-bold"
+                >
+                  Cancel
+                </button>
               </div>
             )}
           </div>

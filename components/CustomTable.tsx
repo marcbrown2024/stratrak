@@ -339,7 +339,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
                 className={`absolute flex items-center justify-center gap-3 transform ${
                   deleteRowId === item.userId
                     ? "-translate-x-4"
-                    : "translate-x-44"
+                    : "translate-x-60"
                 } transition-all duration-500 ease-in-out`}
               >
                 <button
