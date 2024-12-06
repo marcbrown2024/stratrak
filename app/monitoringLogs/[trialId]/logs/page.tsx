@@ -80,7 +80,7 @@ const LogsPage = () => {
         setLogs(logsResponse.data);
         if (usersResponse.success) setOrgUsers(usersResponse.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        setLogs([]);
       } finally {
         setLoading(false);
       }

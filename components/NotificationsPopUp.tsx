@@ -4,14 +4,21 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
+// firebase components
+import { fetchNotifications } from "@/firebase";
+
 // global stores
 import useNotificationStore from "@/store/NotificationStore ";
+
+// custom hooks
+import useUser from "@/hooks/UseUser";
 
 // Icons
 import { IoSettings } from "react-icons/io5";
 import { IoMdClose, IoMdNotificationsOutline } from "react-icons/io";
 
 const NotificationsPopUp = () => {
+  const { user } = useUser();
   const {
     isPopupOpen,
     notifications,
@@ -33,106 +40,30 @@ const NotificationsPopUp = () => {
     setHoveredIndex(null);
   };
 
-  const testNotifications = {
-    All: [
-      {
-        title: "Trial Submission Update",
-        message: "Your trial submission has been successfully processed.",
-      },
-      {
-        title: "Log Upload Confirmation",
-        message: "Log file 'log_2458.txt' has been uploaded successfully.",
-      },
-      {
-        title: "System Maintenance Alert",
-        message:
-          "Scheduled maintenance for the trial platform is starting at 10:00 PM.",
-      },
-      {
-        title: "Trial Review Completed",
-        message:
-          "Your trial review has been completed and is now available for feedback.",
-      },
-      {
-        title: "Trial Status Update",
-        message:
-          "The trial 'Cancer Treatment 2024' has moved to the review stage.",
-      },
-      {
-        title: "Log Review Feedback",
-        message: "Your recent log entries have been approved by the admin.",
-      },
-      {
-        title: "Log Upload Success",
-        message:
-          "Log file 'log_5432.txt' was successfully processed and archived.",
-      },
-      {
-        title: "System Update Complete",
-        message:
-          "The system update to version 2.5 has been completed successfully.",
-      },
-      {
-        title: "New Trial Alert",
-        message:
-          "A new trial has been added to your dashboard. Check it out now!",
-      },
-      {
-        title: "New Log Entry Pending",
-        message: "Your latest log entry 'log_9874.txt' is awaiting approval.",
-      },
-      {
-        title: "Urgent System Notice",
-        message:
-          "There was an error processing your trial data. Please review the logs.",
-      },
-    ],
-    Unread: [
-      {
-        title: "New Trial Alert",
-        message:
-          "A new trial has been added to your dashboard. Check it out now!",
-      },
-      {
-        title: "New Log Entry Pending",
-        message: "Your latest log entry 'log_9874.txt' is awaiting approval.",
-      },
-      {
-        title: "Urgent System Notice",
-        message:
-          "There was an error processing your trial data. Please review the logs.",
-      },
-    ],
-    Read: [
-      {
-        title: "Trial Status Update",
-        message:
-          "The trial 'Cancer Treatment 2024' has moved to the review stage.",
-      },
-      {
-        title: "Log Review Feedback",
-        message: "Your recent log entries have been approved by the admin.",
-      },
-      {
-        title: "Log Upload Success",
-        message:
-          "Log file 'log_5432.txt' was successfully processed and archived.",
-      },
-      {
-        title: "System Update Complete",
-        message:
-          "The system update to version 2.5 has been completed successfully.",
-      },
-    ],
-  };
-
-  useEffect(() => {
-    setNotifications(testNotifications);
-  }, [setNotifications]);
-
   const handleTabClick = (tab: "All" | "Unread" | "Read") => {
     setActiveTab(tab);
   };
+
+  useEffect(() => {
+    const getNotifications = async () => {
+      if (user?.userId) {
+        const fetchedNotifications = await fetchNotifications(user.userId);
+
+        // Categorize the notifications into All, Unread, and Read
+        const categorizedNotifications = {
+          All: fetchedNotifications,
+          Unread: fetchedNotifications.filter((notif) => !notif.isRead),
+          Read: fetchedNotifications.filter((notif) => notif.isRead),
+        };
+
+        // Set the categorized notifications in the store
+        setNotifications(categorizedNotifications);
+      }
+    };
+
+    // Fetch notifications when the component mounts
+    getNotifications();
+  }, [user?.userId, setNotifications]);
 
   if (!isPopupOpen) {
     return null;

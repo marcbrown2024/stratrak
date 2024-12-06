@@ -19,6 +19,7 @@ import {
   where,
   arrayUnion,
   arrayRemove,
+  orderBy,
 } from "firebase/firestore";
 
 import {
@@ -663,7 +664,7 @@ export const getAllUsers = async (orgId: string) => {
         ...userData,
         lastActivity: convertTimestampToDate(userData.lastActivity),
       } as User);
-    }); 
+    });
 
     return { success: true, data: users };
   } catch (e: any) {
@@ -781,7 +782,6 @@ export const updateOptionsField = async (
   }
 };
 
-
 export const updateLogSignature = async (
   documentId: string,
   signature: string
@@ -796,7 +796,78 @@ export const updateLogSignature = async (
     return { success: true };
   } catch (e: any) {
     // Log the error if needed for debugging
-    console.error("Error updating signature:", e);
     return { success: false };
+  }
+};
+
+export const fetchNotifications = async (
+  userId: string
+): Promise<UserNotification[]> => {
+  try {
+    // Reference to the users collection
+    const usersRef = collection(db, "users");
+
+    // Query to find the user document where the userId field matches the parameter
+    const userQuery = query(usersRef, where("userId", "==", userId));
+
+    // Get the query snapshot of the users collection
+    const querySnapshot = await getDocs(userQuery);
+
+    if (querySnapshot.empty) {
+      return [];
+    }
+
+    // Assuming there's only one document with the matching userId
+    const userDoc = querySnapshot.docs[0];
+
+    // Reference to the user's notifications subcollection
+    const notificationsRef = collection(userDoc.ref, "notifications");
+
+    // Query to get user-specific notifications, ordered by createdAt timestamp
+    const userNotificationsQuery = query(
+      notificationsRef,
+      orderBy("createdAt", "desc")
+    );
+
+    // Get the user-specific notifications
+    const userNotificationsSnapshot = await getDocs(userNotificationsQuery);
+
+    // Map through the query results and return the user-specific notifications
+    const userNotifications = userNotificationsSnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      createdAt: convertTimestampToDate(doc.data().createdAt), // Convert Firestore timestamp to string
+    })) as UserNotification[];
+
+    // Reference to the globalNotifications collection
+    const globalNotificationsRef = collection(db, "globalNotifications");
+
+    // Query to get global notifications, ordered by createdAt timestamp
+    const globalNotificationsQuery = query(
+      globalNotificationsRef,
+      orderBy("createdAt", "desc")
+    );
+
+    // Get the global notifications
+    const globalNotificationsSnapshot = await getDocs(globalNotificationsQuery);
+
+    // Map through the query results and return the global notifications
+    const globalNotifications = globalNotificationsSnapshot.docs.map((doc) => ({
+      ...doc.data(),
+      createdAt: convertTimestampToDate(doc.data().createdAt), // Convert Firestore timestamp to string
+    })) as UserNotification[];
+
+    // Combine the user-specific and global notifications
+    const allNotifications = [...userNotifications, ...globalNotifications];
+
+    // Sort the combined notifications by createdAt timestamp (desc)
+    const sortedNotifications = allNotifications.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    return sortedNotifications;
+  } catch (error) {
+    console.error("Error fetching notifications: ", error);
+    return [];
   }
 };

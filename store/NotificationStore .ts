@@ -1,15 +1,11 @@
 import { create } from "zustand";
 
-interface Notification {
-  title: string;
-  message: string;
-}
-
 interface NotificationStore {
   notifications: {
-    All: Notification[];
-    Unread: Notification[];
-    Read: Notification[];
+    All: UserNotification[];
+    Unread: UserNotification[];
+    Read: UserNotification[];
+    
   };
   activeTab: "All" | "Unread" | "Read";
   isPopupOpen: boolean;
@@ -17,9 +13,9 @@ interface NotificationStore {
   togglePopup: () => void;
   closePopUp: () => void;
   setNotifications: (notifications: {
-    All: Notification[];
-    Unread: Notification[];
-    Read: Notification[];
+    All: UserNotification[];
+    Unread: UserNotification[];
+    Read: UserNotification[];
   }) => void;
 }
 

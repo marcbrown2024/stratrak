@@ -53,6 +53,13 @@ type AlertBody = {
   content: string;
 };
 
+type UserNotification = {
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+};
+
 type User = {
   email: string;
   isAdmin: boolean | undefined;
@@ -69,6 +76,7 @@ type User = {
   city: string;
   state: string;
   postalCode: string;
+  notifications?: Notification[];
 };
 
 // Define the type for help form data
