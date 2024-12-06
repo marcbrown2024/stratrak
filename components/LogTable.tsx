@@ -202,7 +202,11 @@ const LogTable = (props: Props) => {
             </select>
           ) : (
             <button
-              onClick={() => setSelectedRow(row, true)}
+              onClick={() => {
+                if (row.signature !== "Must be done by monitor") {
+                  setSelectedRow(row, true);
+                }
+              }}
               className="h-[50px] w-fit flex items-center text-center"
             >
               {isBase64Image ? (
@@ -298,10 +302,10 @@ const LogTable = (props: Props) => {
     sortable: false,
     disableColumnMenu: true,
     headerAlign: "center",
-    headerClassName: "text-blue-500 uppercase bg-blue-50"
+    headerClassName: "text-blue-500 uppercase bg-blue-50",
   };
 
-  const fallbackRow: DBLog  = {
+  const fallbackRow: DBLog = {
     id: "1",
     trialId: "14543",
     monitorName: "N/A",
@@ -316,13 +320,17 @@ const LogTable = (props: Props) => {
       <DataGrid<LogDetails>
         className="h-fit w-[60rem] 2xl:w-[80rem] p-6 gap-4"
         rows={logs.length > 0 ? logs : [{ ...fallbackRow }]}
-        columns={logs.length > 0 ? [
-          MonitorNameColumn,
-          SignatureColumn,
-          props.columns[0],
-          ...props.columns.slice(1),
-          ...(isAdmin ? [ActionColumn] : []),
-        ] : [noRowsColumn]}
+        columns={
+          logs.length > 0
+            ? [
+                MonitorNameColumn,
+                SignatureColumn,
+                props.columns[0],
+                ...props.columns.slice(1),
+                ...(isAdmin ? [ActionColumn] : []),
+              ]
+            : [noRowsColumn]
+        }
         initialState={{
           pagination: {
             paginationModel: {

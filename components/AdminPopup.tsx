@@ -85,7 +85,8 @@ const AdminPopup: React.FC<PopupProps> = ({
     purposeOfVisit: "SIV",
     dateOfVisit: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [monitorUserId, setMonitorUserId] = useState<string>("");
   const [setAlert, closeAlert] = useAlertStore((state) => [
     state.setAlert,
     state.closeAlert,
@@ -261,7 +262,7 @@ const AdminPopup: React.FC<PopupProps> = ({
     e.preventDefault();
     closeAlert();
 
-    if (user) {
+    if (user && monitorUserId) {
       if (user.signature === "" || user.signature === blankImage) {
         setAlert(
           {
@@ -285,38 +286,42 @@ const AdminPopup: React.FC<PopupProps> = ({
         dateOfVisit: formattedDate,
       };
 
-      createLog(ammendlogDetailsWithFormattedDate, trialId as string).then(
-        (response) => {
-          const alert = response.success
-            ? {
-                title: "Success!",
-                content: `Log saved successfully.`,
-              }
-            : {
-                title: "Error",
-                content: "Could not save log, please try again.",
-              };
-          setAlert(
-            alert,
-            response.success ? AlertType.Success : AlertType.Error
-          );
-        }
-      );
+      createLog(
+        ammendlogDetailsWithFormattedDate,
+        trialId as string,
+        user.userId,
+        `${user.fName} ${user.lName}`,
+        monitorUserId,
+        ammendlogDetails.monitorName
+      ).then((response) => {
+        const alert = response.success
+          ? {
+              title: "Success!",
+              content: `Log saved successfully.`,
+            }
+          : {
+              title: "Error",
+              content: "Could not save log, please try again.",
+            };
+        setAlert(alert, response.success ? AlertType.Success : AlertType.Error);
 
-      setIsOpen(false);
-      setAmmendLogDetails({
-        adminName: "",
-        adminSig: "",
-        ammended: false,
-        ammendedDate: format(new Date(), "MMMM d, yyyy h:mm:ss a 'UTC'XXX"),
-        ammendedReason: "",
-        monitorName: "",
-        signature: "",
-        typeOfVisit: "Remote",
-        purposeOfVisit: "SIV",
-        dateOfVisit: "",
+        if (response.success) {
+          setIsOpen(false);
+          setAmmendLogDetails({
+            adminName: "",
+            adminSig: "",
+            ammended: false,
+            ammendedDate: format(new Date(), "MMMM d, yyyy h:mm:ss a 'UTC'XXX"),
+            ammendedReason: "",
+            monitorName: "",
+            signature: "",
+            typeOfVisit: "Remote",
+            purposeOfVisit: "SIV",
+            dateOfVisit: "",
+          });
+          setTimeout(() => window.location.reload(), 2000);
+        }
       });
-      setTimeout(() => window.location.reload(), 2000);
     }
   };
 
@@ -504,7 +509,17 @@ const AdminPopup: React.FC<PopupProps> = ({
                       id="monitorName"
                       name="monitorName"
                       value={ammendlogDetails.monitorName}
-                      onChange={handleAmmendLogChange}
+                      onChange={(e) => {
+                        const selectedMonitor = orgUsers?.find(
+                          (monitor) =>
+                            `${monitor.fName} ${monitor.lName}` ===
+                            e.target.value
+                        );
+                        if (selectedMonitor) {
+                          setMonitorUserId(selectedMonitor.userId);
+                        }
+                        handleAmmendLogChange(e); // Continue updating other state as needed
+                      }}
                       required
                     >
                       <option value="" disabled>
@@ -638,7 +653,7 @@ const AdminPopup: React.FC<PopupProps> = ({
                   type="submit"
                   className="h-12 w-32 text-white font-semibold bg-blue-600 rounded-lg hover:bg-blue-800 focus:outline-none focus:shadow-outline"
                 >
-                  {addUser ? "Add User" : "Amend Log"}
+                  {addUser ? "Add User" : "Amend"}
                 </button>
               </div>
             </form>

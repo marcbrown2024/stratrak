@@ -198,7 +198,11 @@ const NotificationsPopUp = () => {
                   <div className="text-xs font-semibold">
                     {notification.title}
                   </div>
-                  <div className="text-xs">{notification.message}</div>
+                  <div className="text-xs">
+                    {notification.message.length > 70
+                      ? `${notification.message.substring(0, 70)}...`
+                      : notification.message}
+                  </div>
                 </div>
               </div>
               <div
@@ -212,7 +216,7 @@ const NotificationsPopUp = () => {
                   href="/notifications"
                   className="text-xs text-blue-700 font-bold"
                 >
-                  Go to Notifications
+                  Read More
                 </Link>
 
                 {activeTab === "Unread" ? (
@@ -262,3 +266,44 @@ const NotificationsPopUp = () => {
 };
 
 export default NotificationsPopUp;
+
+{/* <div className="flex-1 flex flex-col justify-center gap-2 px-2 py-1">
+<div className="text-xs font-semibold">
+  {notification.title}
+</div>
+<div className="text-xs">
+  {/* Check if the message contains "Link:" and wrap the URL */}
+  // {notification.message.includes("Link:")
+    // ? // Split the message into two parts: before and after "Link:"
+      // notification.message
+        // .split("Link:")
+        // .map((part: string, index: number) => {
+        //   if (index === 0) {
+        //     return part; // Return the part before "Link:" as plain text
+        //   } else {
+        //     // The second part should contain the URL after "Link:"
+        //     const url = part.split(" ")[0]; // Extract the URL
+        //     const rest = part.substring(url.length); // The remaining text after the URL
+
+        //     // Return the part before the URL as plain text, wrap the URL in a Link component
+        //     return (
+        //       <>
+        //         Link:
+        //         <Link
+        //           href={url}
+        //           key={index}
+        //           className="text-blue-600 underline"
+        //         >
+        //           {url}
+        //         </Link>
+        //         {rest}
+        //       </>
+        //     );
+        //   }
+        // })
+//     : // If there's no "Link:", just display the full message
+//     notification.message.length > 70
+//     ? `${notification.message.substring(0, 70)}...`
+//     : notification.message}
+// </div>
+// </div> */}

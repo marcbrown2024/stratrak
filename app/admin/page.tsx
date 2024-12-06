@@ -2,6 +2,7 @@
 
 // react/nextjs components
 import React, { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
 
 // firebase components/functions
 import { getAllUsers } from "@/firebase";
@@ -18,7 +19,9 @@ import AdminPopup from "@/components/AdminPopup";
 
 // icons
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
-import { redirect } from "next/navigation";
+import { FaPlus } from "react-icons/fa6";
+import { CiSearch } from "react-icons/ci";
+import { IoFilter } from "react-icons/io5";
 
 const Page = () => {
   const { user } = useUser();
@@ -28,8 +31,8 @@ const Page = () => {
   const [adminCount, setAdminCount] = useState<number>(0);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [showFilterPopup, setShowFilterPopup] = useState<boolean>(false);
   const [addUser, setAddUser] = useState<boolean>(false);
-  const [findUser, setFindUser] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"Users" | "Admins" | "All Users">(
     "All Users"
@@ -38,6 +41,7 @@ const Page = () => {
   const handleFilterChange = (newFilter: "Users" | "Admins" | "All Users") => {
     setFilter(newFilter);
     setCurrentPage(1);
+    setShowFilterPopup(false)
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,68 +128,85 @@ const Page = () => {
         </div>
       </div>
       {/* Filter & Action buttons */}
-      <div className="h-16 w-11/12 flex items-center justify-start gap-8">
-        {!findUser && (
-          <>
-            <button
-              onClick={() => handleFilterChange("Users")}
-              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-            >
-              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-                Users
-              </div>
-            </button>
-            <button
-              onClick={() => handleFilterChange("Admins")}
-              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-            >
-              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-                Admins
-              </div>
-            </button>
-            <button
-              onClick={() => handleFilterChange("All Users")}
-              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-            >
-              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-                All Users
-              </div>
-            </button>
-            <button
-              onClick={() => setAddUser(true)}
-              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-            >
-              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-                {addUser ? "Cancel" : "Add User"}
-              </div>
-            </button>
-            <button
-              onClick={() => setFindUser(true)}
-              className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
-            >
-              <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
-                Find User
-              </div>
-            </button>
-          </>
-        )}
-        {findUser && (
-          <div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Search for a user..."
-              className="w-80 bg-transparent p-2 border-b rounded focus:outline-none"
-            />
-            <button
-              onClick={() => setFindUser(false)}
-              className="ml-2 p-2 rounded hover:scale-95"
-            >
-              Cancel
-            </button>
+      <div className="relative w-11/12 flex items-center justify-between">
+        <div className="text-lg font-semibold">
+          {filter === "Admins" ? (
+            <div>
+              Admins<span className="text-gray-400 ml-2">{adminCount}</span>
+            </div>
+          ) : filter === "Users" ? (
+            <div>
+              Users<span className="text-gray-400 ml-2">{userCount}</span>
+            </div>
+          ) : (
+            <div>
+              All Users<span className="text-gray-400 ml-2">{totalCount}</span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="h-10 w-60 flex items-center gap-3 bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg">
+            <div className="h-full w-full flex items-center justify-center gap-2 font-semibold bg-gray-200 px-2 rounded-md shadow-lg">
+              <CiSearch size={20} color="black" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Search"
+                className="w-full bg-transparent focus:outline-none"
+              />
+            </div>
           </div>
-        )}
+          <button
+            onClick={() => setShowFilterPopup(!showFilterPopup)}
+            className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
+          >
+            <div className="h-full w-full flex items-center justify-center gap-2 font-semibold bg-gray-200 rounded-md shadow-lg">
+              <IoFilter />
+              <span className="">Filters</span>
+            </div>
+          </button>
+          <button
+            onClick={() => setAddUser(true)}
+            className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
+          >
+            <div className="h-full w-full flex items-center justify-center font-semibold bg-gray-200 rounded-md shadow-lg">
+              {addUser ? (
+                "Cancel"
+              ) : (
+                <div className="flex items-center gap-2">
+                  <FaPlus size={14} />
+                  Add User
+                </div>
+              )}
+            </div>
+          </button>
+          {showFilterPopup && (
+            <div className="absolute top-12 right-[8.5rem] w-28 flex flex-col text-sm text-gray-700 bg-gray-200 p-3 rounded-lg shadow">
+              <button
+                type="button"
+                onClick={() => handleFilterChange("All Users")}
+                className="font-semibold p-1 rounded-md hover:bg-black/10"
+              >
+                All Users
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFilterChange("Admins")}
+                className="font-semibold p-1 rounded-md hover:bg-black/10"
+              >
+                Admins
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFilterChange("Users")}
+                className="font-semibold p-1 rounded-md hover:bg-black/10"
+              >
+                Users
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       {/* Custom Table */}
       <CustomTable

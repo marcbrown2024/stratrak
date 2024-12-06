@@ -434,7 +434,7 @@ const CustomToolbar = () => {
                 style={{ backgroundColor: "#384151", color: "#fff" }}
                 onClick={() => setIsOpen(true)}
               >
-                {isOpen ? "Cancel" : "Ammend Log"}
+                {isOpen ? "Cancel" : "Amend Log"}
               </Button>
             )}
           </>
