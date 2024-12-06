@@ -493,7 +493,7 @@ export const createLog = async (
       } as LogDetails,
     };
 
-    if (response.success) {
+    if (response.success && userId1) {
       await createNotificationForUsers(
         userId1,
         adminName,

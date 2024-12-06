@@ -70,7 +70,14 @@ const Disclaimer: React.FC<DisclaimerProps> = ({
     };
 
     setSavingLog(true);
-    createLog(logData, trialId).then((response) => {
+    createLog(
+      logData,
+      trialId,
+      "",
+      "",
+      "",
+      ""
+    ).then((response) => {
       const alert = response.success
         ? {
             title: "Success!",
