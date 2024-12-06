@@ -239,22 +239,22 @@ const CustomTable: React.FC<CustomTableProps> = ({
     <div className="w-11/12 bg-gray-200 pb-[6px] rounded-lg overflow-hidden">
       <div className="h-14 w-full bg-gray-300 pr-2 shadow-lg rounded-t-lg">
         <div className="h-full w-full flex text-sm text-left font-semibold tracking-wide uppercase bg-gray-200 rounded-t-lg shadow-lg">
-          <div className="h-full w-3/12 flex items-center justify-start px-4">
+          <div className="h-full w-[20%] flex items-center justify-start px-4">
             Member
           </div>
-          <div className="h-full w-1/12 flex items-center justify-start px-4">
+          <div className="h-full w-32 flex items-center justify-start px-4">
             Admin
           </div>
-          <div className="h-full w-3/12 flex items-center justify-start px-4">
+          <div className="h-full w-[20%] flex items-center justify-start px-4">
             Email
           </div>
           <div className="h-full w-60 flex items-center justify-start px-4">
             Last Activity
           </div>
-          <div className="h-full w-2/12 flex items-center justify-start px-4">
+          <div className="h-full w-[21%] flex items-center justify-start px-4">
             Action
           </div>
-          <div className="h-full w-2/12 flex items-center justify-start px-4">
+          <div className="h-full w-[21%] flex items-center justify-start px-4">
             Change Role
           </div>
         </div>
@@ -265,7 +265,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             key={item.userId}
             className="h-full w-full flex text-sm text-gray-700 text-left bg-gray-100 border-b hover:bg-gray-50 shadow-lg"
           >
-            <div className="h-full w-3/12 flex items-center justify-start gap-2 px-4 overflow-hidden">
+            <div className="h-full w-[20%] flex items-center justify-start gap-2 px-4 overflow-hidden">
               <Image
                 width={20}
                 height={20}
@@ -281,16 +281,16 @@ const CustomTable: React.FC<CustomTableProps> = ({
                 {item.fName} {item.lName}
               </span>
             </div>
-            <div className="h-full w-1/12 flex items-center justify-start px-4">
+            <div className="h-full w-32 flex items-center justify-start px-4">
               {item.isAdmin ? "Yes" : "No"}
             </div>
-            <div className="h-full w-3/12 flex items-center justify-start px-4 overflow-hidden">
+            <div className="h-full w-[20%] flex items-center justify-start text-nowrap px-4 overflow-hidden">
               {item.email}
             </div>
             <div className="h-full w-60 flex items-center justify-start px-4 overflow-hidden">
               {item.lastActivity ? item.lastActivity : "N/A"}
             </div>
-            <div className="relative h-full w-2/12 flex items-center justify-start pl-11 overflow-hidden">
+            <div className="relative h-full w-[21%] flex items-center justify-start pl-11 overflow-hidden">
               <button
                 onClick={() => handlePrivilegeChangeClick(item.userId)}
                 className={`w-32 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
@@ -324,7 +324,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
                 </button>
               </div>
             </div>
-            <div className="relative h-full w-2/12 flex items-center justify-start pl-8 overflow-hidden">
+            <div className="relative h-full w-[21%] flex items-center justify-start pl-8 overflow-hidden">
               <button
                 onClick={() => handleDeleteClick(item.userId)}
                 className={`w-28 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${

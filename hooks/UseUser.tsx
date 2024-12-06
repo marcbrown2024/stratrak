@@ -1,13 +1,19 @@
 "use client";
 
+// react/nextjs components
 import React, { useEffect, useState } from 'react';
+
+// firebase components
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, getUserFromDb } from "@/firebase";
+
+// global states
+import LoadingStore from "@/store/LoadingStore";
 
 const useUser = () => {
   const [authUser] = useAuthState(auth);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const { setLoading } = LoadingStore();
   const [error, setError] = useState<string | null>(null); // Error state
 
   useEffect(() => {
@@ -31,7 +37,7 @@ const useUser = () => {
     fetchUser();
   }, [authUser]);
 
-  return { user, loading, error };
+  return { user, error };
 };
 
 export default useUser;

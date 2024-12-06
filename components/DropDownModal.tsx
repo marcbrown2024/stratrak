@@ -5,11 +5,15 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-// zustand stores
+// global stores
 import { useModalStore } from "@/store/DropDownModalStore";
+import useNotificationStore from "@/store/NotificationStore ";
 
 // firebase components
 import { getOrganizationName } from "@/firebase";
+
+// custom hooks
+import useUser from "@/hooks/UseUser";
 
 // Icons
 import { AiOutlineClose } from "react-icons/ai";
@@ -18,7 +22,6 @@ import { FaUserLock } from "react-icons/fa6";
 import { MdOutlineHelp } from "react-icons/md";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase";
-import useUser from "@/hooks/UseUser";
 
 const DropDownModal = () => {
   const { user } = useUser();
@@ -46,17 +49,15 @@ const DropDownModal = () => {
     fetchOrganizationName();
   }, [user]);
 
+  if (!isModalOpen) {
+    return null;
+  }
+
   return (
-    <div
-      className={`Popup fixed top-16 right-2 2xl:h-[26rem] 2xl:w-[22rem] hidden md:flex flex-col items-center  ${
-        isModalOpen ? "visible opacity-100" : "invisible opacity-0"
-      } bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-100 ease-in-out`}
-    >
+    <div className="Popup fixed top-16 right-2 2xl:h-[26rem] 2xl:w-[22rem] hidden md:flex flex-col items-center bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-100 ease-in-out">
       <div className="h-1/2 w-full flex flex-col items-center justify-center gap-4 text-gray-700 p-4">
         <div className="h-auto w-full flex items-center justify-between">
-          <span className="text-lg  font-bold tracking-wider">
-            User Acount
-          </span>
+          <span className="text-lg  font-bold tracking-wider">User Acount</span>
           <button
             onClick={closeModal}
             className="flex items-center justify-center"

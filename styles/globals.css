@@ -18,6 +18,6 @@ html {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #efeeee;
+  background: #2563eb;
   border-radius: 1rem;
 }

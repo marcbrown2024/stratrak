@@ -12,18 +12,23 @@ import { SIDENAV_ITEMS } from "@/constants";
 // custom hooks
 import UseScroll from "@/hooks/UseScroll";
 
-// zustand stores
+// global stores
 import { useModalStore } from "@/store/DropDownModalStore";
+import useNotificationStore from "@/store/NotificationStore ";
+
+// custom hooks
 import useUser from "@/hooks/UseUser";
 
 // icons
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
+
 const Header = () => {
   const { user } = useUser();
   const scrolled = UseScroll(5);
   const currentPathname = usePathname();
   const { toggleModal, closeModal } = useModalStore();
+  const { notifications, togglePopup, closePopUp } = useNotificationStore();
 
   const splitCamelCase = (str: string) => {
     return str
@@ -66,6 +71,7 @@ const Header = () => {
       const target = event.target as HTMLElement;
       if (!target.closest(".Popup")) {
         closeModal();
+        closePopUp();
       }
     };
     document.addEventListener("click", closePopupsOnOutsideClick);
@@ -82,19 +88,39 @@ const Header = () => {
   }
 
   return (
-    <div className={`sticky inset-x-0 top-0 h-[4.5rem] w-full flex items-center justify-between gap-6 px-8 border-b border-zinc-200 ${
-      scrolled
-        ? "bg-slate-50/75 backdrop-blur-lg"
-        : ""
-    } transition-all z-30`}>
+    <div
+      className={`sticky inset-x-0 top-0 h-[4.5rem] w-full flex items-center justify-between gap-6 px-8 border-b border-zinc-200 ${
+        scrolled ? "bg-slate-50/75 backdrop-blur-lg" : ""
+      } transition-all z-30`}
+    >
       <span className="flex text-xl font-bold tracking-wide">
         {displayTitle}
       </span>
-      <div className="w-[16.5rem] flex items-center justify-between">
-        <div className="h-[50px] w-[50px] flex items-center justify-center bg-blue-50 rounded-full">
+      <div className="Popup w-[16.5rem] flex items-center justify-between">
+        <button
+          onClick={() => {
+            togglePopup();
+            closeModal();
+          }}
+          className="relative h-[50px] w-[50px] flex items-center justify-center bg-blue-50 rounded-full"
+        >
           <IoMdNotificationsOutline size={28} />
-        </div>
-        <div className="flex items-center gap-3">
+          {notifications.Unread.length > 0 ? (
+            <div className="absolute top-2 right-2 h-4 w-4 flex items-center justify-center text-xs text-white font-semibold bg-blue-600 rounded-full">
+              {notifications.Unread.length}
+            </div>
+          ) : (
+            <div className="absolute top-4 right-4 h-2 w-2 bg-blue-600 rounded-full"/>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            toggleModal();
+            closePopUp();
+          }}
+          className="flex items-center gap-3"
+        >
           <Image
             width={200}
             height={200}
@@ -106,13 +132,13 @@ const Header = () => {
             alt="Profile Photo"
             className="h-12 w-12 rounded-full"
           />
-          <button onClick={() => toggleModal()} className="Popup flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <span className="text-gray-500 font-bold">
               {user?.fName} {user?.lName}
             </span>
             <FaChevronDown color="#6b7280" />
-          </button>
-        </div>
+          </div>
+        </button>
       </div>
     </div>
   );
