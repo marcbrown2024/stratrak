@@ -20,6 +20,7 @@ import {
   arrayUnion,
   arrayRemove,
   orderBy,
+  writeBatch,
 } from "firebase/firestore";
 
 import {
@@ -800,17 +801,68 @@ export const updateLogSignature = async (
   }
 };
 
-export const fetchNotifications = async (
+// Function to check and clone global notifications into the user's notification subcollection
+export const fetchGlobalNotificationsForUser = async (
   userId: string
-): Promise<UserNotification[]> => {
+): Promise<void> => {
   try {
     // Reference to the users collection
     const usersRef = collection(db, "users");
 
     // Query to find the user document where the userId field matches the parameter
     const userQuery = query(usersRef, where("userId", "==", userId));
+    const querySnapshot = await getDocs(userQuery);
 
-    // Get the query snapshot of the users collection
+    if (querySnapshot.empty) {
+      console.error("No user found with the specified userId");
+      return;
+    }
+
+    // Assuming there's only one document with the matching userId
+    const userDoc = querySnapshot.docs[0];
+
+    // Reference to the user's notifications subcollection
+    const notificationsRef = collection(userDoc.ref, "notifications");
+
+    // Fetch existing user-specific notifications
+    const userNotificationsSnapshot = await getDocs(notificationsRef);
+    const existingNotificationIds = userNotificationsSnapshot.docs.map(
+      (doc) => doc.id
+    );
+
+    // Fetch global notifications
+    const globalNotificationsRef = collection(db, "globalNotifications");
+    const globalNotificationsSnapshot = await getDocs(globalNotificationsRef);
+
+    // Use Firestore writeBatch
+    const batch = writeBatch(db);
+    globalNotificationsSnapshot.docs.forEach((globalDoc) => {
+      if (!existingNotificationIds.includes(globalDoc.id)) {
+        const newDocRef = doc(notificationsRef, globalDoc.id);
+        batch.set(newDocRef, globalDoc.data());
+      }
+    });
+
+    // Commit the batched writes
+    await batch.commit();
+  } catch (error) {
+    console.error("Error syncing global notifications for user: ", error);
+  }
+};
+
+// Function to fetch user-specific notifications
+export const fetchNotifications = async (
+  userId: string
+): Promise<UserNotification[]> => {
+  try {
+    // Ensure global notifications are synced first
+    await fetchGlobalNotificationsForUser(userId);
+
+    // Reference to the users collection
+    const usersRef = collection(db, "users");
+
+    // Query to find the user document where the userId field matches the parameter
+    const userQuery = query(usersRef, where("userId", "==", userId));
     const querySnapshot = await getDocs(userQuery);
 
     if (querySnapshot.empty) {
@@ -837,51 +889,19 @@ export const fetchNotifications = async (
       id: doc.id, // Use doc.id as the 'id' for the notification
       ...doc.data(),
       createdAt: convertTimestampToDate(doc.data().createdAt), // Convert Firestore timestamp to string
-      global: false, // Mark as not global
     })) as UserNotification[];
 
-    // Reference to the globalNotifications collection
-    const globalNotificationsRef = collection(db, "globalNotifications");
-
-    // Query to get global notifications, ordered by createdAt timestamp
-    const globalNotificationsQuery = query(
-      globalNotificationsRef,
-      orderBy("createdAt", "desc")
-    );
-
-    // Get the global notifications
-    const globalNotificationsSnapshot = await getDocs(globalNotificationsQuery);
-
-    // Map through the query results and return the global notifications
-    const globalNotifications = globalNotificationsSnapshot.docs.map((doc) => ({
-      id: doc.id, // Use doc.id as the 'id' for the notification
-      ...doc.data(),
-      createdAt: convertTimestampToDate(doc.data().createdAt), // Convert Firestore timestamp to string
-      global: true, // Mark as global
-    })) as UserNotification[];
-
-    // Combine the user-specific and global notifications
-    const allNotifications = [...userNotifications, ...globalNotifications];
-
-    // Sort the combined notifications by createdAt timestamp (desc)
-    const sortedNotifications = allNotifications.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-
-    return sortedNotifications;
+    return userNotifications;
   } catch (error) {
     console.error("Error fetching notifications: ", error);
     return [];
   }
 };
 
-
 export const updateIsRead = async (
   userId: string,
   notificationId: string,
   status: boolean,
-  isGlobal: boolean // New parameter to specify if it's a global notification
 ): Promise<boolean> => {
   try {
     // Reference to the 'users' collection
@@ -901,30 +921,18 @@ export const updateIsRead = async (
     // Assuming there's only one document with the matching userId
     const userDoc = userQuerySnapshot.docs[0];
 
-    // If it's a global notification, update in the globalNotifications collection
-    if (isGlobal) {
-      const notificationRef = doc(db, "globalNotifications", notificationId);
-      
-      // Update the 'isRead' field to the new status for the global notification
-      await updateDoc(notificationRef, {
-        isRead: status,
-      });
-    } else {
-      // If it's a user notification, update in the user's notifications subcollection
-      const notificationRef = doc(
-        db,
-        "users",
-        userDoc.id,
-        "notifications",
-        notificationId
-      );
-      
-      // Update the 'isRead' field to the new status for the user-specific notification
-      await updateDoc(notificationRef, {
-        isRead: status,
-      });
-    }
-    
+    const notificationRef = doc(
+      db,
+      "users",
+      userDoc.id,
+      "notifications",
+      notificationId
+    );
+
+    // Update the 'isRead' field to the new status for the user-specific notification
+    await updateDoc(notificationRef, {
+      isRead: status,
+    });
     return true;
   } catch (error) {
     return false;

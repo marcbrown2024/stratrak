@@ -32,21 +32,27 @@ const NotificationsPopUp = () => {
     setNotifications,
   } = useNotificationStore();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [showGif, setShowGif] = useState<boolean>(false);
+  const [overlayIndex, setOverlayIndex] = useState<number | null>(null);
   const [setAlert, closeAlert] = useAlertStore((state) => [
     state.setAlert,
     state.closeAlert,
   ]);
+  let hoverTimeout: NodeJS.Timeout;
+
+  const handleMouseEnter = (index: number) => {
+    hoverTimeout = setTimeout(() => {
+      setHoveredIndex(index);
+    }, 1500);
+  };
+
+  const handleMouseLeave = () => {
+    clearTimeout(hoverTimeout);
+    setHoveredIndex(null);
+  };
 
   const handleTabClick = (tab: "All" | "Unread" | "Read") => {
     setActiveTab(tab);
   };
-
-  useEffect(() => {
-    setTimeout(() => {
-      setShowGif(!showGif);
-    }, 3000);
-  }, [showGif]);
 
   const getNotifications = async () => {
     if (user?.userId) {
@@ -66,17 +72,11 @@ const NotificationsPopUp = () => {
 
   const handleUpdateIsRead = async (
     notificationId: string,
-    status: boolean,
-    isGlobal: boolean
+    status: boolean
   ) => {
     closeAlert();
     if (user?.userId) {
-      const result = await updateIsRead(
-        user.userId,
-        notificationId,
-        status,
-        isGlobal
-      );
+      const result = await updateIsRead(user.userId, notificationId, status);
       if (result) {
         getNotifications();
       } else {
@@ -87,6 +87,20 @@ const NotificationsPopUp = () => {
       }
     }
   };
+
+  useEffect(() => {
+    const closePopupsOnOutsideClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".Notif")) {
+        setHoveredIndex(null);
+        setOverlayIndex(null);
+      }
+    };
+    document.addEventListener("click", closePopupsOnOutsideClick);
+    return () => {
+      document.removeEventListener("click", closePopupsOnOutsideClick);
+    };
+  }, [setHoveredIndex, setOverlayIndex]);
 
   useEffect(() => {
     // Fetch notifications when the component mounts
@@ -150,90 +164,90 @@ const NotificationsPopUp = () => {
         </div>
       </div>
       {/* Display notifications based on the active tab */}
-      <div className="custom-scrollbar h-72 space-y-2 mt-3 px-3 rounded-b-2xl overflow-y-auto">
+      <div className="custom-scrollbar h-[18.6rem] space-y-2 mt-3 px-3 rounded-b-2xl overflow-y-auto border">
         {notifications[activeTab].map((notification: any, index: number) => (
           <div
             key={index}
-            onClick={() => setHoveredIndex(index)}
-            className="relative h-20 w-full flex text-sm text-gray-700 bg-white rounded-lg"
+            className="Notif relative h-20 w-full flex text-sm text-gray-700 bg-white rounded-lg overflow-hidden"
           >
-            <div className="h-full flex items-center gap-3 rounded-b-lg">
-              <div className="h-full w-[4px] bg-blue-600 rounded-tl-lg rounded-bl-lg"></div>
-              <div className="h-8 w-8 flex items-center justify-center bg-blue-50 rounded-full">
-                {!showGif && isPopupOpen && activeTab !== "Read" ? (
-                  <IoMdNotificationsOutline size={20} color="#1e40af" />
-                ) : (
-                  <Image
-                    src="/click.gif"
-                    alt="hand click gif"
-                    height={100}
-                    width={100}
-                  />
-                )}
+            <div
+              onClick={() => setOverlayIndex(index)}
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={handleMouseLeave}
+              className={`h-full w-full flex items-center ${
+                overlayIndex === index ? "z-10" : "z-0"
+              }`}
+            >
+              <div className="h-full flex items-center gap-3 rounded-b-lg">
+                <div className="h-full w-[4px] bg-blue-600 rounded-tl-lg rounded-bl-lg" />
+                <div className="h-8 w-8 flex items-center justify-center bg-blue-50 rounded-full">
+                  {hoveredIndex !== index && activeTab !== "Read" ? (
+                    <IoMdNotificationsOutline size={20} color="#1e40af" />
+                  ) : (
+                    <Image
+                      src="/click.gif"
+                      alt="hand click gif"
+                      height={100}
+                      width={100}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="flex-1 flex flex-col justify-center gap-2 px-2 py-1">
+                <div className="text-xs font-semibold">
+                  {notification.title}
+                </div>
+                <div className="text-xs">{notification.message}</div>
               </div>
             </div>
-            <div className="flex-1 flex flex-col justify-center gap-2 px-2 py-1">
-              <div className="text-xs font-semibold">{notification.title}</div>
-              <div className="text-xs">{notification.message}</div>
-            </div>
-            {hoveredIndex === index && (
-              <div className="absolute top-0 right-0 h-full w-[calc(100%-4px)] flex flex-col items-center justify-center gap-2 bg-white/90 rounded-r-lg">
-                <Link
-                  href="/notifications"
-                  className="text-xs text-blue-700 font-bold"
-                >
-                  Go to Notifications
-                </Link>
+            <div
+              className={`absolute top-0 right-0 h-full w-[calc(100%-4px)] flex flex-col items-center justify-center gap-2 bg-white/90 rounded-r-lg transition-all duration-500 ease-in-out ${
+                overlayIndex === index
+                  ? "z-20 translate-x-0"
+                  : "z-0 translate-x-96"
+              }`}
+            >
+              <Link
+                href="/notifications"
+                className="text-xs text-blue-700 font-bold"
+              >
+                Go to Notifications
+              </Link>
 
-                {/* Conditionally render button based on the activeTab */}
-                {activeTab === "Unread" ? (
-                  <button
-                    onClick={() =>
-                      handleUpdateIsRead(
-                        notification.id,
-                        true,
-                        notification.global
-                      )
-                    }
-                    className="text-xs text-blue-700 font-bold"
-                  >
-                    Mark as Read
-                  </button>
-                ) : activeTab === "Read" ? (
-                  <button
-                    onClick={() =>
-                      handleUpdateIsRead(
-                        notification.id,
-                        false,
-                        notification.global
-                      )
-                    }
-                    className="text-xs text-blue-700 font-bold"
-                  >
-                    Mark as Unread
-                  </button>
-                ) : (
-                  <button
-                    onClick={() =>
-                      handleUpdateIsRead(
-                        notification.id,
-                        !notification.isRead,
-                        notification.global
-                      )
-                    }
-                    className="text-xs text-blue-700 font-bold"
-                  >
-                    {notification.isRead ? "Mark as Unread" : "Mark as Read"}
-                  </button>
-                )}
+              {activeTab === "Unread" ? (
                 <button
-                  onClick={() => setHoveredIndex(null)}
+                  onClick={() => handleUpdateIsRead(notification.id, true)}
                   className="text-xs text-blue-700 font-bold"
                 >
-                  Cancel
+                  Mark as Read
                 </button>
-              </div>
-            )}
+              ) : activeTab === "Read" ? (
+                <button
+                  onClick={() => handleUpdateIsRead(notification.id, false)}
+                  className="text-xs text-blue-700 font-bold"
+                >
+                  Mark as Unread
+                </button>
+              ) : (
+                <button
+                  onClick={() =>
+                    handleUpdateIsRead(notification.id, !notification.isRead)
+                  }
+                  className="text-xs text-blue-700 font-bold"
+                >
+                  {notification.isRead ? "Mark as Unread" : "Mark as Read"}
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setHoveredIndex(null);
+                  setOverlayIndex(null);
+                }}
+                className="text-xs text-blue-700 font-bold"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         ))}
       </div>

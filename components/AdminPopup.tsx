@@ -118,6 +118,23 @@ const AdminPopup: React.FC<PopupProps> = ({
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+
+    // Check if selected monitor is the same as the current user
+    if (name === "monitorName" && value === `${user?.fName} ${user?.lName}`) {
+      setAlert(
+        {
+          title: "Action Not Allowed",
+          content:
+            "You cannot amend a log for yourself. Request another admin to start the ammend process.",
+        },
+        AlertType.Info
+      );
+
+      // Reset the selection if necessary
+      return;
+    }
+
+    // Update amend log details if the condition is not met
     setAmmendLogDetails((prevDetails) => ({
       ...prevDetails,
       [name]: value,
