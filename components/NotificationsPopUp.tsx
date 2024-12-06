@@ -42,7 +42,7 @@ const NotificationsPopUp = () => {
   const handleMouseEnter = (index: number) => {
     hoverTimeout = setTimeout(() => {
       setHoveredIndex(index);
-    }, 1500);
+    }, 1000);
   };
 
   const handleMouseLeave = () => {
@@ -112,7 +112,7 @@ const NotificationsPopUp = () => {
   }
 
   return (
-    <div className="Popup fixed top-[4.5rem] right-28 h-96 w-80 space-y-3 bg-slate-50 py-1 border rounded-2xl z-50 transition-all duration-100 ease-in-out">
+    <div className="Popup fixed top-16 right-28 h-96 w-80 space-y-3 bg-slate-50 py-1 border rounded-2xl z-50 transition-all duration-100 ease-in-out">
       <div className="h-10 flex items-center justify-between px-3">
         <span className="text-sm font-semibold">Notifications</span>
         <div className="flex items-center gap-4">
@@ -164,92 +164,98 @@ const NotificationsPopUp = () => {
         </div>
       </div>
       {/* Display notifications based on the active tab */}
-      <div className="custom-scrollbar h-[18.6rem] space-y-2 mt-3 px-3 rounded-b-2xl overflow-y-auto border">
-        {notifications[activeTab].map((notification: any, index: number) => (
-          <div
-            key={index}
-            className="Notif relative h-20 w-full flex text-sm text-gray-700 bg-white rounded-lg overflow-hidden"
-          >
+      <div className="custom-scrollbar h-[18.6rem] space-y-2 mt-3 px-3 rounded-b-2xl overflow-y-auto">
+        {notifications[activeTab].length > 0 ? (
+          notifications[activeTab].map((notification: any, index: number) => (
             <div
-              onClick={() => setOverlayIndex(index)}
-              onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
-              className={`h-full w-full flex items-center ${
-                overlayIndex === index ? "z-10" : "z-0"
-              }`}
+              key={index}
+              className="Notif relative h-20 w-full flex text-sm text-gray-700 bg-white rounded-lg overflow-hidden"
             >
-              <div className="h-full flex items-center gap-3 rounded-b-lg">
-                <div className="h-full w-[4px] bg-blue-600 rounded-tl-lg rounded-bl-lg" />
-                <div className="h-8 w-8 flex items-center justify-center bg-blue-50 rounded-full">
-                  {hoveredIndex !== index && activeTab !== "Read" ? (
-                    <IoMdNotificationsOutline size={20} color="#1e40af" />
-                  ) : (
-                    <Image
-                      src="/click.gif"
-                      alt="hand click gif"
-                      height={100}
-                      width={100}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col justify-center gap-2 px-2 py-1">
-                <div className="text-xs font-semibold">
-                  {notification.title}
-                </div>
-                <div className="text-xs">{notification.message}</div>
-              </div>
-            </div>
-            <div
-              className={`absolute top-0 right-0 h-full w-[calc(100%-4px)] flex flex-col items-center justify-center gap-2 bg-white/90 rounded-r-lg transition-all duration-500 ease-in-out ${
-                overlayIndex === index
-                  ? "z-20 translate-x-0"
-                  : "z-0 translate-x-96"
-              }`}
-            >
-              <Link
-                href="/notifications"
-                className="text-xs text-blue-700 font-bold"
+              <div
+                onClick={() => setOverlayIndex(index)}
+                onMouseEnter={() => handleMouseEnter(index)}
+                onMouseLeave={handleMouseLeave}
+                className={`h-full w-full flex items-center ${
+                  overlayIndex === index ? "z-10" : "z-0"
+                }`}
               >
-                Go to Notifications
-              </Link>
+                <div className="h-full flex items-center gap-3 rounded-b-lg">
+                  <div className="h-full w-[4px] bg-blue-600 rounded-tl-lg rounded-bl-lg" />
+                  <div className="h-8 w-8 flex items-center justify-center bg-blue-50 rounded-full">
+                    {hoveredIndex !== index && activeTab !== "Read" ? (
+                      <IoMdNotificationsOutline size={20} color="#1e40af" />
+                    ) : (
+                      <Image
+                        src="/click.gif"
+                        alt="hand click gif"
+                        height={100}
+                        width={100}
+                      />
+                    )}
+                  </div>
+                </div>
+                <div className="flex-1 flex flex-col justify-center gap-2 px-2 py-1">
+                  <div className="text-xs font-semibold">
+                    {notification.title}
+                  </div>
+                  <div className="text-xs">{notification.message}</div>
+                </div>
+              </div>
+              <div
+                className={`absolute top-0 right-0 h-full w-[calc(100%-4px)] flex flex-col items-center justify-center gap-2 bg-white/90 rounded-r-lg transition-all duration-500 ease-in-out ${
+                  overlayIndex === index
+                    ? "z-20 translate-x-0"
+                    : "z-0 translate-x-96"
+                }`}
+              >
+                <Link
+                  href="/notifications"
+                  className="text-xs text-blue-700 font-bold"
+                >
+                  Go to Notifications
+                </Link>
 
-              {activeTab === "Unread" ? (
+                {activeTab === "Unread" ? (
+                  <button
+                    onClick={() => handleUpdateIsRead(notification.id, true)}
+                    className="text-xs text-blue-700 font-bold"
+                  >
+                    Mark as Read
+                  </button>
+                ) : activeTab === "Read" ? (
+                  <button
+                    onClick={() => handleUpdateIsRead(notification.id, false)}
+                    className="text-xs text-blue-700 font-bold"
+                  >
+                    Mark as Unread
+                  </button>
+                ) : (
+                  <button
+                    onClick={() =>
+                      handleUpdateIsRead(notification.id, !notification.isRead)
+                    }
+                    className="text-xs text-blue-700 font-bold"
+                  >
+                    {notification.isRead ? "Mark as Unread" : "Mark as Read"}
+                  </button>
+                )}
                 <button
-                  onClick={() => handleUpdateIsRead(notification.id, true)}
+                  onClick={() => {
+                    setHoveredIndex(null);
+                    setOverlayIndex(null);
+                  }}
                   className="text-xs text-blue-700 font-bold"
                 >
-                  Mark as Read
+                  Cancel
                 </button>
-              ) : activeTab === "Read" ? (
-                <button
-                  onClick={() => handleUpdateIsRead(notification.id, false)}
-                  className="text-xs text-blue-700 font-bold"
-                >
-                  Mark as Unread
-                </button>
-              ) : (
-                <button
-                  onClick={() =>
-                    handleUpdateIsRead(notification.id, !notification.isRead)
-                  }
-                  className="text-xs text-blue-700 font-bold"
-                >
-                  {notification.isRead ? "Mark as Unread" : "Mark as Read"}
-                </button>
-              )}
-              <button
-                onClick={() => {
-                  setHoveredIndex(null);
-                  setOverlayIndex(null);
-                }}
-                className="text-xs text-blue-700 font-bold"
-              >
-                Cancel
-              </button>
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-400 pb-4">
+            No notifications to display
           </div>
-        ))}
+        )}
       </div>
     </div>
   );

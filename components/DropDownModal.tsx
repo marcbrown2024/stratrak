@@ -54,18 +54,18 @@ const DropDownModal = () => {
   }
 
   return (
-    <div className="Popup fixed top-16 right-2 2xl:h-[26rem] 2xl:w-[22rem] hidden md:flex flex-col items-center bg-[#fffefe] rounded-2xl mr-8 pt-2 border z-50 transition-all duration-100 ease-in-out">
+    <div className="Popup fixed top-16 right-4 h-[22rem] w-80 flex flex-col items-center bg-[#fffefe] rounded-2xl border z-50 transition-all duration-100 ease-in-out">
       <div className="h-1/2 w-full flex flex-col items-center justify-center gap-4 text-gray-700 p-4">
         <div className="h-auto w-full flex items-center justify-between">
-          <span className="text-lg  font-bold tracking-wider">User Acount</span>
+          <span className="font-bold tracking-wider">User Acount</span>
           <button
             onClick={closeModal}
             className="flex items-center justify-center"
           >
-            <AiOutlineClose className="text-xl  cursor-pointer" />
+            <AiOutlineClose className="text-lg cursor-pointer" />
           </button>
         </div>
-        <div className="h-auto w-full flex items-center justify-start gap-6">
+        <div className="h-auto w-full flex items-center justify-start gap-4">
           <Image
             width={50}
             height={50}
@@ -77,30 +77,30 @@ const DropDownModal = () => {
             alt="Profile Photo"
             className="h-16 w-16 rounded-full border"
           />
-          <div className="flex flex-col items-start justify-start gap-1 text-sm 2xl:text-[14px] font-semibold">
+          <div className="flex flex-col items-start justify-start gap-1 text-[13px] font-semibold">
             <p className="">{user?.fName + " " + user?.lName}</p>
             <p className="">{user?.email}</p>
-            <p className="">{organizationName}</p>
+            <p className="text-wrap">{organizationName}</p>
           </div>
         </div>
         <Link
           onClick={closeModal}
           href={"/profile"}
-          className="w-full flex items-center justify-center font-semibold p-1 rounded-2xl border border-gray-500"
+          className="w-full flex items-center justify-center text-sm font-semibold p-1 rounded-2xl border border-gray-300 hover:bg-gray-100 hover:scale-[98%]"
         >
           View Profile
         </Link>
       </div>
       <div className="h-1/2 w-full bg-[#1286ff] rounded-b-2xl">
         <div className="h-auto w-full flex flex-col items-start justify-center gap-4 mx-4 my-2">
-          <span className="text-lg text-white font-bold tracking-wider">
+          <span className="text-white font-bold tracking-wider">
             User Support
           </span>
           <div className="h-auto w-full flex flex-col items-start justify-start gap-4">
             <button onClick={closeModal} type="button">
               <Link
                 href={"/help"}
-                className="flex items-center justify-start gap-4 text-white"
+                className="flex items-center justify-start gap-4 text-white hover:scale-[98%]"
               >
                 <MdOutlineHelp className="text-white text-xl" />
                 <span>Help</span>
@@ -109,7 +109,7 @@ const DropDownModal = () => {
             <button onClick={closeModal} type="button">
               <Link
                 href={"/resetPassword"}
-                className="flex items-center justify-start gap-4 text-white"
+                className="flex items-center justify-start gap-4 text-white hover:scale-[98%]"
               >
                 <FaUserLock className="text-white text-xl" />
                 <span>Reset Password</span>
@@ -122,7 +122,7 @@ const DropDownModal = () => {
           <button
             type="button"
             onClick={handleSignOut}
-            className="h-8 w-full flex items-center justify-start gap-4 text-white font-medium mt-2"
+            className="h-8 w-full flex items-center justify-start gap-4 text-white font-medium hover:scale-[98%]"
           >
             <MdLogout className="text-white text-xl" />
             Sign Out

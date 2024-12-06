@@ -89,14 +89,14 @@ const Header = () => {
 
   return (
     <div
-      className={`sticky inset-x-0 top-0 h-[4.5rem] w-full flex items-center justify-between gap-6 px-8 border-b border-zinc-200 ${
+      className={`sticky inset-x-0 top-0 h-16 w-full flex items-center justify-between gap-6 px-8 border-b border-zinc-100 ${
         scrolled ? "bg-slate-50/75 backdrop-blur-lg" : ""
       } transition-all z-30`}
     >
       <span className="flex text-xl font-bold tracking-wide">
         {displayTitle}
       </span>
-      <div className="Popup w-[16.5rem] flex items-center justify-between">
+      <div className="Popup w-[16.5rem] flex items-center gap-3">
         <button
           onClick={() => {
             togglePopup();
