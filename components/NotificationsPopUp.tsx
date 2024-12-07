@@ -166,7 +166,7 @@ const NotificationsPopUp = () => {
   }
 
   return (
-    <div className="Popup fixed top-16 right-28 h-fit w-80 space-y-3 bg-slate-50 py-1 border rounded-2xl z-50 transition-all duration-100 ease-in-out">
+    <div className="Popup fixed top-16 right-28 h-fit w-80 space-y-3 bg-gray-100 py-1 border rounded-2xl z-50 transition-all duration-100 ease-in-out">
       <div className="h-10 flex items-center justify-between px-3">
         <span className="text-sm font-semibold">Notifications</span>
         <div className="flex items-center gap-4">
@@ -244,6 +244,7 @@ const NotificationsPopUp = () => {
                           alt="hand click gif"
                           height={100}
                           width={100}
+                          unoptimized
                         />
                       )}
                     </div>

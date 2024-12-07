@@ -235,7 +235,7 @@ const LogTable = (props: Props) => {
     headerClassName: "text-blue-500 uppercase bg-blue-50",
     headerName: "Action",
     headerAlign: "left",
-    flex: 0.6,
+    flex: 1,
     renderCell: (params) => {
       const { id } = params.row;
       const isProgressActive = id === activeRowId;
