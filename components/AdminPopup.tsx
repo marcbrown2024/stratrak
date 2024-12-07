@@ -10,6 +10,7 @@ import { FirebaseError } from "firebase/app";
 // custom firebase components
 import {
   createLog,
+  createNotification,
   createUser,
   secondaryAuth,
   userEmailExists,
@@ -215,6 +216,12 @@ const AdminPopup: React.FC<PopupProps> = ({
     };
 
     await createUser(userDetails);
+
+    await createNotification(
+      firebaseUser.user.uid,
+      "Welcome to Trialist!",
+      "Thank you for joining Trialist! Start tracking trials and logs to stay on top of your tasks."
+    );
   };
 
   const { executeAuth: executeUserCreation, error: userCreationError } =
@@ -239,7 +246,7 @@ const AdminPopup: React.FC<PopupProps> = ({
 
     if (dataValid) {
       // Call the executeAuth function with the appropriate arguments
-      const { success, result } = await executeUserCreation();
+      const { success } = await executeUserCreation();
 
       if (success) {
         // On success, set success alert and clear form data

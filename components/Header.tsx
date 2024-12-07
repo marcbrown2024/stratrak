@@ -96,7 +96,7 @@ const Header = () => {
       <span className="flex text-xl font-bold tracking-wide">
         {displayTitle}
       </span>
-      <div className="Popup w-[16.5rem] flex items-center gap-3">
+      <div className="Popup w-fit flex items-center gap-3">
         <button
           onClick={() => {
             togglePopup();

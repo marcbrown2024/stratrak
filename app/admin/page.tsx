@@ -41,7 +41,7 @@ const Page = () => {
   const handleFilterChange = (newFilter: "Users" | "Admins" | "All Users") => {
     setFilter(newFilter);
     setCurrentPage(1);
-    setShowFilterPopup(false)
+    setShowFilterPopup(false);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +72,19 @@ const Page = () => {
       }
     });
   };
+
+  useEffect(() => {
+    const closePopupsOnOutsideClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".FilterPopup")) {
+        setShowFilterPopup(false);
+      }
+    };
+    document.addEventListener("click", closePopupsOnOutsideClick);
+    return () => {
+      document.removeEventListener("click", closePopupsOnOutsideClick);
+    };
+  }, [setShowFilterPopup]);
 
   useEffect(() => {
     if (user) {
@@ -159,7 +172,7 @@ const Page = () => {
           </div>
           <button
             onClick={() => setShowFilterPopup(!showFilterPopup)}
-            className="h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
+            className="FilterPopup h-10 w-28 text-[15px] bg-gray-300 pb-[3px] pr-[3px] rounded-md shadow-lg hover:scale-95"
           >
             <div className="h-full w-full flex items-center justify-center gap-2 font-semibold bg-gray-200 rounded-md shadow-lg">
               <IoFilter />
@@ -182,7 +195,7 @@ const Page = () => {
             </div>
           </button>
           {showFilterPopup && (
-            <div className="absolute top-12 right-[8.5rem] w-28 flex flex-col text-sm text-gray-700 bg-gray-200 p-3 rounded-lg shadow">
+            <div className="FilterPopup absolute top-12 right-[8.5rem] w-28 flex flex-col text-sm text-gray-700 bg-gray-200 p-3 rounded-lg shadow">
               <button
                 type="button"
                 onClick={() => handleFilterChange("All Users")}

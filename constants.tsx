@@ -47,13 +47,13 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     title: "Notifications",
     path: "/notifications",
     icon: <IoNotifications size={24} />,
-    requireAdmin: true,
+    requireAdmin: false,
   },
   {
     title: "TrialNetwork",
     path: "/trialNetwork",
     icon: <HiMiniChatBubbleLeftRight size={24} />,
-    requireAdmin: true,
+    requireAdmin: false,
   },
   {
     title: "Admin",

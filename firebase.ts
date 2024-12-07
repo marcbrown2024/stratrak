@@ -494,7 +494,7 @@ export const createLog = async (
     };
 
     if (response.success && userId1) {
-      await createNotificationForUsers(
+      await createAmendNotification(
         userId1,
         adminName,
         userId2,
@@ -956,26 +956,26 @@ export const updateIsRead = async (
   }
 };
 
-export const createNotificationForUsers = async (
+export const createAmendNotification = async (
   userId1: string,
   adminName: string,
   userId2: string,
   monitorName: string,
-  amendlogNum: string
+  amendlogNum: string,
 ): Promise<void> => {
   const now = new Date();
   const firestoreTimestamp = Timestamp.fromDate(now);
 
   try {
     // Function to generate a notification object based on userId
-    const generateNotification = (userId: string): UserNotification => ({
+    const generateNotification = (userId: string) => ({
       title: "Amend Log",
       message:
         userId === userId2
           ? `Admin ${adminName} has requested that you add your signature to amended log. Link:/monitoringLogs/${amendlogNum}/logs`
           : `Notification to set signature for amended log was sent to ${monitorName}.`,
       isRead: false,
-      createdAt: firestoreTimestamp.toString(),
+      createdAt: firestoreTimestamp,
     });
 
     // Function to fetch the user document reference
@@ -1005,5 +1005,45 @@ export const createNotificationForUsers = async (
     console.log("Notifications created successfully for both users.");
   } catch (error) {
     console.error("Error creating notifications:", error);
+  }
+};
+
+export const createNotification = async (
+  userId: string,
+  title: string,
+  message: string
+): Promise<void> => {
+  const now = new Date();
+  const firestoreTimestamp = Timestamp.fromDate(now);
+
+  try {
+    // Function to fetch the user document reference
+    const getUserDocRef = async (userId: string) => {
+      const usersRef = collection(db, "users");
+      const userQuery = query(usersRef, where("userId", "==", userId));
+      const querySnapshot = await getDocs(userQuery);
+      if (!querySnapshot.empty) {
+        return querySnapshot.docs[0].ref;
+      }
+      throw new Error(`User with ID ${userId} not found.`);
+    };
+
+    // Fetch the user document reference
+    const userDocRef = await getUserDocRef(userId);
+
+    // Create the notification object
+    const notification = {
+      title,
+      message,
+      isRead: false,
+      createdAt: firestoreTimestamp,
+    };
+
+    // Add the notification to the user's notifications subcollection
+    await setDoc(doc(collection(userDocRef, "notifications")), notification);
+
+    console.log(`Notification created successfully for user ${userId}.`);
+  } catch (error) {
+    console.error("Error creating notification:", error);
   }
 };

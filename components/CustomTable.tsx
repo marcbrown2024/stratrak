@@ -277,7 +277,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
                 alt="Profile Photo"
                 className="h-10 w-10 rounded-full border"
               />
-              <span>
+              <span className="text-nowrap">
                 {item.fName} {item.lName}
               </span>
             </div>
