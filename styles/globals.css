@@ -21,3 +21,9 @@ html {
   background: #2563eb;
   border-radius: 1rem;
 }
+
+#sentry-feedback {
+  /* Target the custom id */
+  --background: #0d79ed;
+  --page-margin: 15px;
+}

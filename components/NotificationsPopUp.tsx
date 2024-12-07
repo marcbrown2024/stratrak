@@ -248,40 +248,23 @@ const NotificationsPopUp = () => {
                           expandedIndex === index
                         )}
                       </span>
-
-                      {activeTab === "Unread" ? (
-                        <button
-                          onClick={() =>
-                            handleUpdateIsRead(notification.id, true)
-                          }
-                          className="text-xs text-blue-700 font-bold"
-                        >
-                          Mark as Read
-                        </button>
-                      ) : activeTab === "Read" ? (
-                        <button
-                          onClick={() =>
-                            handleUpdateIsRead(notification.id, false)
-                          }
-                          className="text-xs text-blue-700 font-bold"
-                        >
-                          Mark as Unread
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            handleUpdateIsRead(
-                              notification.id,
-                              !notification.isRead
-                            )
-                          }
-                          className="text-xs text-blue-700 font-bold"
-                        >
-                          {notification.isRead
-                            ? "Mark as Unread"
-                            : "Mark as Read"}
-                        </button>
-                      )}
+                      <button
+                        onClick={() =>
+                          handleUpdateIsRead(
+                            notification.id,
+                            !notification.isRead
+                          )
+                        }
+                        className={`text-xs ${
+                          notification.isRead
+                            ? "text-gray-500 hover:text-blue-700"
+                            : "text-blue-700 hover:text-gray-500"
+                        } text-blue-700 font-semibold `}
+                      >
+                        {notification.isRead
+                          ? "Mark as Unread"
+                          : "Mark as Read"}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -297,7 +280,7 @@ const NotificationsPopUp = () => {
           <Link
             href="/notifications"
             onClick={() => closePopUp()}
-            className="text-xs text-blue-700 font-bold"
+            className="text-sm text-blue-700 font-bold"
           >
             View All
           </Link>
