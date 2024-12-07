@@ -21,7 +21,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
 
   return (
     <div
-      className={`relative min-h-[calc(100vh-64px)] flex flex-col items-center justify-center flex-grow px-8 py-8`}
+      className={`relative h-[calc(100vh-64px)] flex flex-col items-center justify-center flex-grow px-8 py-8`}
     >
       <SiteNavBtns />
       <NotificationsPopUp />

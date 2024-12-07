@@ -478,8 +478,8 @@ export const createLog = async (
     const newLogRef = await addDoc(logsRef, {
       ...log,
       trialId: trialId,
-      ammendedDate: log.ammendedDate
-        ? convertToFirestoreTimestamp(log.ammendedDate)
+      ammendedDate: log.amendedDate
+        ? convertToFirestoreTimestamp(log.amendedDate)
         : null,
       dateOfVisit: convertToFirestoreTimestamp(log.dateOfVisit),
     });
@@ -831,7 +831,6 @@ export const fetchGlobalNotificationsForUser = async (
     const querySnapshot = await getDocs(userQuery);
 
     if (querySnapshot.empty) {
-      console.error("No user found with the specified userId");
       return;
     }
 
@@ -862,9 +861,7 @@ export const fetchGlobalNotificationsForUser = async (
 
     // Commit the batched writes
     await batch.commit();
-  } catch (error) {
-    console.error("Error syncing global notifications for user: ", error);
-  }
+  } catch (error) {}
 };
 
 // Function to fetch user-specific notifications
@@ -910,7 +907,6 @@ export const fetchNotifications = async (
 
     return userNotifications;
   } catch (error) {
-    console.error("Error fetching notifications: ", error);
     return [];
   }
 };
@@ -961,7 +957,7 @@ export const createAmendNotification = async (
   adminName: string,
   userId2: string,
   monitorName: string,
-  amendlogNum: string,
+  amendlogNum: string
 ): Promise<void> => {
   const now = new Date();
   const firestoreTimestamp = Timestamp.fromDate(now);
@@ -1001,11 +997,7 @@ export const createAmendNotification = async (
       setDoc(doc(collection(userDocRef1, "notifications")), notification1),
       setDoc(doc(collection(userDocRef2, "notifications")), notification2),
     ]);
-
-    console.log("Notifications created successfully for both users.");
-  } catch (error) {
-    console.error("Error creating notifications:", error);
-  }
+  } catch (error) {}
 };
 
 export const createNotification = async (
@@ -1041,9 +1033,69 @@ export const createNotification = async (
 
     // Add the notification to the user's notifications subcollection
     await setDoc(doc(collection(userDocRef, "notifications")), notification);
+  } catch (error) {}
+};
 
-    console.log(`Notification created successfully for user ${userId}.`);
-  } catch (error) {
-    console.error("Error creating notification:", error);
+export const getAmendedLogs = async (userOrg: string) => {
+  const amendedLogs: LogDetails[] = [];
+
+  try {
+    // Step 1: Get all trial IDs from the 'trials' collection that match the orgId
+    const trialsRef = collection(db, "trials");
+    const q = query(trialsRef, where("orgId", "==", userOrg)); // Filter trials by orgId
+    const trialsSnap = await getDocs(q);
+
+    const trialIds: string[] = [];
+    trialsSnap.forEach((doc) => {
+      trialIds.push(doc.id); // Collect all trial IDs that match the orgId
+    });
+
+    if (trialIds.length === 0) {
+      return { success: false, data: "No trials found for this orgId" };
+    }
+
+    // Step 2: Query the 'logs' collection in batches of 30 to match trialId in logs
+    const logsRef = collection(db, "logs");
+
+    // Function to run queries in batches
+    const fetchLogsInBatches = async (trialIds: string[]) => {
+      const batchSize = 30;
+      let allLogs: LogDetails[] = [];
+
+      // Loop through trialIds in batches of 30
+      for (let i = 0; i < trialIds.length; i += batchSize) {
+        const batch = trialIds.slice(i, i + batchSize); // Create a batch of 30 or fewer trialIds
+
+        const logsQuery = query(logsRef, where("trialId", "in", batch)); // Query logs by this batch of trialIds
+        const logsSnap = await getDocs(logsQuery);
+
+        // Filter logs with amended: true
+        logsSnap.forEach((doc) => {
+          const logData = doc.data();
+          if (logData.amended === true) {
+            allLogs.push({
+              id: doc.id,
+              ...logData,
+              amendedDate:
+                convertTimestampToDate(logData.amendedDate) ??
+                logData.amendedDate,
+              dateOfVisit:
+                convertTimestampToDate(logData.dateOfVisit) ??
+                logData.dateOfVisit,
+            } as DBLog);
+          }
+        });
+      }
+
+      return allLogs;
+    };
+
+    // Fetch logs in batches and merge them
+    const fetchedLogs = await fetchLogsInBatches(trialIds);
+    amendedLogs.push(...fetchedLogs);
+
+    return { success: true, data: amendedLogs };
+  } catch (e: any) {
+    return { success: false, data: e };
   }
 };

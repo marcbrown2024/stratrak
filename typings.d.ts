@@ -1,11 +1,12 @@
 // type for log details
 type LogDetails = {
+  id?: string;
   trialId?: string;
   adminName?: string;
   adminSig?: string;
-  ammended?: boolean;
-  ammendedDate?: string;
-  ammendedReason?: string;
+  amended?: boolean;
+  amendedDate?: string;
+  amendedReason?: string;
   monitorName: string;
   signature: string;
   typeOfVisit: "Remote" | "Onsite" | "Waiver Call";

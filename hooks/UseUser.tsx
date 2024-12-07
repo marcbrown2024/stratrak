@@ -19,18 +19,13 @@ const useUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       if (authUser) {
-        if (!loading) setLoading(true); // Start loading when the request is initiated and loading is false
         try {
           const response = await getUserFromDb(authUser?.uid);
           const fetchedUser = response?.data ?? null;
           setUser(fetchedUser);
         } catch (err) {
           setError("Failed to fetch user data");
-        } finally {
-          setLoading(false); // Stop loading after the request completes
         }
-      } else {
-        setLoading(false); // Stop loading if no authUser is available
       }
     };
 

@@ -38,7 +38,7 @@ type PopupProps = {
   orgUsers?: User[];
   addUser?: boolean;
   setAddUser?: React.Dispatch<React.SetStateAction<boolean>>;
-  refreshUsers?: () => void;
+  refreshData?: () => void;
 };
 
 type FormData = User & {
@@ -68,7 +68,7 @@ const AdminPopup: React.FC<PopupProps> = ({
   orgUsers,
   addUser,
   setAddUser,
-  refreshUsers,
+  refreshData,
 }) => {
   const { user } = useUser();
   const { trialId } = useParams();
@@ -77,9 +77,9 @@ const AdminPopup: React.FC<PopupProps> = ({
   const [ammendlogDetails, setAmmendLogDetails] = useState<LogDetails>({
     adminName: "",
     adminSig: "",
-    ammended: false,
-    ammendedDate: format(new Date(), "MMMM d, yyyy h:mm:ss a 'UTC'XXX"),
-    ammendedReason: "",
+    amended: false,
+    amendedDate: format(new Date(), "MMMM d, yyyy h:mm:ss a 'UTC'XXX"),
+    amendedReason: "",
     monitorName: "",
     signature: "Must be done by monitor",
     typeOfVisit: "Remote",
@@ -258,8 +258,8 @@ const AdminPopup: React.FC<PopupProps> = ({
         if (setAddUser) {
           setAddUser(false);
         }
-        if (refreshUsers) {
-          refreshUsers();
+        if (refreshData) {
+          refreshData();
         }
       }
     }
@@ -289,7 +289,7 @@ const AdminPopup: React.FC<PopupProps> = ({
         ...ammendlogDetails,
         adminName: `${user?.fName} ${user?.lName}`,
         adminSig: user?.signature,
-        ammended: true,
+        amended: true,
         dateOfVisit: formattedDate,
       };
 
@@ -317,9 +317,9 @@ const AdminPopup: React.FC<PopupProps> = ({
           setAmmendLogDetails({
             adminName: "",
             adminSig: "",
-            ammended: false,
-            ammendedDate: format(new Date(), "MMMM d, yyyy h:mm:ss a 'UTC'XXX"),
-            ammendedReason: "",
+            amended: false,
+            amendedDate: format(new Date(), "MMMM d, yyyy h:mm:ss a 'UTC'XXX"),
+            amendedReason: "",
             monitorName: "",
             signature: "",
             typeOfVisit: "Remote",
@@ -629,16 +629,16 @@ const AdminPopup: React.FC<PopupProps> = ({
                   <div className="mb-4">
                     <label
                       className="block text-gray-700 font-bold mb-2"
-                      htmlFor="ammendedReason"
+                      htmlFor="amendedReason"
                     >
                       Reason for the amendment
                     </label>
                     <textarea
                       className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="ammendedReason"
-                      name="ammendedReason"
+                      id="amendedReason"
+                      name="amendedReason"
                       rows={4}
-                      value={ammendlogDetails.ammendedReason}
+                      value={ammendlogDetails.amendedReason}
                       onChange={handleAmmendLogChange}
                       placeholder="Enter reason for the amendment"
                       required

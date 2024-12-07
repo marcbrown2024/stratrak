@@ -21,7 +21,7 @@ import useUser from "@/hooks/UseUser";
 
 type CustomTableProps = {
   users: User[];
-  refreshUsers: () => void;
+  refreshData: () => void;
   setLoading: (value: boolean) => void;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   currentPage: number;
@@ -31,7 +31,7 @@ type CustomTableProps = {
 
 const CustomTable: React.FC<CustomTableProps> = ({
   users,
-  refreshUsers,
+  refreshData,
   setLoading,
   setCurrentPage,
   currentPage,
@@ -121,7 +121,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             content: "User was deleted successfully.",
           };
           alertType = AlertType.Success;
-          refreshUsers();
+          refreshData();
         } else {
           alert = {
             title: "Error!",
@@ -156,7 +156,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
           content: "User privilege updated successfully.",
         };
         alertType = AlertType.Success;
-        refreshUsers();
+        refreshData();
       } else {
         alert = {
           title: "Error!",
@@ -293,7 +293,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             <div className="relative h-full w-[21%] flex items-center justify-start pl-11 overflow-hidden">
               <button
                 onClick={() => handlePrivilegeChangeClick(item.userId)}
-                className={`w-32 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
+                className={`w-32 text-sm font-bold bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
                   privilegeChangeRowId === item.userId
                     ? "-translate-x-48"
                     : "-translate-x-[26px]"
@@ -312,13 +312,13 @@ const CustomTable: React.FC<CustomTableProps> = ({
                   onClick={() =>
                     handleUpdatePrivilege(item.email, !item.isAdmin)
                   }
-                  className="w-16 text-sm text-white bg-blue-500 py-1 rounded-md hover:bg-blue-600"
+                  className="w-16 text-sm font-bold text-white bg-blue-500 py-1 rounded-md hover:bg-blue-600"
                 >
                   Confirm
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="w-16 text-sm bg-gray-200 py-1 rounded-md hover:bg-gray-300"
+                  className="w-16 text-sm font-bold bg-gray-200 py-1 rounded-md hover:bg-gray-300"
                 >
                   Cancel
                 </button>
@@ -327,7 +327,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             <div className="relative h-full w-[21%] flex items-center justify-start pl-8 overflow-hidden">
               <button
                 onClick={() => handleDeleteClick(item.userId)}
-                className={`w-28 text-sm bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
+                className={`w-28 text-sm font-bold bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
                   deleteRowId === item.userId
                     ? "-translate-x-40"
                     : "-translate-x-4"
@@ -344,13 +344,13 @@ const CustomTable: React.FC<CustomTableProps> = ({
               >
                 <button
                   onClick={() => handleDeleteUser(item.userId)}
-                  className="w-16 text-sm bg-red-300 py-1 rounded-md hover:bg-red-400"
+                  className="w-16 text-sm font-bold bg-red-300 py-1 rounded-md hover:bg-red-400"
                 >
                   Confirm
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="w-16 text-sm bg-gray-200 py-1 rounded-md hover:bg-gray-300"
+                  className="w-16 text-sm font-bold bg-gray-200 py-1 rounded-md hover:bg-gray-300"
                 >
                   Cancel
                 </button>

@@ -14,7 +14,7 @@ const Loader = () => {
   }
 
   return (
-    <div className="fixed top-0 left-0 h-full w-full flex items-center justify-center bg-slate-50 pl-80 z-45">
+    <div className="fixed top-0 right-0 h-full w-[calc(100vw-17rem)] flex items-center justify-center bg-slate-50 z-50">
       <DNA
         height="100"
         width="100"

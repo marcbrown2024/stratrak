@@ -5,10 +5,11 @@ import React, { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 
 // firebase components/functions
-import { getAllUsers } from "@/firebase";
+import { getAllUsers, getAmendedLogs } from "@/firebase";
 
 // global components
 import LoadingStore from "@/store/LoadingStore";
+import AdminPopupStore from "@/store/AdminPopupStore";
 
 // custom hooks
 import useUser from "@/hooks/UseUser";
@@ -16,6 +17,7 @@ import useUser from "@/hooks/UseUser";
 // custom components
 import CustomTable from "@/components/CustomTable";
 import AdminPopup from "@/components/AdminPopup";
+import AmendLogTable from "@/components/AmendLogTable";
 
 // icons
 import { FaUser, FaUsers, FaUserShield } from "react-icons/fa";
@@ -26,7 +28,9 @@ import { IoFilter } from "react-icons/io5";
 const Page = () => {
   const { user } = useUser();
   const { setLoading } = LoadingStore();
+  const { isOpen } = AdminPopupStore();
   const [users, setUsers] = useState<User[]>([]);
+  const [amendLogs, setAmendLogs] = useState<LogDetails[]>([]);
   const [userCount, setUserCount] = useState<number>(0);
   const [adminCount, setAdminCount] = useState<number>(0);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -48,12 +52,14 @@ const Page = () => {
     setSearchQuery(event.target.value);
   };
 
-  const refreshUsers = () => {
-    fetchUsers();
+  const refreshData = () => {
+    fetchData();
   };
 
-  const fetchUsers = () => {
+  const fetchData = () => {
     setLoading(true);
+
+    // Fetch all users
     getAllUsers(user?.orgId ?? "").then((response) => {
       if (response.success) {
         const allUsers = response.data;
@@ -68,6 +74,14 @@ const Page = () => {
         setUserCount(usersCount);
         setAdminCount(adminsCount);
         setTotalCount(allUsers.length);
+
+        // Fetch amended logs
+        getAmendedLogs(user?.orgId as string).then((logResponse) => {
+          if (logResponse.success) {
+            setAmendLogs(logResponse.data);
+          }
+          setLoading(false);
+        });
         setLoading(false);
       }
     });
@@ -89,12 +103,12 @@ const Page = () => {
   useEffect(() => {
     if (user) {
       if (!user.isAdmin) redirect("/");
-      fetchUsers();
+      fetchData();
     }
   }, [user]);
 
   return (
-    <div className="h-fit w-full flex flex-col items-center justify-center gap-8">
+    <div className="h-fit w-full flex flex-col items-center justify-center gap-8 pb-8">
       {/* Info Cards */}
       <div className="h-fit w-11/12 flex flex-col md:flex-row gap-4 md:gap-8">
         <div className="relative h-fit w-[18.5rem] 2xl:w-1/3 flex flex-col pb-1 pr-1 rounded-lg bg-gray-300 text-gray-700 shadow-lg">
@@ -141,7 +155,7 @@ const Page = () => {
         </div>
       </div>
       {/* Filter & Action buttons */}
-      <div className="relative w-11/12 flex items-center justify-between">
+      <div className="relative w-11/12 flex items-center justify-between mt-12">
         <div className="text-lg font-semibold">
           {filter === "Admins" ? (
             <div>
@@ -224,17 +238,23 @@ const Page = () => {
       {/* Custom Table */}
       <CustomTable
         users={users}
-        refreshUsers={refreshUsers}
+        refreshData={refreshData}
         setLoading={setLoading}
         setCurrentPage={setCurrentPage}
         currentPage={currentPage}
         filter={filter}
         searchQuery={searchQuery}
       />
+      <AmendLogTable
+        setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
+        amendLogs={amendLogs}
+      />
       <AdminPopup
         addUser={addUser}
         setAddUser={setAddUser}
-        refreshUsers={refreshUsers}
+        refreshData={refreshData}
+        orgUsers={users}
       />
     </div>
   );
