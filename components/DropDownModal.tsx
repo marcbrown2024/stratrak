@@ -7,7 +7,7 @@ import Image from "next/image";
 
 // global stores
 import { useModalStore } from "@/store/DropDownModalStore";
-import useNotificationStore from "@/store/NotificationStore ";
+import useNotificationStore from "@/store/NotificationStore";
 
 // firebase components
 import { getOrganizationName } from "@/firebase";

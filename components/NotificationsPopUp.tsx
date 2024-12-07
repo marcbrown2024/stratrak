@@ -9,8 +9,9 @@ import Image from "next/image";
 import { fetchNotifications, updateIsRead } from "@/firebase";
 
 // global stores
-import useNotificationStore from "@/store/NotificationStore ";
+import useNotificationStore from "@/store/NotificationStore";
 import { useAlertStore } from "@/store/AlertStore";
+import LoadingStore from "@/store/LoadingStore";
 
 // date components
 import { format, formatDistanceToNow, parse, isValid } from "date-fns";
@@ -22,7 +23,7 @@ import useUser from "@/hooks/UseUser";
 import { AlertType } from "@/enums";
 
 // Icons
-import { IoSettings } from "react-icons/io5";
+import { IoCheckmarkDoneSharp, IoSettings } from "react-icons/io5";
 import { IoMdClose, IoMdNotificationsOutline } from "react-icons/io";
 
 const NotificationsPopUp = () => {
@@ -35,6 +36,7 @@ const NotificationsPopUp = () => {
     setNotifications,
     closePopUp,
   } = useNotificationStore();
+  const { setLoading } = LoadingStore();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [overlayIndex, setOverlayIndex] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -84,6 +86,8 @@ const NotificationsPopUp = () => {
   };
 
   const getNotifications = async () => {
+    setLoading(true);
+
     if (user?.userId) {
       const fetchedNotifications = await fetchNotifications(user.userId);
 
@@ -97,6 +101,7 @@ const NotificationsPopUp = () => {
       // Set the categorized notifications in the store
       setNotifications(categorizedNotifications);
     }
+    setLoading(false);
   };
 
   const handleUpdateIsRead = async (
@@ -112,6 +117,26 @@ const NotificationsPopUp = () => {
         setAlert(
           { title: "Error!", content: "Failed to mark notification as read." },
           AlertType.Info
+        );
+      }
+    }
+  };
+
+  // Function to mark all notifications in the active tab as Read/Unread
+  const handleMarkAllAsRead = async (status: boolean) => {
+    if (user?.userId) {
+      closeAlert();
+      const updatePromises = notifications[activeTab].map((notification: any) =>
+        updateIsRead(user.userId, notification.id, status)
+      );
+      const results = await Promise.all(updatePromises);
+
+      if (results.every((result) => result)) {
+        getNotifications(); // Refresh notifications
+      } else {
+        setAlert(
+          { title: "Error!", content: "Failed to update some notifications." },
+          AlertType.Error
         );
       }
     }
@@ -141,7 +166,7 @@ const NotificationsPopUp = () => {
   }
 
   return (
-    <div className="Popup fixed top-16 right-28 h-96 w-80 space-y-3 bg-slate-50 py-1 border rounded-2xl z-50 transition-all duration-100 ease-in-out">
+    <div className="Popup fixed top-16 right-28 h-fit w-80 space-y-3 bg-slate-50 py-1 border rounded-2xl z-50 transition-all duration-100 ease-in-out">
       <div className="h-10 flex items-center justify-between px-3">
         <span className="text-sm font-semibold">Notifications</span>
         <div className="flex items-center gap-4">
@@ -194,7 +219,7 @@ const NotificationsPopUp = () => {
       </div>
       {/* Display notifications based on the active tab */}
       <div>
-        <div className="custom-scrollbar h-[17rem] space-y-2 mt-3 -mb-2 px-3 rounded-b-2xl overflow-y-auto">
+        <div className="custom-scrollbar h-[17rem] space-y-2 mt-3 px-3 pb-2 rounded-b-2xl overflow-y-auto">
           {notifications[activeTab].length > 0 ? (
             notifications[activeTab].map((notification: any, index: number) => (
               <div
@@ -227,19 +252,20 @@ const NotificationsPopUp = () => {
                     <Link
                       href={`/notifications/${notification.id}`}
                       onClick={() => closePopUp()}
+                      className="space-y-2"
                     >
-                      <div className="text-xs font-semibold">
+                      <span className="text-xs font-semibold">
                         {notification.title}
-                      </div>
-                      <div className="text-xs">
+                      </span>
+                      <span className="text-xs">
                         {notification.message.length > 70
                           ? `${notification.message.substring(0, 70)}...`
                           : notification.message}
-                      </div>
+                      </span>
                     </Link>
                     <div className="flex items-center justify-between">
                       <span
-                        className="text-xs text-gray-400 cursor-pointer hover:underline"
+                        className="text-xs text-gray-600 cursor-pointer hover:underline"
                         onClick={() => toggleExactTime(index)}
                         title={getTimeDisplay(notification.createdAt, true)}
                       >
@@ -276,13 +302,38 @@ const NotificationsPopUp = () => {
             </div>
           )}
         </div>
-        <div className="h-[32px] w-full flex items-center justify-center border-t border-gray-200 rounded-b-2xl">
+        <div className="h-12 w-full flex items-center justify-between px-3 border-t border-gray-200 rounded-b-2xl">
+          <button
+            type="button"
+            onClick={() =>
+              handleMarkAllAsRead(
+                notifications[activeTab].some(
+                  (notification) => !notification.isRead
+                )
+              )
+            }
+            className={`flex items-center gap-1 text-xs font-bold ${
+              notifications[activeTab].some(
+                (notification) => !notification.isRead
+              )
+                ? "text-blue-700"
+                : "text-gray-700"
+            }`}
+          >
+            <IoCheckmarkDoneSharp size={18} />
+            {notifications[activeTab].some(
+              (notification) => !notification.isRead
+            )
+              ? "Mark all as Read"
+              : "Mark all as Unread"}
+          </button>
+
           <Link
             href="/notifications"
             onClick={() => closePopUp()}
-            className="text-sm text-blue-700 font-bold"
+            className="text-xs text-white font-bold bg-blue-700 p-2 rounded-md"
           >
-            View All
+            View all notifcations
           </Link>
         </div>
       </div>

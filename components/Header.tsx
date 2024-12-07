@@ -14,7 +14,7 @@ import UseScroll from "@/hooks/UseScroll";
 
 // global stores
 import { useModalStore } from "@/store/DropDownModalStore";
-import useNotificationStore from "@/store/NotificationStore ";
+import useNotificationStore from "@/store/NotificationStore";
 
 // custom hooks
 import useUser from "@/hooks/UseUser";
@@ -89,7 +89,7 @@ const Header = () => {
 
   return (
     <div
-      className={`sticky inset-x-0 top-0 h-16 w-full flex items-center justify-between gap-6 px-8 border-b border-zinc-100 ${
+      className={`sticky inset-x-0 top-0 h-16 w-full flex items-center justify-between gap-6 px-8 border-b border-zinc-300 ${
         scrolled ? "bg-slate-50/75 backdrop-blur-lg" : ""
       } transition-all z-30`}
     >
