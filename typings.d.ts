@@ -71,6 +71,7 @@ type User = {
   orgId: string;
   signature: string;
   lastActivity: string;
+  dateAdded?: string;
   userId: string;
   phoneNumber: string;
   country: string;

@@ -236,20 +236,23 @@ const CustomTable: React.FC<CustomTableProps> = ({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="w-11/12 bg-gray-200 pb-[6px] rounded-lg overflow-hidden">
+    <div className="w-[95%] bg-gray-200 pb-[6px] rounded-lg overflow-hidden">
       <div className="h-14 w-full bg-gray-300 pr-2 shadow-lg rounded-t-lg">
-        <div className="h-full w-full flex text-sm text-left font-semibold tracking-wide uppercase bg-gray-200 rounded-t-lg shadow-lg">
+        <div className="h-full w-full flex text-[15px] text-left text-nowrap font-semibold bg-gray-200 rounded-t-lg shadow-lg">
           <div className="h-full w-[20%] flex items-center justify-start px-4">
             Member
           </div>
-          <div className="h-full w-32 flex items-center justify-start px-4">
+          <div className="h-full w-28 flex items-center justify-start px-4">
             Admin
           </div>
           <div className="h-full w-[20%] flex items-center justify-start px-4">
             Email
           </div>
           <div className="h-full w-60 flex items-center justify-start px-4">
-            Last Activity
+            Last Active
+          </div>
+          <div className="h-full w-56 flex items-center justify-start px-4">
+            Date Added
           </div>
           <div className="h-full w-[21%] flex items-center justify-start px-4">
             Action
@@ -260,7 +263,10 @@ const CustomTable: React.FC<CustomTableProps> = ({
         </div>
       </div>
       {currentItems.map((item, idx) => (
-        <div key={idx} className="h-16 w-full pr-2 bg-gray-300 shadow-lg">
+        <div
+          key={idx}
+          className="h-16 w-full text-nowrap bg-gray-300 pr-2 shadow-lg"
+        >
           <div
             key={item.userId}
             className="h-full w-full flex text-sm text-gray-700 text-left bg-gray-100 border-b hover:bg-gray-50 shadow-lg"
@@ -281,19 +287,40 @@ const CustomTable: React.FC<CustomTableProps> = ({
                 {item.fName} {item.lName}
               </span>
             </div>
-            <div className="h-full w-32 flex items-center justify-start px-4">
+            <div className="h-full w-28 flex items-center justify-start px-4">
               {item.isAdmin ? "Yes" : "No"}
             </div>
             <div className="h-full w-[20%] flex items-center justify-start text-nowrap px-4 overflow-hidden">
               {item.email}
             </div>
             <div className="h-full w-60 flex items-center justify-start px-4 overflow-hidden">
-              {item.lastActivity ? item.lastActivity : "N/A"}
+              {item.lastActivity
+                ? new Date(item.lastActivity).toLocaleString("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  })
+                : "N/A"}
+            </div>
+            <div className="h-full w-56 flex items-center justify-start px-4 overflow-hidden">
+              {item.dateAdded
+                ? new Date(item.dateAdded).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                  })
+                : "N/A"}
             </div>
             <div className="relative h-full w-[21%] flex items-center justify-start pl-11 overflow-hidden">
               <button
                 onClick={() => handlePrivilegeChangeClick(item.userId)}
-                className={`w-32 text-sm font-bold bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
+                className={`w-32 text-sm font-medium bg-gray-300 p-1 rounded-md hover:bg-gray-400 transform ${
                   privilegeChangeRowId === item.userId
                     ? "-translate-x-48"
                     : "-translate-x-[26px]"
@@ -312,13 +339,13 @@ const CustomTable: React.FC<CustomTableProps> = ({
                   onClick={() =>
                     handleUpdatePrivilege(item.email, !item.isAdmin)
                   }
-                  className="w-16 text-sm font-bold text-white bg-blue-500 py-1 rounded-md hover:bg-blue-600"
+                  className="w-16 text-sm font-medium text-white bg-blue-500 py-1 rounded-md hover:bg-blue-600"
                 >
                   Confirm
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="w-16 text-sm font-bold bg-gray-200 py-1 rounded-md hover:bg-gray-300"
+                  className="w-16 text-sm font-medium bg-gray-200 py-1 rounded-md hover:bg-gray-300"
                 >
                   Cancel
                 </button>
@@ -327,7 +354,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             <div className="relative h-full w-[21%] flex items-center justify-start pl-8 overflow-hidden">
               <button
                 onClick={() => handleDeleteClick(item.userId)}
-                className={`w-28 text-sm font-bold bg-gray-200 p-1 rounded-md hover:bg-gray-300 transform ${
+                className={`w-28 text-sm font-medium bg-gray-300 p-1 rounded-md hover:bg-gray-400 transform ${
                   deleteRowId === item.userId
                     ? "-translate-x-40"
                     : "-translate-x-4"
@@ -344,13 +371,13 @@ const CustomTable: React.FC<CustomTableProps> = ({
               >
                 <button
                   onClick={() => handleDeleteUser(item.userId)}
-                  className="w-16 text-sm font-bold bg-red-300 py-1 rounded-md hover:bg-red-400"
+                  className="w-16 text-sm font-medium bg-red-300 py-1 rounded-md hover:bg-red-400"
                 >
                   Confirm
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="w-16 text-sm font-bold bg-gray-200 py-1 rounded-md hover:bg-gray-300"
+                  className="w-16 text-sm font-medium bg-gray-200 py-1 rounded-md hover:bg-gray-300"
                 >
                   Cancel
                 </button>

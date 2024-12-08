@@ -43,7 +43,7 @@ const AmendLogTable: React.FC<AmendLogTableProps> = ({
       const dateB = b.amendedDate ? new Date(b.amendedDate).getTime() : 0;
       return dateB - dateA; // Descending order
     });
-    
+
   // Total items per page
   const ITEMS_PER_PAGE = 8;
 
@@ -86,7 +86,7 @@ const AmendLogTable: React.FC<AmendLogTableProps> = ({
   return (
     <>
       {/* Action buttons */}
-      <div className="relative w-11/12 flex items-center justify-between mt-10">
+      <div className="relative w-[95%] flex items-center justify-between mt-10">
         <div className="text-lg font-semibold">
           Amended Logs
           <span className="text-gray-400 ml-2">{currentItems.length}</span>
@@ -121,9 +121,9 @@ const AmendLogTable: React.FC<AmendLogTableProps> = ({
           </button>
         </div>
       </div>
-      <div className="w-11/12 bg-gray-200  pb-[6px] rounded-lg overflow-hidden">
+      <div className="w-[95%] bg-gray-200  pb-[6px] rounded-lg overflow-hidden">
         <div className="h-14 w-full bg-gray-300 pr-2 shadow-lg rounded-t-lg">
-          <div className="h-full w-full flex text-sm text-left font-semibold tracking-wide uppercase bg-gray-200 rounded-t-lg shadow-lg">
+          <div className="h-full w-full flex text-[15px] text-left text-nowrap font-semibold bg-gray-200 rounded-t-lg shadow-lg">
             <div className="h-full w-[14%] flex items-center justify-start px-4">
               Amended By
             </div>
@@ -133,10 +133,10 @@ const AmendLogTable: React.FC<AmendLogTableProps> = ({
             <div className="h-full w-[18%] flex items-center justify-start px-4">
               Reason
             </div>
-            <div className="h-full w-[14%] flex items-center justify-start px-4">
+            <div className="h-full w-[16%] flex items-center justify-start px-4">
               Amendment Date
             </div>
-            <div className="h-full w-[14%] flex items-center justify-start px-4">
+            <div className="h-full w-[12%] flex items-center justify-start px-4">
               Monitor Name
             </div>
             <div className="h-full w-[16%] flex items-center justify-start px-4">
@@ -148,7 +148,10 @@ const AmendLogTable: React.FC<AmendLogTableProps> = ({
           </div>
         </div>
         {filteredData.map((item, idx) => (
-          <div key={idx} className="h-16 w-full pr-2 bg-gray-300 shadow-lg">
+          <div
+            key={idx}
+            className="h-16 w-full text-nowrap bg-gray-300 pr-2 shadow-lg"
+          >
             <div
               key={item.id}
               className="h-full w-full flex text-sm text-gray-700 text-left bg-gray-100 border-b hover:bg-gray-50 shadow-lg"
@@ -175,21 +178,39 @@ const AmendLogTable: React.FC<AmendLogTableProps> = ({
               <div className="h-full w-[18%] flex items-center justify-start text-nowrap px-4 overflow-hidden">
                 {item.amendedReason}
               </div>
-              <div className="h-full w-[14%] flex items-center justify-start text-nowrap px-4 overflow-hidden">
-                {item.amendedDate}
+              <div className="h-full w-[16%] flex items-center justify-start text-nowrap px-4 overflow-hidden">
+                {item.amendedDate
+                  ? new Date(item.amendedDate).toLocaleString("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })
+                  : "N/A"}
               </div>
-              <div className="h-full w-[14%] flex items-center justify-start px-4 overflow-hidden">
+              <div className="h-full w-[12%] flex items-center justify-start px-4 overflow-hidden">
                 {item.monitorName}
               </div>
               <div className="h-full w-[16%] flex items-center justify-start px-4 overflow-hidden">
-                {item.dateOfVisit}
+                {item.dateOfVisit
+                  ? new Date(item.dateOfVisit).toLocaleString("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })
+                  : "N/A"}
               </div>
               <div className="h-full w-[12%] flex items-center justify-start px-4 overflow-hidden">
                 <Link
                   href={`/monitoringLogs/${item.trialId}/logs`}
                   target="blank"
                   rel="noopener noreferrer"
-                  className="text-gray-700 font-bold bg-gray-200 px-4 py-1 rounded-md hover:bg-gray-300"
+                  className="text-gray-700 font-semibold bg-gray-300 px-4 py-1 rounded-md hover:bg-gray-400"
                   title={`/monitoringLogs/${item.trialId}/logs`}
                 >
                   View Log

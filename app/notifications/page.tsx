@@ -3,6 +3,7 @@
 // react/nextjs components
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 // firebase components
 import { fetchNotifications, updateIsRead } from "@/firebase";
@@ -89,6 +90,19 @@ const Page = () => {
           </div>
         )}
       </div>
+      <div className="text-xl font-semibold">Possible Future Updates</div>
+      <Image
+        src="/notifications.jpg"
+        alt="notification update"
+        width={1000}
+        height={1000}
+      />
+      <Image
+        src="/notificationPopUp.jpg"
+        alt="notification update"
+        width={1000}
+        height={1000}
+      />
     </div>
   );
 };

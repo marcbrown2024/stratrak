@@ -191,6 +191,39 @@ export const updatePrivilege = async (
   }
 };
 
+// export const updateUserLastActivity = async (
+//   userId: string
+// ): Promise<{ success: boolean }> => {
+//   try {
+//     // Create a query to find the document where userId matches
+//     const usersRef = collection(db, "users");
+//     const q = query(usersRef, where("userId", "==", userId));
+
+//     // Get the documents matching the query
+//     const querySnapshot = await getDocs(q);
+
+//     // Check if a document was found
+//     if (!querySnapshot.empty) {
+//       const now = new Date();
+//       const firestoreTimestamp = Timestamp.fromDate(now); // Convert to Firestore Timestamp
+
+//       // Update the lastActivity field in matching document
+//       const updatePromises = querySnapshot.docs.map((doc) =>
+//         updateDoc(doc.ref, { lastActivity: firestoreTimestamp })
+//       );
+
+//       // Wait for all updates to complete
+//       await Promise.all(updatePromises);
+
+//       return { success: true };
+//     } else {
+//       return { success: false };
+//     }
+//   } catch (e: any) {
+//     return { success: false };
+//   }
+// };
+
 export const updateUserLastActivity = async (
   userId: string
 ): Promise<{ success: boolean }> => {
@@ -207,10 +240,27 @@ export const updateUserLastActivity = async (
       const now = new Date();
       const firestoreTimestamp = Timestamp.fromDate(now); // Convert to Firestore Timestamp
 
-      // Update the lastActivity field in matching document
-      const updatePromises = querySnapshot.docs.map((doc) =>
-        updateDoc(doc.ref, { lastActivity: firestoreTimestamp })
-      );
+      // Get the current authenticated user to access the creation date
+      const auth = getAuth();
+      const user = auth.currentUser;
+
+      // Check if user is authenticated and retrieve the creation date
+      let dateAdded = user?.metadata.creationTime;
+      if (!dateAdded) {
+        // If no creation date is found, use the current date as fallback
+        dateAdded = now.toISOString();
+      }
+
+      // Update the lastActivity and dateAdded fields in matching document
+      const updatePromises = querySnapshot.docs.map((doc) => {
+        // Only set dateAdded if it's not already present
+        const updateData: any = { lastActivity: firestoreTimestamp };
+        if (!doc.data().dateAdded) {
+          updateData.dateAdded = Timestamp.fromDate(new Date(dateAdded));
+        }
+
+        return updateDoc(doc.ref, updateData);
+      });
 
       // Wait for all updates to complete
       await Promise.all(updatePromises);
@@ -220,6 +270,7 @@ export const updateUserLastActivity = async (
       return { success: false };
     }
   } catch (e: any) {
+    console.error(e);
     return { success: false };
   }
 };
@@ -681,6 +732,7 @@ export const getAllUsers = async (orgId: string) => {
       users.push({
         ...userData,
         lastActivity: convertTimestampToDate(userData.lastActivity),
+        dateAdded: convertTimestampToDate(userData.dateAdded),
       } as User);
     });
 
