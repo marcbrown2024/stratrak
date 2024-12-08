@@ -175,9 +175,17 @@ const AmendLogTable: React.FC<AmendLogTableProps> = ({
                   <p>{item.adminSig || "No signature available"}</p>
                 )}
               </div>
-              <div className="h-full w-[18%] flex items-center justify-start text-nowrap px-4 overflow-hidden">
-                {item.amendedReason}
+              <div
+                className="h-full w-[18%] flex items-center justify-start text-nowrap px-4 overflow-hidden"
+                title={item.amendedReason || ""}
+              >
+                {item.amendedReason
+                  ? item.amendedReason.length > 30
+                    ? `${item.amendedReason.slice(0, 30)}...`
+                    : item.amendedReason
+                  : ""}
               </div>
+
               <div className="h-full w-[16%] flex items-center justify-start text-nowrap px-4 overflow-hidden">
                 {item.amendedDate
                   ? new Date(item.amendedDate).toLocaleString("en-US", {

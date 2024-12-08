@@ -73,17 +73,16 @@ const Page = () => {
         setUserCount(usersCount);
         setAdminCount(adminsCount);
         setTotalCount(allUsers.length);
-
-        // Fetch amended logs
-        getAmendedLogs(user?.orgId as string).then((logResponse) => {
-          if (logResponse.success) {
-            setAmendLogs(logResponse.data);
-          }
-          setLoading(false);
-        });
-        setLoading(false);
       }
     });
+    // Fetch amended logs
+    getAmendedLogs(user?.orgId as string).then((logResponse) => {
+      if (logResponse.success) {
+        setAmendLogs(logResponse.data);
+      }
+    });
+    setTimeout(() => {
+    }, 2000);
   };
 
   useEffect(() => {
