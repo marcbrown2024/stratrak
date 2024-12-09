@@ -82,6 +82,7 @@ const Page = () => {
       }
     });
     setTimeout(() => {
+      setLoading(false);
     }, 2000);
   };
 
