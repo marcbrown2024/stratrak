@@ -26,15 +26,23 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <div className={`relative h-[calc(100vh-64px)] ${
-      isSidebarOpen ? "w-[calc(100%-272px)] ml-[272px]" : "w-[calc(100%-80px)] ml-[80px]"
-    } flex-grow transition-all duration-100 ease-in-out`}>
+    <div
+      className={`relative h-[calc(100vh-64px)] mt-[64px] ${
+        isSidebarOpen
+          ? "w-[calc(100%-272px)] ml-[272px]"
+          : "w-[calc(100%-80px)] ml-[80px]"
+      } flex-grow transition-all duration-100 ease-in-out`}
+    >
       <Loader />
-      <SiteNavBtns />
       <NotificationsPopUp />
       <DropDownModal />
       <Header />
-      <div className="bg-slate-50 pt-10">{children}</div>
+      <div className="h-screen bg-slate-50">
+        <div className="space-y-12 bg-slate-50 py-10">
+          <SiteNavBtns />
+          {children}
+        </div>
+      </div>
     </div>
   );
 };
