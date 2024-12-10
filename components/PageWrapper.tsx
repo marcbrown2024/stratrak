@@ -27,7 +27,7 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
 
   return (
     <div
-      className={`relative h-[calc(100vh-64px)] mt-[64px] ${
+      className={`relative h-[calc(100vh-64px)] ${
         isSidebarOpen
           ? "w-[calc(100%-272px)] ml-[272px]"
           : "w-[calc(100%-80px)] ml-[80px]"
@@ -36,9 +36,9 @@ const PageWrapper = ({ children }: { children: ReactNode }) => {
       <Loader />
       <NotificationsPopUp />
       <DropDownModal />
-      <Header />
       <div className="h-screen bg-slate-50">
-        <div className="space-y-12 bg-slate-50 py-10">
+        <div className="space-y-12 bg-slate-50">
+          <Header />
           <SiteNavBtns />
           {children}
         </div>

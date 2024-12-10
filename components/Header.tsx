@@ -6,15 +6,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-// constants
-import { SIDENAV_ITEMS } from "@/constants";
-
 // custom hooks
 import UseScroll from "@/hooks/UseScroll";
 
 // global stores
 import { useModalStore } from "@/store/DropDownModalStore";
 import useNotificationStore from "@/store/NotificationStore";
+import useSideBarStore from "@/store/SideBarStore";
 
 // custom hooks
 import useUser from "@/hooks/UseUser";
@@ -24,10 +22,11 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 
 const Header = () => {
+  const currentPathname = usePathname();
   const { user } = useUser();
   const scrolled = UseScroll(5);
-  const currentPathname = usePathname();
   const { toggleModal, closeModal } = useModalStore();
+  const { isSidebarOpen } = useSideBarStore();
   const { notifications, togglePopup, closePopUp } = useNotificationStore();
 
   const splitCamelCase = (str: string) => {
@@ -88,14 +87,14 @@ const Header = () => {
   }
 
   return (
-    <div
-      className={`fixed top-0 h-16 w-full bg-[#1286ff] transition-all z-30`}
-    >
-      <div className="h-full w-full flex items-center justify-between gap-6 bg-slate-50 pl-8 pr-28 border-b border-zinc-300 rounded-tl-2xl">
-        <span className="flex text-xl font-bold tracking-wide">
-          {displayTitle}
-        </span>
-        <div className="Popup w-fit flex items-center gap-3">
+    <div className="sticky top-0 h-16 w-full bg-[#1286ff] z-30">
+      <div
+        className={`h-full flex items-center justify-between bg-slate-50 px-8 border-b border-zinc-300 rounded-tl-2xl ${
+          scrolled ? "bg-slate-50/90 backdrop-blur-lg" : ""
+        } transition-all duration-200 ease-in-out`}
+      >
+        <span className="text-xl font-bold tracking-wide">{displayTitle}</span>
+        <div className="Popup flex items-center justify-end gap-3">
           <button
             onClick={() => {
               togglePopup();
