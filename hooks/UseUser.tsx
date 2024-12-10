@@ -7,14 +7,10 @@ import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, getUserFromDb } from "@/firebase";
 
-// global states
-import LoadingStore from "@/store/LoadingStore";
-
 const useUser = () => {
   const [authUser] = useAuthState(auth);
   const [user, setUser] = useState<User | null>(null);
-  const { loading, setLoading } = LoadingStore();
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [error, setError] = useState<string | null>(null); 
 
   useEffect(() => {
     const fetchUser = async () => {

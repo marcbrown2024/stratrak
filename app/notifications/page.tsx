@@ -47,14 +47,14 @@ const Page = () => {
   };
 
   return (
-    <div className="h-full w-full space-y-8 bg-gray-200 p-8 rounded-xl">
+    <div className="h-full w-full space-y-8 p-8 rounded-xl">
       <span className="text-2xl font-bold">Notification</span>
       <div className="space-y-6">
         {notifications[activeTab].length > 0 ? (
           notifications[activeTab].map((notification: any, index: number) => (
             <div
               key={index}
-              className="Notif relative h-20 w-full flex items-center text-sm text-gray-700 bg-gray-50 px-4 rounded-lg overflow-hidden"
+              className="Notif relative h-20 w-full flex items-center text-sm text-gray-700 bg-gray-200 px-4 rounded-lg overflow-hidden"
             >
               {/* Render your notification content here */}
               <div className="flex-1 flex items-center gap-8">

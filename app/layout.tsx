@@ -9,11 +9,8 @@ import { Inter } from "next/font/google";
 import { AuthProvider } from "@/components/AuthProvider";
 
 // custom components
-import Header from "@/components/Header";
-import HeaderMobile from "@/components/HeaderMobile";
 import Sidebar from "@/components/sideMenu/Sidebar";
 import PageWrapper from "@/components/PageWrapper";
-import MarginWidthWrapper from "@/components/MarginWidthWrapper";
 import Alert from "@/components/Alert";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -30,20 +27,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`bg-slate-50 ${inter.className}`}>
-        <div className="flex">
-          <AuthProvider>
-            <Sidebar />
-            <main className="flex-1">
-              <MarginWidthWrapper>
-                <Header />
-                <HeaderMobile />
-                <PageWrapper>{children}</PageWrapper>
-              </MarginWidthWrapper>
-            </main>
-          </AuthProvider>
-          <Alert />
-        </div>
+      <body className={`bg-[#1286ff] ${inter.className}`}>
+        <AuthProvider>
+          <Sidebar />
+          <PageWrapper>{children}</PageWrapper>
+        </AuthProvider>
+        <Alert />
       </body>
     </html>
   );

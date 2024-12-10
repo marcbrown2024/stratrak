@@ -83,7 +83,7 @@ const Page = () => {
     });
     setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -107,7 +107,7 @@ const Page = () => {
   }, [user]);
 
   return (
-    <div className="h-fit w-full flex flex-col items-center justify-center gap-8 pb-8">
+    <div className="h-fit w-full flex flex-col items-center justify-center gap-8 py-16">
       {/* Info Cards */}
       <div className="h-fit w-[95%] flex flex-col md:flex-row gap-4 md:gap-8">
         <div className="relative h-fit w-[18.5rem] 2xl:w-1/3 flex flex-col pb-1 pr-1 rounded-lg bg-gray-300 text-gray-700 shadow-lg">

@@ -1,25 +1,28 @@
-'use client'
+"use client";
 
 // react/nextjs components
-import { redirect, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
+
+// global stores
+import useSideBarStore from "@/store/SideBarStore";
 
 // icons
 import { FaChevronDown } from "react-icons/fa";
 import useUser from "@/hooks/UseUser";
 
 const MenuItem = ({ item }: { item: SideNavItem }) => {
-  const {user} = useUser()
+  const { user } = useUser();
   const currentPathname = usePathname();
   const [subMenuOpen, setSubMenuOpen] = useState(false);
+  const { isSidebarOpen } = useSideBarStore();
 
   const toggleSubMenu = () => {
     setSubMenuOpen(!subMenuOpen);
   };
 
-  return (item.requireAdmin && !user?.isAdmin) ? null : (
-    
+  return item.requireAdmin && !user?.isAdmin ? null : (
     <>
       {item.subMenu ? (
         <>
@@ -56,10 +59,12 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
         item.usage !== "smallScreen" && (
           <Link
             href={item.path}
-            className={`w-full flex items-center justify-start gap-3 text-white px-2 py-3 ${item.path === currentPathname ? "bg-white/20" : ""} rounded-lg hover:bg-white/20 `}
+            className={`relative h-14 w-full flex items-center text-white ${
+              item.path === currentPathname ? "bg-white/20" : ""
+            } rounded-lg hover:bg-white/20`}
           >
-            {item.icon}
-            <span className="font-semibold">{item.title}</span>
+            <div className="h-full w-10 flex items-center justify-center pl-2">{item.icon}</div>
+            {isSidebarOpen && <div className="absolute left-12 h-full w-44 flex items-center font-semibold">{item.title}</div>}
           </Link>
         )
       )}
